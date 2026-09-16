@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Provider Dashboard | Event Platform</title>
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <header class="dashboard-header">
+      <div>
+        <h1>Provider Dashboard</h1>
+        <p id="welcomeMessage">Loading...</p>
+      </div>
+
+      <div class="dashboard-actions">
+        <a href="provider-dashboard.html"> Dashboard </a>
+
+        <a href="#" id="viewProfileButton"> My Public Profile </a>
+
+        <a href="providers.html"> Browse Providers </a>
+
+        <button id="logoutButton">Logout</button>
+      </div>
+    </header>
+
+    <main class="dashboard-container">
+      <section class="dashboard-card dashboard-overview">
+        <h2>Welcome to Your Dashboard</h2>
+        <p>
+          Manage your business profile, services, portfolio, and reputation from
+          one place.
+        </p>
+
+        <div class="provider-readiness">
+          <div class="readiness-header">
+            <strong>Profile Readiness</strong>
+            <span id="profileCompletion">0%</span>
+          </div>
+
+          <div class="readiness-bar">
+            <div id="profileCompletionBar" class="readiness-progress"></div>
+          </div>
+
+          <p id="profileCompletionMessage">
+            Complete your profile to help clients discover and trust your
+            business.
+          </p>
+        </div>
+      </section>
+
+      <!-- Business Profile -->
+
+      <section class="dashboard-card">
+        <h2>Business Profile</h2>
+
+        <form id="profileForm">
+          <label for="profileBusinessName"> Business Name </label>
+
+          <input type="text" id="profileBusinessName" required />
+
+          <label for="profileEmail"> Email </label>
+
+          <input type="email" id="profileEmail" readonly />
+
+          <label for="profilePhone"> Phone </label>
+
+          <input type="tel" id="profilePhone" />
+
+          <label for="profileLocation"> Location </label>
+
+          <input type="text" id="profileLocation" />
+
+          <label for="profileAddress"> Address </label>
+
+          <textarea
+            id="profileAddress"
+            rows="3"
+            placeholder="Business address"
+          ></textarea>
+
+          <label for="profileDescription"> Business Description </label>
+
+          <textarea
+            id="profileDescription"
+            rows="5"
+            placeholder="Tell clients about your business..."
+          ></textarea>
+
+          <label for="profileWebsite"> Website / Social Media Link </label>
+
+          <input type="url" id="profileWebsite" placeholder="https://..." />
+          <div class="form-group">
+            <label for="profileWhatsapp"> WhatsApp Number </label>
+
+            <input
+              type="text"
+              id="profileWhatsapp"
+              placeholder="+256 7XX XXX XXX"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="profileInstagram"> Instagram URL </label>
+
+            <input
+              type="url"
+              id="profileInstagram"
+              placeholder="https://instagram.com/yourbusiness"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="profileFacebook"> Facebook URL </label>
+
+            <input
+              type="url"
+              id="profileFacebook"
+              placeholder="https://facebook.com/yourbusiness"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="profileTiktok"> TikTok URL </label>
+
+            <input
+              type="url"
+              id="profileTiktok"
+              placeholder="https://tiktok.com/@yourbusiness"
+            />
+          </div>
+
+          <button type="submit">Save Profile</button>
+        </form>
+
+        <p id="profileMessage"></p>
+      </section>
+
+      <!-- Reputation -->
+
+      <section class="dashboard-card">
+        <h2>Reputation</h2>
+
+        <div class="stats-grid">
+          <div class="stat-box">
+            <h3 id="rating">0</h3>
+            <p>Average Rating</p>
+          </div>
+
+          <div class="stat-box">
+            <h3 id="reviews">0</h3>
+            <p>Reviews</p>
+          </div>
+
+          <div class="stat-box">
+            <h3 id="reliability">0</h3>
+            <p>Reliability Score</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Services -->
+
+      <section class="dashboard-card">
+        <h2>My Services</h2>
+
+        <p>Select the services your business provides.</p>
+
+        <div id="servicesList">Loading services...</div>
+
+        <button id="saveServicesButton">Save Services</button>
+
+        <p id="servicesMessage"></p>
+      </section>
+
+      <section class="dashboard-card media-section">
+        <div class="section-heading">
+          <div>
+            <h2>Business Media</h2>
+
+            <p>
+              Showcase your work and give clients a reason to choose your
+              business.
+            </p>
+          </div>
+        </div>
+
+        <!-- PHOTOS -->
+
+        <div class="media-upload-group">
+          <div class="media-upload-header">
+            <div>
+              <h3>Business Photos</h3>
+
+              <p>
+                Upload up to 4 photos of your work, team, equipment or previous
+                events.
+              </p>
+            </div>
+
+            <span id="imageCountLabel" class="media-count"> 0 / 4 </span>
+          </div>
+
+          <label for="imageUpload" class="media-dropzone" id="imageDropzone">
+            <div class="dropzone-icon">📷</div>
+
+            <div class="dropzone-title">Drag & drop your photos here</div>
+
+            <div class="dropzone-subtitle">
+              or <span>browse from your computer</span>
+            </div>
+
+            <div class="dropzone-info">JPG, PNG or WEBP · Maximum 4 photos</div>
+          </label>
+
+          <input
+            type="file"
+            id="imageUpload"
+            accept="image/jpeg,image/png,image/webp"
+            multiple
+            hidden
+          />
+
+          <div id="imagePreview" class="media-preview-grid"></div>
+
+          <button
+            id="uploadImagesButton"
+            class="media-upload-button"
+            type="button"
+          >
+            Upload Photos
+          </button>
+        </div>
+
+        <!-- VIDEO -->
+
+        <div class="media-upload-group">
+          <div class="media-upload-header">
+            <div>
+              <h3>Business Video</h3>
+
+              <p>
+                Add one short video that gives clients a better feel for your
+                business.
+              </p>
+            </div>
+
+            <span id="videoCountLabel" class="media-count"> 0 / 1 </span>
+          </div>
+
+          <label
+            for="videoUpload"
+            class="media-dropzone video-dropzone"
+            id="videoDropzone"
+          >
+            <div class="dropzone-icon">🎥</div>
+
+            <div class="dropzone-title">Drag & drop your video here</div>
+
+            <div class="dropzone-subtitle">
+              or <span>browse from your computer</span>
+            </div>
+
+            <div class="dropzone-info">MP4, MOV or WEBM · Maximum 1 video</div>
+          </label>
+
+          <input
+            type="file"
+            id="videoUpload"
+            accept="video/mp4,video/quicktime,video/webm"
+            hidden
+          />
+
+          <div id="videoPreview" class="video-preview"></div>
+
+          <button
+            id="uploadVideoButton"
+            class="media-upload-button"
+            type="button"
+          >
+            Upload Video
+          </button>
+        </div>
+
+        <p id="mediaMessage" class="media-message"></p>
+
+        <!-- EXISTING MEDIA -->
+
+        <div class="existing-media-section">
+          <div class="media-upload-header">
+            <div>
+              <h3>Your Media</h3>
+
+              <p>
+                These are the photos and video currently visible on your public
+                profile.
+              </p>
+            </div>
+          </div>
+
+          <div id="mediaGallery" class="media-gallery"></div>
+        </div>
+      </section>
+    </main>
+    <div id="footer"></div>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

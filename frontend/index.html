@@ -1,0 +1,113 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Event Platform</title>
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <header>
+      <h1>Event Platform</h1>
+
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="providers.html">Services</a>
+        <a href="login.html">Login</a>
+        <a href="register.html">Join as Provider</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h2>Find Reliable Event Professionals</h2>
+
+        <p>
+          Discover trusted decorators, sound companies, photographers,
+          videographers and more.
+        </p>
+
+        <div class="hero-buttons">
+          <a href="providers.html">
+            <button type="button">Find a Service</button>
+          </a>
+
+          <a href="register.html">
+            <button type="button">Join as a Provider</button>
+          </a>
+        </div>
+      </section>
+
+      <section class="services">
+        <div class="section-title">
+          <h2>Explore Services</h2>
+          <p>Find the right professionals for your next event.</p>
+        </div>
+
+        <div class="service-list">
+          <a
+            href="providers.html?category=sound-production"
+            class="service-card"
+          >
+            <div class="service-icon">🔊</div>
+            <h3>Sound & Production</h3>
+            <p>Sound, stages, LED screens and event production.</p>
+          </a>
+
+          <a href="providers.html?category=decoration" class="service-card">
+            <div class="service-icon">🎨</div>
+            <h3>Decoration</h3>
+            <p>Transform your venue and create the right atmosphere.</p>
+          </a>
+
+          <a href="providers.html?category=photography" class="service-card">
+            <div class="service-icon">📸</div>
+            <h3>Photography</h3>
+            <p>Capture the moments that matter.</p>
+          </a>
+
+          <a href="providers.html?category=videography" class="service-card">
+            <div class="service-icon">🎥</div>
+            <h3>Videography</h3>
+            <p>Professional event videos and memories.</p>
+          </a>
+
+          <a href="providers.html?category=lighting" class="service-card">
+            <div class="service-icon">💡</div>
+            <h3>Lighting</h3>
+            <p>Professional lighting for every kind of event.</p>
+          </a>
+
+          <a href="providers.html?category=venues" class="service-card">
+            <div class="service-icon">🏟️</div>
+            <h3>Venues</h3>
+            <p>Discover spaces suited for your event.</p>
+          </a>
+        </div>
+      </section>
+
+      <section class="featured-providers">
+        <div class="section-title">
+          <h2>Featured Providers</h2>
+
+          <p>Discover event professionals already on our platform.</p>
+        </div>
+
+        <div id="featuredProvidersList" class="featured-providers-list">
+          <p class="featured-loading">Loading providers...</p>
+        </div>
+
+        <div class="featured-providers-action">
+          <a href="providers.html"> View All Providers </a>
+        </div>
+      </section>
+    </main>
+    <div id="footer"></div>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

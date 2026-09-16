@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Provider Profile</title>
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <header class="dashboard-header">
+      <div>
+        <section class="provider-hero">
+          <div class="provider-hero-content">
+            <div class="provider-profile-header">
+              <h1 id="providerName">Loading provider...</h1>
+
+              <p id="providerLocation" class="provider-profile-location">
+                Loading location...
+              </p>
+            </div>
+
+            <div class="provider-hero-reputation">
+              <div>
+                <strong id="providerRating"> 0 </strong>
+
+                <span> ⭐ Rating </span>
+              </div>
+
+              <div>
+                <strong id="providerReviews"> 0 </strong>
+
+                <span> Reviews </span>
+              </div>
+
+              <div>
+                <strong id="providerReliability"> 0 </strong>
+
+                <span> Reliability </span>
+              </div>
+            </div>
+
+            <div class="contact-buttons">
+              <a
+                id="callProvider"
+                class="contact-button primary-contact"
+                href="#"
+              >
+                📞 Call Provider
+              </a>
+
+              <a
+                id="whatsappProvider"
+                class="contact-button whatsapp-contact"
+                href="#"
+                target="_blank"
+              >
+                💬 WhatsApp
+              </a>
+
+              <a
+                id="websiteProvider"
+                class="contact-button"
+                href="#"
+                target="_blank"
+              >
+                🌐 Website
+              </a>
+
+              <a
+                id="instagramProvider"
+                class="contact-button"
+                href="#"
+                target="_blank"
+              >
+                📸 Instagram
+              </a>
+
+              <a
+                id="facebookProvider"
+                class="contact-button"
+                href="#"
+                target="_blank"
+              >
+                📘 Facebook
+              </a>
+
+              <a
+                id="tiktokProvider"
+                class="contact-button"
+                href="#"
+                target="_blank"
+              >
+                🎵 TikTok
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <p id="providerLocation">Loading...</p>
+      </div>
+
+      <div class="profile-navigation">
+        <a href="providers.html">← Back to Providers</a>
+        <a href="index.html">Home</a>
+      </div>
+    </header>
+
+    <main class="dashboard-container">
+
+        <div id="profileLoader"></div>
+      <!-- Media -->
+
+      <section class="dashboard-card">
+        <h2>Our Work</h2>
+
+        <div id="providerMedia">Loading media...</div>
+      </section>
+
+      <!-- Provider Information -->
+
+      <section class="dashboard-card">
+        <h2>About Us</h2>
+
+        <p id="providerDescription">Loading description...</p>
+
+        <p>
+          <strong>Address:</strong>
+          <span id="providerAddress"> Loading address... </span>
+        </p>
+      </section>
+
+      <!-- Services -->
+
+      <section class="dashboard-card">
+        <h2>Services</h2>
+
+        <div id="providerServices">Loading services...</div>
+      </section>
+
+      <!-- Reputation -->
+
+      <section class="dashboard-card">
+        <h2>Reputation</h2>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <h3>Rating</h3>
+
+            <p id="providerRating">0</p>
+          </div>
+
+          <div class="stat-card">
+            <h3>Reviews</h3>
+
+            <p id="providerReviews">0</p>
+          </div>
+
+          <div class="stat-card">
+            <h3>Reliability</h3>
+
+            <p id="providerReliability">0</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="dashboard-card">
+        <h2>Client Reviews</h2>
+
+        <div id="providerReviewsList">Loading reviews...</div>
+
+        <div
+          id="reviewFormContainer"
+          class="review-form-container"
+          style="display: none"
+        >
+          <h3>Leave a Review</h3>
+
+          <div class="review-rating-input">
+            <label for="reviewRating"> Rating </label>
+
+            <select id="reviewRating">
+              <option value="5">★★★★★ — Excellent</option>
+              <option value="4">★★★★ — Very Good</option>
+              <option value="3">★★★ — Good</option>
+              <option value="2">★★ — Fair</option>
+              <option value="1">★ — Poor</option>
+            </select>
+          </div>
+
+          <div class="review-comment-input">
+            <label for="reviewComment"> Your Review </label>
+
+            <textarea
+              id="reviewComment"
+              rows="5"
+              placeholder="Tell others about your experience with this provider..."
+            ></textarea>
+          </div>
+
+          <button id="submitReview" class="provider-profile-button">
+            Submit Review
+          </button>
+
+          <p id="reviewFormMessage" class="review-form-message"></p>
+        </div>
+
+        <div
+          id="reviewLoginMessage"
+          class="review-login-message"
+          style="display: none"
+        >
+          <p>Want to share your experience?</p>
+
+          <a href="login.html" class="provider-profile-button">
+            Log in as a Client to Review
+          </a>
+        </div>
+      </section>
+
+      <!-- Contact -->
+
+      <section class="dashboard-card">
+        <h2>Contact This Provider</h2>
+
+        <p>Interested in working with this provider? Get in touch directly.</p>
+
+        <div class="contact-buttons">
+          <a id="callProvider" class="contact-button" href="#"> 📞 Call </a>
+
+          <a
+            id="whatsappProvider"
+            class="contact-button"
+            href="#"
+            target="_blank"
+          >
+            💬 WhatsApp
+          </a>
+
+          <a
+            id="websiteProvider"
+            class="contact-button"
+            href="#"
+            target="_blank"
+          >
+            🌐 Website
+          </a>
+
+          <a
+            id="instagramProvider"
+            class="contact-button"
+            href="#"
+            target="_blank"
+          >
+            📸 Instagram
+          </a>
+
+          <a
+            id="facebookProvider"
+            class="contact-button"
+            href="#"
+            target="_blank"
+          >
+            📘 Facebook
+          </a>
+
+          <a
+            id="tiktokProvider"
+            class="contact-button"
+            href="#"
+            target="_blank"
+          >
+            🎵 TikTok
+          </a>
+        </div>
+      </section>
+    </main>
+    <div id="footer"></div>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js"></script>
+    <script src="provider-profile.js"></script>
+  </body>
+</html>

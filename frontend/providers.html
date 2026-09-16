@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Find Event Providers</title>
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <!-- HEADER -->
+
+    <header>
+      <h1>Find Event Providers</h1>
+
+      <p>Discover event professionals and service providers.</p>
+
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="providers.html">Services</a>
+        <a href="login.html">Login</a>
+        <a href="register.html">Join as Provider</a>
+      </nav>
+    </header>
+
+    <!-- PROVIDERS -->
+
+    <main>
+      <section class="dashboard-card">
+        <h2>Find Event Providers</h2>
+
+        <div class="provider-filters">
+          <div class="filter-group">
+            <label for="searchInput"> Search </label>
+
+            <input
+              type="text"
+              id="searchInput"
+              placeholder="e.g. wedding decoration, sound..."
+            />
+          </div>
+
+          <div class="filter-group">
+            <label for="locationInput"> Location </label>
+
+            <input type="text" id="locationInput" placeholder="e.g. Kampala" />
+          </div>
+
+          <div class="filter-group">
+            <label for="categoryFilter"> Category </label>
+
+            <select id="categoryFilter">
+              <option value="">All Categories</option>
+            </select>
+          </div>
+        </div>
+        <div id="providersList">Loading providers...</div>
+      </section>
+    </main>
+    <div id="footer"></div>
+    <script src="app.js"></script>
+    <script src="providers.js"></script>
+  </body>
+</html>
