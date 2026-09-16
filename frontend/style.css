@@ -4188,3 +4188,20 @@ background: #ecfdf5;
 }
 
 }
+
+
+/* ========================================
+   BIDE HUB BRAND LOGO
+======================================== */
+
+.brand-logo {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.brand-logo img {
+    width: 150px;
+    height: auto;
+    display: block;
+}
