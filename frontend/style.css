@@ -4089,3 +4089,102 @@ body:has(#providersList) .dashboard-card h2 {
 #providerMedia .content-loader {
     min-height: 180px;
 }
+
+/* ========================================
+PROVIDER CONTACT ICONS
+======================================== */
+
+.provider-contact-card {
+text-align: center;
+}
+
+.contact-icon-buttons {
+display: flex;
+justify-content: center;
+align-items: center;
+gap: 14px;
+margin-top: 24px;
+flex-wrap: wrap;
+}
+
+.contact-icon-button {
+width: 48px;
+height: 48px;
+
+display: inline-flex;
+align-items: center;
+justify-content: center;
+
+border-radius: 50%;
+
+background: #f3f4f6;
+color: #374151;
+
+text-decoration: none;
+
+border: 1px solid #e5e7eb;
+
+transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+
+}
+
+.contact-icon-button svg {
+width: 22px;
+height: 22px;
+
+fill: none;
+stroke: currentColor;
+stroke-width: 1.8;
+stroke-linecap: round;
+stroke-linejoin: round;
+
+}
+
+.contact-icon-button:hover {
+transform: translateY(-3px);
+box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.contact-icon-button:active {
+transform: translateY(-1px);
+}
+
+.contact-icon-button:focus-visible {
+outline: 3px solid rgba(37, 99, 235, 0.25);
+outline-offset: 3px;
+}
+
+/* Call */
+
+.call-contact:hover {
+background: #eef2ff;
+}
+
+/* WhatsApp */
+
+.whatsapp-contact:hover {
+background: #ecfdf5;
+}
+
+/* Mobile */
+
+@media (max-width: 480px) {
+
+.contact-icon-buttons {
+    gap: 10px;
+}
+
+.contact-icon-button {
+    width: 44px;
+    height: 44px;
+}
+
+.contact-icon-button svg {
+    width: 20px;
+    height: 20px;
+}
+
+}
