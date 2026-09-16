@@ -1,3 +1,4 @@
+
 async function loadProviderProfile() {
   // ==========================================
   // SHOW PROFILE LOADER
@@ -35,7 +36,7 @@ async function loadProviderProfile() {
     // Fetch provider
 
     const response = await fetch(
-      `http://localhost:3000/api/providers/${providerId}`,
+      `${API_BASE_URL}/api/providers/${providerId}`,
     );
 
     const result = await response.json();
@@ -301,7 +302,7 @@ async function loadProviderReviews(providerId) {
 
   try {
     const response = await fetch(
-      `http://localhost:3000/api/providers/${providerId}/reviews`,
+      `${API_BASE_URL}/api/providers/${providerId}/reviews`,
     );
 
     const result = await response.json();
@@ -400,7 +401,7 @@ async function setupReviewForm(providerId) {
         // Get the user's role
         const response =
             await fetch(
-                "http://localhost:3000/api/me",
+                `${API_BASE_URL}/api/me`,
                 {
                     headers: {
                         Authorization:
@@ -503,7 +504,7 @@ function setupReviewSubmission(
 
                 const response =
                     await fetch(
-                        `http://localhost:3000/api/providers/${providerId}/reviews`,
+                        `${API_BASE_URL}/api/providers/${providerId}/reviews`,
                         {
                             method: "POST",
 
@@ -576,7 +577,7 @@ async function refreshProviderRating(
 
         const response =
             await fetch(
-                `http://localhost:3000/api/providers/${providerId}`
+                `${API_BASE_URL}/api/providers/${providerId}`
             );
 
         const result =

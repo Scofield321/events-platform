@@ -1,3 +1,5 @@
+const API_BASE_URL = "https://events-platform-ym0v.onrender.com";
+
 const SUPABASE_URL = "https://uainkysoifpgvqxcnpde.supabase.co";
 
 const SUPABASE_ANON_KEY =
@@ -243,7 +245,7 @@ if (registerForm) {
 
       // 2. Create provider profile
       const response = await fetch(
-        "http://localhost:3000/api/providers/register",
+        `${API_BASE_URL}/api/providers/register`,
         {
           method: "POST",
 
@@ -310,7 +312,7 @@ if (loginForm) {
       console.log("Logged in user:", data.user);
 
       // Get platform profile and role
-      const response = await fetch("http://localhost:3000/api/me", {
+      const response = await fetch(`${API_BASE_URL}/api/me`, {
         method: "GET",
 
         headers: {
@@ -369,7 +371,7 @@ async function getMyProfile() {
 
     console.log("Access token found.");
 
-    const response = await fetch("http://localhost:3000/api/me", {
+    const response = await fetch(`${API_BASE_URL}/api/me`, {
       method: "GET",
 
       headers: {
@@ -420,7 +422,7 @@ async function loadProviderDashboard() {
       return;
     }
 
-    const response = await fetch("http://localhost:3000/api/me", {
+    const response = await fetch(`${API_BASE_URL}/api/me`, {
       method: "GET",
 
       headers: {
@@ -693,7 +695,7 @@ async function loadProviderServices() {
     }
 
     // Get all available services
-    const servicesResponse = await fetch("http://localhost:3000/api/services");
+    const servicesResponse = await fetch(`${API_BASE_URL}/api/services`);
 
     const servicesResult = await servicesResponse.json();
 
@@ -703,7 +705,7 @@ async function loadProviderServices() {
 
     // Get provider's selected services
     const myServicesResponse = await fetch(
-      "http://localhost:3000/api/providers/services",
+      `${API_BASE_URL}/api/providers/services`,
       {
         headers: {
           Authorization: `Bearer ${session.access_token}`,
@@ -812,7 +814,7 @@ async function saveProviderServices() {
       .map((checkbox) => checkbox.value);
 
     const response = await fetch(
-      "http://localhost:3000/api/providers/services",
+      `${API_BASE_URL}/api/providers/services`,
       {
         method: "POST",
 
@@ -912,7 +914,7 @@ async function saveProviderProfile(event) {
     };
 
     const response = await fetch(
-      "http://localhost:3000/api/providers/profile",
+      `${API_BASE_URL}/api/providers/profile`,
       {
         method: "PUT",
 
@@ -997,7 +999,7 @@ async function uploadProviderMedia(file, mediaType) {
     const mediaUrl = publicUrlData.publicUrl;
 
     // Save media record in backend
-    const response = await fetch("http://localhost:3000/api/providers/media", {
+    const response = await fetch(`${API_BASE_URL}/api/providers/media`, {
       method: "POST",
 
       headers: {
@@ -1343,7 +1345,7 @@ async function loadProviderMedia() {
       return;
     }
 
-    const response = await fetch("http://localhost:3000/api/providers/media", {
+    const response = await fetch(`${API_BASE_URL}/api/providers/media`, {
       headers: {
         Authorization: `Bearer ${session.access_token}`,
       },
@@ -1475,7 +1477,7 @@ async function deleteProviderMedia(mediaId) {
     }
 
     const response = await fetch(
-      `http://localhost:3000/api/providers/media/${mediaId}`,
+      `${API_BASE_URL}/api/providers/media/${mediaId}`,
       {
         method: "DELETE",
         headers: {
@@ -1523,7 +1525,7 @@ async function loadFeaturedProviders() {
     featuredProvidersList.innerHTML = createContentLoader(
         "Loading providers..."
     );
-    const response = await fetch("http://localhost:3000/api/providers");
+    const response = await fetch(`${API_BASE_URL}/api/providers`);
 
     const result = await response.json();
 

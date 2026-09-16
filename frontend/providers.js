@@ -2,7 +2,7 @@ let allProviders = [];
 
 async function loadCategories() {
   try {
-    const response = await fetch("http://localhost:3000/api/categories");
+    const response = await fetch(`${API_BASE_URL}/api/categories`);
     const result = await response.json();
     if (!response.ok) {
       throw new Error(result.message || "Failed to load categories");
@@ -35,7 +35,7 @@ async function loadProviders(categoryId = "") {
   );
 
   try {
-    let url = "http://localhost:3000/api/providers";
+    let url = `${API_BASE_URL}/api/providers`;
 
     if (categoryId) {
       url += `?category_id=${categoryId}`;

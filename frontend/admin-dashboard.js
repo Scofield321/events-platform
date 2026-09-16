@@ -15,7 +15,7 @@ async function loadAdminProviders() {
         }
 
         const response = await fetch(
-            "http://localhost:3000/api/providers",
+            `${API_BASE_URL}/api/providers`,
             {
                 headers: {
                     Authorization:
@@ -153,7 +153,7 @@ async function viewAdminProvider(providerId) {
         }
 
         const response = await fetch(
-            `http://localhost:3000/api/admin/providers/${providerId}`,
+            `${API_BASE_URL}/api/admin/providers/${providerId}`,
             {
                 headers: {
                     Authorization:
@@ -369,7 +369,7 @@ async function toggleVerification(
         }
 
         const response = await fetch(
-            `http://localhost:3000/api/admin/providers/${providerId}/verification`,
+            `${API_BASE_URL}/api/admin/providers/${providerId}/verification`,
             {
                 method: "PUT",
 
