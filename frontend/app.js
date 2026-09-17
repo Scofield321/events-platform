@@ -34,6 +34,52 @@ function createLoaderSpinner() {
     return spinner;
 }
 
+function showToast(message, type = "success") {
+    const existingToast =
+        document.getElementById("appToast");
+
+    if (existingToast) {
+        existingToast.remove();
+    }
+
+    const toast =
+        document.createElement("div");
+
+    toast.id = "appToast";
+    toast.className =
+        `app-toast app-toast-${type}`;
+
+    const icon =
+        type === "success"
+            ? "✓"
+            : type === "error"
+                ? "!"
+                : "i";
+
+    toast.innerHTML = `
+        <span class="app-toast-icon">
+            ${icon}
+        </span>
+
+        <span class="app-toast-message">
+            ${message}
+        </span>
+    `;
+
+    document.body.appendChild(toast);
+
+    requestAnimationFrame(() => {
+        toast.classList.add("show");
+    });
+
+    setTimeout(() => {
+        toast.classList.remove("show");
+
+        setTimeout(() => {
+            toast.remove();
+        }, 300);
+    }, 3500);
+}
 
 /**
  * Returns HTML for a content loader.
@@ -210,26 +256,47 @@ if (registerForm) {
   registerForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    const businessName = document.getElementById("businessName").value.trim();
+    const businessName = document
+      .getElementById("businessName")
+      .value.trim();
 
-    const email = document.getElementById("email").value.trim();
+    const email = document
+      .getElementById("email")
+      .value.trim();
 
-    const phone = document.getElementById("phone").value.trim();
+    const phone = document
+      .getElementById("phone")
+      .value.trim();
 
-    const location = document.getElementById("location").value.trim();
+    const location = document
+      .getElementById("location")
+      .value.trim();
 
-    const password = document.getElementById("password").value;
+    const password =
+      document.getElementById("password").value;
 
-    const message = document.getElementById("registerMessage");
+    const message =
+      document.getElementById("registerMessage");
 
-    message.textContent = "Creating your account...";
+    const registerButton =
+      document.getElementById("registerButton");
+
+    message.textContent =
+      "Creating your account...";
 
     try {
+      // Show loading state
+      setButtonLoading(
+        registerButton,
+        "Creating account..."
+      );
+
       // 1. Create account in Supabase Auth
-      const { data, error } = await supabaseClient.auth.signUp({
-        email: email,
-        password: password,
-      });
+      const { data, error } =
+        await supabaseClient.auth.signUp({
+          email: email,
+          password: password,
+        });
 
       if (error) {
         throw error;
@@ -238,10 +305,15 @@ if (registerForm) {
       const authUser = data.user;
 
       if (!authUser) {
-        throw new Error("User account was not created.");
+        throw new Error(
+          "User account was not created."
+        );
       }
 
-      console.log("Auth user created:", authUser.id);
+      console.log(
+        "Auth user created:",
+        authUser.id
+      );
 
       // 2. Create provider profile
       const response = await fetch(
@@ -250,7 +322,8 @@ if (registerForm) {
           method: "POST",
 
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type":
+              "application/json",
           },
 
           body: JSON.stringify({
@@ -260,93 +333,176 @@ if (registerForm) {
             business_name: businessName,
             location: location,
           }),
-        },
+        }
       );
 
-      const result = await response.json();
+      const result =
+        await response.json();
 
       if (!response.ok) {
-        throw new Error(result.message || "Failed to create provider profile.");
+        throw new Error(
+          result.message ||
+          "Failed to create provider profile."
+        );
       }
 
-      message.textContent = "Account created successfully! Redirecting...";
+      message.textContent =
+        "Account created successfully! Redirecting...";
 
-      window.location.href = "provider-dashboard.html";
+      window.location.href =
+        "provider-dashboard.html";
+
     } catch (error) {
-      console.error("Registration error:", error);
+      console.error(
+        "Registration error:",
+        error
+      );
 
-      message.textContent = error.message;
+      message.textContent =
+        error.message;
+
+    } finally {
+      resetButtonLoading(
+        registerButton
+      );
     }
   });
 }
+
 
 // ======================================================
 // LOGIN
 // ======================================================
 
-const loginForm = document.getElementById("loginForm");
+const loginForm =
+  document.getElementById("loginForm");
 
 if (loginForm) {
-  loginForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
+  loginForm.addEventListener(
+    "submit",
+    async (event) => {
+      event.preventDefault();
 
-    const email = document.getElementById("loginEmail").value.trim();
+      const email =
+        document
+          .getElementById("loginEmail")
+          .value.trim();
 
-    const password = document.getElementById("loginPassword").value;
+      const password =
+        document.getElementById(
+          "loginPassword"
+        ).value;
 
-    const message = document.getElementById("loginMessage");
+      const message =
+        document.getElementById(
+          "loginMessage"
+        );
 
-    message.textContent = "Logging in...";
+      const loginButton =
+        document.getElementById(
+          "loginButton"
+        );
 
-    try {
-      // Authenticate with Supabase
-      const { data, error } = await supabaseClient.auth.signInWithPassword({
-        email: email,
-        password: password,
-      });
+      message.textContent =
+        "Logging in...";
 
-      if (error) {
-        throw error;
+      try {
+        // Show loading state
+        setButtonLoading(
+          loginButton,
+          "Logging in..."
+        );
+
+        // Authenticate with Supabase
+        const { data, error } =
+          await supabaseClient.auth
+            .signInWithPassword({
+              email: email,
+              password: password,
+            });
+
+        if (error) {
+          throw error;
+        }
+
+        console.log(
+          "Logged in user:",
+          data.user
+        );
+
+        // Get platform profile and role
+        const response =
+          await fetch(
+            `${API_BASE_URL}/api/me`,
+            {
+              method: "GET",
+
+              headers: {
+                Authorization:
+                  `Bearer ${data.session.access_token}`,
+              },
+            }
+          );
+
+        const result =
+          await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            result.message ||
+            "Failed to load user profile."
+          );
+        }
+
+        const user =
+          result.user;
+
+        console.log(
+          "Logged in role:",
+          user.role
+        );
+
+        // Redirect based on role
+        if (user.role === "ADMIN") {
+          window.location.href =
+            "admin-dashboard.html";
+
+        } else if (
+          user.role === "PROVIDER"
+        ) {
+          window.location.href =
+            "provider-dashboard.html";
+
+        } else if (
+          user.role === "CLIENT"
+        ) {
+          window.location.href =
+            "providers.html";
+
+        } else {
+          throw new Error(
+            "Your account has an unsupported role."
+          );
+        }
+
+      } catch (error) {
+        console.error(
+          "Login error:",
+          error
+        );
+
+        message.textContent =
+          error.message;
+
+      } finally {
+        resetButtonLoading(
+          loginButton
+        );
       }
-
-      console.log("Logged in user:", data.user);
-
-      // Get platform profile and role
-      const response = await fetch(`${API_BASE_URL}/api/me`, {
-        method: "GET",
-
-        headers: {
-          Authorization: `Bearer ${data.session.access_token}`,
-        },
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || "Failed to load user profile.");
-      }
-
-      const user = result.user;
-
-      console.log("Logged in role:", user.role);
-
-      // Redirect based on role
-      if (user.role === "ADMIN") {
-        window.location.href = "admin-dashboard.html";
-      } else if (user.role === "PROVIDER") {
-        window.location.href = "provider-dashboard.html";
-      } else if (user.role === "CLIENT") {
-        window.location.href = "providers.html";
-      } else {
-        throw new Error("Your account has an unsupported role.");
-      }
-    } catch (error) {
-      console.error("Login error:", error);
-
-      message.textContent = error.message;
     }
-  });
+  );
 }
+
 
 // ======================================================
 // GET MY PROFILE

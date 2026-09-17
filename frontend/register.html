@@ -1,84 +1,69 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Register | Event Platform</title>
 
-    <link rel="stylesheet" href="style.css">
-</head>
+    <link rel="stylesheet" href="style.css" />
+  </head>
 
-<body>
-
+  <body>
     <main class="auth-container">
+      <div class="auth-card">
+        <h1>Join the Bide Hub</h1>
 
-        <div class="auth-card">
+        <p>Create your service provider account.</p>
 
-            <h1>Join the Bide Hub</h1>
+        <form id="registerForm">
+          <label for="businessName">Business Name</label>
+          <input
+            type="text"
+            id="businessName"
+            placeholder="e.g. AKS Events"
+            required
+          />
 
-            <p>Create your service provider account.</p>
+          <label for="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            placeholder="business@example.com"
+            required
+          />
 
-            <form id="registerForm">
+          <label for="phone">Phone</label>
+          <input type="tel" id="phone" placeholder="0700 000 000" required />
 
-                <label for="businessName">Business Name</label>
-                <input
-                    type="text"
-                    id="businessName"
-                    placeholder="e.g. AKS Events"
-                    required
-                >
+          <label for="location">Location</label>
+          <input
+            type="text"
+            id="location"
+            placeholder="e.g. Kampala"
+            required
+          />
 
-                <label for="email">Email</label>
-                <input
-                    type="email"
-                    id="email"
-                    placeholder="business@example.com"
-                    required
-                >
+          <label for="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            placeholder="Create a password"
+            required
+          />
 
-                <label for="phone">Phone</label>
-                <input
-                    type="tel"
-                    id="phone"
-                    placeholder="0700 000 000"
-                    required
-                >
+          <button type="submit" id="registerButton">Create Account</button>
+        </form>
 
-                <label for="location">Location</label>
-                <input
-                    type="text"
-                    id="location"
-                    placeholder="e.g. Kampala"
-                    required
-                >
+        <p id="registerMessage"></p>
 
-                <label for="password">Password</label>
-                <input
-                    type="password"
-                    id="password"
-                    placeholder="Create a password"
-                    required
-                >
-
-                <button type="submit">
-                    Create Account
-                </button>
-
-            </form>
-
-            <p id="registerMessage"></p>
-
-            <p>
-                Already have an account?
-                <a href="login.html">Login</a>
-            </p>
-
-        </div>
-
+        <p>
+          Already have an account?
+          <a href="login.html">Login</a>
+        </p>
+      </div>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="app.js"></script>
-
-</body>
+  </body>
 </html>

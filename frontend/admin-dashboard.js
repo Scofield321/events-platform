@@ -91,7 +91,8 @@ function displayAdminProviders(providers) {
                     class="admin-action-button"
                     onclick="toggleVerification(
                         '${provider.id}',
-                        '${isVerified ? "UNVERIFIED" : "VERIFIED"}'
+                        '${isVerified ? "UNVERIFIED" : "VERIFIED"}',
+                        this
                     )"
                 >
                     ${isVerified ? "Remove Verification" : "Verify Provider"}
@@ -281,7 +282,7 @@ function closeAdminProviderDetails() {
   loadAdminProviders();
 }
 
-async function toggleVerification(providerId, verificationStatus) {
+async function toggleVerification(providerId, verificationStatus, button) {
   try {
     const {
       data: { session },
@@ -295,6 +296,11 @@ async function toggleVerification(providerId, verificationStatus) {
     if (!session) {
       window.location.href = "login.html";
       return;
+    }
+
+    // Show loading state
+    if (button) {
+      setButtonLoading(button, "Updating...");
     }
 
     const response = await fetch(
@@ -317,16 +323,22 @@ async function toggleVerification(providerId, verificationStatus) {
     const result = await response.json();
 
     if (!response.ok) {
-      throw new Error(result.message || "Failed to update verification");
+      throw new Error(
+        result.message || "Failed to update provider verification",
+      );
     }
 
-    alert(result.message);
+    showToast(result.message, "success");
 
     await loadAdminProviders();
   } catch (error) {
     console.error("Verification error:", error);
 
-    alert(error.message);
+    showToast(error.message, "error");
+  } finally {
+    if (button) {
+      resetButtonLoading(button);
+    }
   }
 }
 
