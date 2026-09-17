@@ -1,4 +1,3 @@
-
 async function loadProviderProfile() {
   // ==========================================
   // SHOW PROFILE LOADER
@@ -9,7 +8,7 @@ async function loadProviderProfile() {
   if (profileLoader) {
     profileLoader.innerHTML = createContentLoader(
       "Loading provider profile...",
-      true
+      true,
     );
 
     profileLoader.style.display = "block";
@@ -35,16 +34,12 @@ async function loadProviderProfile() {
 
     // Fetch provider
 
-    const response = await fetch(
-      `${API_BASE_URL}/api/providers/${providerId}`,
-    );
+    const response = await fetch(`${API_BASE_URL}/api/providers/${providerId}`);
 
     const result = await response.json();
 
     if (!response.ok) {
-      throw new Error(
-        result.message || "Failed to load provider"
-      );
+      throw new Error(result.message || "Failed to load provider");
     }
 
     const provider = result.provider;
@@ -76,14 +71,27 @@ async function loadProviderProfile() {
     // REPUTATION
     // ==========================================
 
-    document.getElementById("providerRating").textContent =
-      provider.average_rating || "0";
+    const rating = Number(provider.average_rating || 0).toFixed(1);
 
-    document.getElementById("providerReviews").textContent =
-      provider.review_count || "0";
+    const reviewCount = provider.review_count || 0;
+
+    const reliability = Number(provider.reliability_score || 0).toFixed(0);
+
+    // Hero reputation
+    document.getElementById("providerRating").textContent = rating;
+
+    document.getElementById("providerReviews").textContent = reviewCount;
 
     document.getElementById("providerReliability").textContent =
-      provider.reliability_score || "0";
+      `${reliability}%`;
+
+    // Reputation section
+    document.getElementById("reputationRating").textContent = rating;
+
+    document.getElementById("reputationReviews").textContent = reviewCount;
+
+    document.getElementById("reputationReliability").textContent =
+      `${reliability}%`;
 
     // ==========================================
     // CONTACT OPTIONS
@@ -101,23 +109,19 @@ async function loadProviderProfile() {
 
     // WHATSAPP
 
-    const whatsappButton =
-      document.getElementById("whatsappProvider");
+    const whatsappButton = document.getElementById("whatsappProvider");
 
     if (provider.whatsapp_number) {
-      const whatsappNumber =
-        provider.whatsapp_number.replace(/\D/g, "");
+      const whatsappNumber = provider.whatsapp_number.replace(/\D/g, "");
 
-      whatsappButton.href =
-        `https://wa.me/${whatsappNumber}`;
+      whatsappButton.href = `https://wa.me/${whatsappNumber}`;
     } else {
       whatsappButton.style.display = "none";
     }
 
     // WEBSITE
 
-    const websiteButton =
-      document.getElementById("websiteProvider");
+    const websiteButton = document.getElementById("websiteProvider");
 
     if (provider.website_url) {
       websiteButton.href = provider.website_url;
@@ -127,8 +131,7 @@ async function loadProviderProfile() {
 
     // INSTAGRAM
 
-    const instagramButton =
-      document.getElementById("instagramProvider");
+    const instagramButton = document.getElementById("instagramProvider");
 
     if (provider.instagram_url) {
       instagramButton.href = provider.instagram_url;
@@ -138,8 +141,7 @@ async function loadProviderProfile() {
 
     // FACEBOOK
 
-    const facebookButton =
-      document.getElementById("facebookProvider");
+    const facebookButton = document.getElementById("facebookProvider");
 
     if (provider.facebook_url) {
       facebookButton.href = provider.facebook_url;
@@ -149,8 +151,7 @@ async function loadProviderProfile() {
 
     // TIKTOK
 
-    const tiktokButton =
-      document.getElementById("tiktokProvider");
+    const tiktokButton = document.getElementById("tiktokProvider");
 
     if (provider.tiktok_url) {
       tiktokButton.href = provider.tiktok_url;
@@ -185,7 +186,6 @@ async function loadProviderProfile() {
     if (profileLoader) {
       profileLoader.style.display = "none";
     }
-
   } catch (error) {
     console.error("Provider profile error:", error);
 
@@ -216,9 +216,7 @@ function loadProviderServices(services) {
   }
 
   // Show loader while services are being prepared
-  container.innerHTML = createInlineLoader(
-    "Loading services..."
-  );
+  container.innerHTML = createInlineLoader("Loading services...");
 
   // No services
   if (!services || services.length === 0) {
@@ -258,7 +256,7 @@ function loadProviderMedia(media) {
   // Show loader while media is being prepared
   container.innerHTML = createContentLoader(
     "Loading provider portfolio...",
-    true
+    true,
   );
 
   // No media
@@ -368,246 +366,140 @@ async function loadProviderReviews(providerId) {
 }
 
 async function setupReviewForm(providerId) {
+  const reviewForm = document.getElementById("reviewFormContainer");
 
-    const reviewForm =
-        document.getElementById(
-            "reviewFormContainer"
-        );
+  const loginMessage = document.getElementById("reviewLoginMessage");
 
-    const loginMessage =
-        document.getElementById(
-            "reviewLoginMessage"
-        );
+  try {
+    const {
+      data: { session },
+      error,
+    } = await supabaseClient.auth.getSession();
 
-    try {
-
-        const {
-            data: { session },
-            error
-        } = await supabaseClient.auth.getSession();
-
-        if (error) {
-            throw error;
-        }
-
-        // No logged-in user
-        if (!session) {
-            loginMessage.style.display =
-                "block";
-
-            return;
-        }
-
-        // Get the user's role
-        const response =
-            await fetch(
-                `${API_BASE_URL}/api/me`,
-                {
-                    headers: {
-                        Authorization:
-                            `Bearer ${session.access_token}`
-                    }
-                }
-            );
-
-        const result =
-            await response.json();
-
-        if (!response.ok) {
-            throw new Error(
-                result.message ||
-                "Failed to load user profile"
-            );
-        }
-
-        const user =
-            result.user;
-
-        // Only CLIENT accounts can review
-        if (user.role === "CLIENT") {
-
-            reviewForm.style.display =
-                "block";
-
-            loginMessage.style.display =
-                "none";
-
-            setupReviewSubmission(
-                providerId,
-                session
-            );
-
-        } else {
-
-            reviewForm.style.display =
-                "none";
-
-            loginMessage.style.display =
-                "none";
-
-        }
-
-    } catch (error) {
-
-        console.error(
-            "Review form setup error:",
-            error
-        );
-
+    if (error) {
+      throw error;
     }
+
+    // No logged-in user
+    if (!session) {
+      loginMessage.style.display = "block";
+
+      return;
+    }
+
+    // Get the user's role
+    const response = await fetch(`${API_BASE_URL}/api/me`, {
+      headers: {
+        Authorization: `Bearer ${session.access_token}`,
+      },
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || "Failed to load user profile");
+    }
+
+    const user = result.user;
+
+    // Only CLIENT accounts can review
+    if (user.role === "CLIENT") {
+      reviewForm.style.display = "block";
+
+      loginMessage.style.display = "none";
+
+      setupReviewSubmission(providerId, session);
+    } else {
+      reviewForm.style.display = "none";
+
+      loginMessage.style.display = "none";
+    }
+  } catch (error) {
+    console.error("Review form setup error:", error);
+  }
 }
 
-function setupReviewSubmission(
-    providerId,
-    session
-) {
+function setupReviewSubmission(providerId, session) {
+  const submitButton = document.getElementById("submitReview");
 
-    const submitButton =
-        document.getElementById(
-            "submitReview"
-        );
+  const ratingInput = document.getElementById("reviewRating");
 
-    const ratingInput =
-        document.getElementById(
-            "reviewRating"
-        );
+  const commentInput = document.getElementById("reviewComment");
 
-    const commentInput =
-        document.getElementById(
-            "reviewComment"
-        );
+  const message = document.getElementById("reviewFormMessage");
 
-    const message =
-        document.getElementById(
-            "reviewFormMessage"
-        );
+  submitButton.addEventListener("click", async () => {
+    const rating = Number(ratingInput.value);
 
-    submitButton.addEventListener(
-        "click",
-        async () => {
+    const comment = commentInput.value.trim();
 
-            const rating =
-                Number(
-                    ratingInput.value
-                );
+    submitButton.disabled = true;
 
-            const comment =
-                commentInput.value.trim();
-
-            submitButton.disabled =
-                true;
-
-            message.textContent =
-                "Submitting review...";
-
-            try {
-
-                const response =
-                    await fetch(
-                        `${API_BASE_URL}/api/providers/${providerId}/reviews`,
-                        {
-                            method: "POST",
-
-                            headers: {
-                                "Content-Type":
-                                    "application/json",
-
-                                Authorization:
-                                    `Bearer ${session.access_token}`
-                            },
-
-                            body:
-                                JSON.stringify({
-                                    rating,
-                                    comment
-                                })
-                        }
-                    );
-
-                const result =
-                    await response.json();
-
-                if (!response.ok) {
-                    throw new Error(
-                        result.message ||
-                        "Failed to submit review"
-                    );
-                }
-
-                message.textContent =
-                    "Review submitted successfully!";
-
-                commentInput.value = "";
-
-                await loadProviderReviews(
-                    providerId
-                );
-
-                // Refresh provider rating
-                await refreshProviderRating(
-                    providerId
-                );
-
-            } catch (error) {
-
-                console.error(
-                    "Review submission error:",
-                    error
-                );
-
-                message.textContent =
-                    error.message;
-
-            } finally {
-
-                submitButton.disabled =
-                    false;
-
-            }
-
-        }
-    );
-}
-
-async function refreshProviderRating(
-    providerId
-) {
+    message.textContent = "Submitting review...";
 
     try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/providers/${providerId}/reviews`,
+        {
+          method: "POST",
 
-        const response =
-            await fetch(
-                `${API_BASE_URL}/api/providers/${providerId}`
-            );
+          headers: {
+            "Content-Type": "application/json",
 
-        const result =
-            await response.json();
+            Authorization: `Bearer ${session.access_token}`,
+          },
 
-        if (!response.ok) {
-            return;
-        }
+          body: JSON.stringify({
+            rating,
+            comment,
+          }),
+        },
+      );
 
-        const provider =
-            result.provider;
+      const result = await response.json();
 
-        document.getElementById(
-            "providerRating"
-        ).textContent =
-            provider.average_rating || "0";
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to submit review");
+      }
 
-        document.getElementById(
-            "providerReviews"
-        ).textContent =
-            provider.review_count || "0";
+      message.textContent = "Review submitted successfully!";
 
+      commentInput.value = "";
+
+      await loadProviderReviews(providerId);
+
+      // Refresh provider rating
+      await refreshProviderRating(providerId);
     } catch (error) {
+      console.error("Review submission error:", error);
 
-        console.error(
-            "Rating refresh error:",
-            error
-        );
-
+      message.textContent = error.message;
+    } finally {
+      submitButton.disabled = false;
     }
+  });
+}
+
+async function refreshProviderRating(providerId) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/providers/${providerId}`);
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      return;
+    }
+
+    const provider = result.provider;
+
+    document.getElementById("providerRating").textContent =
+      provider.average_rating || "0";
+
+    document.getElementById("providerReviews").textContent =
+      provider.review_count || "0";
+  } catch (error) {
+    console.error("Rating refresh error:", error);
+  }
 }
 
 loadProviderProfile();

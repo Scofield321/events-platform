@@ -5,18 +5,19 @@ const pool = require("../config/database");
 const authenticateUser = require("../middleware/auth");
 const requireAdmin = require("../middleware/admin");
 const requireClient = require("../middleware/client");
+const calculateReliabilityScore = require("../utils/reputation");
 
-// GET 
+// GET
 router.get(
-    "/admin/providers/:id",
-    authenticateUser,
-    requireAdmin,
-    async (req, res) => {
-        const providerId = req.params.id;
+  "/admin/providers/:id",
+  authenticateUser,
+  requireAdmin,
+  async (req, res) => {
+    const providerId = req.params.id;
 
-        try {
-            const providerResult = await pool.query(
-                `
+    try {
+      const providerResult = await pool.query(
+        `
                 SELECT
                     sp.id,
                     sp.business_name,
@@ -39,20 +40,20 @@ router.get(
                     ON u.id = sp.user_id
                 WHERE sp.id = $1
                 `,
-                [providerId]
-            );
+        [providerId],
+      );
 
-            if (providerResult.rows.length === 0) {
-                return res.status(404).json({
-                    status: "ERROR",
-                    message: "Provider not found"
-                });
-            }
+      if (providerResult.rows.length === 0) {
+        return res.status(404).json({
+          status: "ERROR",
+          message: "Provider not found",
+        });
+      }
 
-            const provider = providerResult.rows[0];
+      const provider = providerResult.rows[0];
 
-            const servicesResult = await pool.query(
-                `
+      const servicesResult = await pool.query(
+        `
                 SELECT
                     s.id,
                     s.name,
@@ -69,11 +70,11 @@ router.get(
                 AND c.status = 'ACTIVE'
                 ORDER BY c.name, s.name
                 `,
-                [providerId]
-            );
+        [providerId],
+      );
 
-            const mediaResult = await pool.query(
-                `
+      const mediaResult = await pool.query(
+        `
                 SELECT
                     id,
                     media_type,
@@ -84,58 +85,51 @@ router.get(
                 WHERE provider_id = $1
                 ORDER BY display_order, created_at
                 `,
-                [providerId]
-            );
+        [providerId],
+      );
 
-            res.json({
-                status: "OK",
-                provider: {
-                    ...provider,
-                    services: servicesResult.rows,
-                    media: mediaResult.rows
-                }
-            });
+      res.json({
+        status: "OK",
+        provider: {
+          ...provider,
+          services: servicesResult.rows,
+          media: mediaResult.rows,
+        },
+      });
+    } catch (error) {
+      console.error("Admin provider details error:", error);
 
-        } catch (error) {
-
-            console.error(
-                "Admin provider details error:",
-                error
-            );
-
-            res.status(500).json({
-                status: "ERROR",
-                message:
-                    "Failed to load provider details"
-            });
-        }
+      res.status(500).json({
+        status: "ERROR",
+        message: "Failed to load provider details",
+      });
     }
+  },
 );
 
 // Update provider verification
 router.put(
-    "/admin/providers/:id/verification",
-    authenticateUser,
-    requireAdmin,
-    async (req, res) => {
-        const providerId = req.params.id;
+  "/admin/providers/:id/verification",
+  authenticateUser,
+  requireAdmin,
+  async (req, res) => {
+    const providerId = req.params.id;
 
-        const { verification_status } = req.body;
+    const { verification_status } = req.body;
 
-        if (
-            verification_status !== "VERIFIED" &&
-            verification_status !== "UNVERIFIED"
-        ) {
-            return res.status(400).json({
-                status: "ERROR",
-                message:
-                    "Verification status must be VERIFIED or UNVERIFIED",
-            });
-        }
+    if (
+      verification_status !== "VERIFIED" &&
+      verification_status !== "UNVERIFIED"
+    ) {
+      return res.status(400).json({
+        status: "ERROR",
+        message: "Verification status must be VERIFIED or UNVERIFIED",
+      });
+    }
 
-        try {
-            const result = await pool.query(
-                `
+    try {
+      const result = await pool.query(
+        `
                 UPDATE service_providers
                 SET
                     verification_status = $1::VARCHAR,
@@ -153,55 +147,44 @@ router.put(
                     verification_status,
                     verified_at
                 `,
-                [
-                    verification_status,
-                    providerId,
-                ],
-            );
+        [verification_status, providerId],
+      );
 
-            if (result.rows.length === 0) {
-                return res.status(404).json({
-                    status: "ERROR",
-                    message: "Provider not found",
-                });
-            }
+      if (result.rows.length === 0) {
+        return res.status(404).json({
+          status: "ERROR",
+          message: "Provider not found",
+        });
+      }
+      // Recalculate provider reliability
+      await calculateReliabilityScore(providerId);
 
-            res.json({
-                status: "OK",
-                message:
-                    verification_status === "VERIFIED"
-                        ? "Provider verified successfully"
-                        : "Provider verification removed",
-                provider: result.rows[0],
-            });
-        } catch (error) {
-            console.error(
-                "Provider verification error:",
-                error,
-            );
+      res.json({
+        status: "OK",
+        message:
+          verification_status === "VERIFIED"
+            ? "Provider verified successfully"
+            : "Provider verification removed",
+        provider: result.rows[0],
+      });
+    } catch (error) {
+      console.error("Provider verification error:", error);
 
-            res.status(500).json({
-                status: "ERROR",
-                message:
-                    error.message,
-            });
-        }
-    },
+      res.status(500).json({
+        status: "ERROR",
+        message: error.message,
+      });
+    }
+  },
 );
 
 // Client authorization test
-router.get(
-    "/client-test",
-    authenticateUser,
-    requireClient,
-    (req, res) => {
-        res.json({
-            status: "OK",
-            message:
-                "Client authorization successful",
-            user_id: req.user.id,
-        });
-    },
-);
+router.get("/client-test", authenticateUser, requireClient, (req, res) => {
+  res.json({
+    status: "OK",
+    message: "Client authorization successful",
+    user_id: req.user.id,
+  });
+});
 
 module.exports = router;
