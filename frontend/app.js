@@ -20,43 +20,34 @@ console.log("Supabase connected:", supabaseClient);
    REUSABLE LOADING SYSTEM
 ======================================== */
 
-
 /**
  * Creates a spinner element.
  */
 function createLoaderSpinner() {
-    const spinner = document.createElement("span");
+  const spinner = document.createElement("span");
 
-    spinner.className = "loader-spinner";
+  spinner.className = "loader-spinner";
 
-    spinner.setAttribute("aria-hidden", "true");
+  spinner.setAttribute("aria-hidden", "true");
 
-    return spinner;
+  return spinner;
 }
 
 function showToast(message, type = "success") {
-    const existingToast =
-        document.getElementById("appToast");
+  const existingToast = document.getElementById("appToast");
 
-    if (existingToast) {
-        existingToast.remove();
-    }
+  if (existingToast) {
+    existingToast.remove();
+  }
 
-    const toast =
-        document.createElement("div");
+  const toast = document.createElement("div");
 
-    toast.id = "appToast";
-    toast.className =
-        `app-toast app-toast-${type}`;
+  toast.id = "appToast";
+  toast.className = `app-toast app-toast-${type}`;
 
-    const icon =
-        type === "success"
-            ? "✓"
-            : type === "error"
-                ? "!"
-                : "i";
+  const icon = type === "success" ? "✓" : type === "error" ? "!" : "i";
 
-    toast.innerHTML = `
+  toast.innerHTML = `
         <span class="app-toast-icon">
             ${icon}
         </span>
@@ -66,19 +57,19 @@ function showToast(message, type = "success") {
         </span>
     `;
 
-    document.body.appendChild(toast);
+  document.body.appendChild(toast);
 
-    requestAnimationFrame(() => {
-        toast.classList.add("show");
-    });
+  requestAnimationFrame(() => {
+    toast.classList.add("show");
+  });
+
+  setTimeout(() => {
+    toast.classList.remove("show");
 
     setTimeout(() => {
-        toast.classList.remove("show");
-
-        setTimeout(() => {
-            toast.remove();
-        }, 300);
-    }, 3500);
+      toast.remove();
+    }, 300);
+  }, 3500);
 }
 
 /**
@@ -89,7 +80,7 @@ function showToast(message, type = "success") {
  * element.innerHTML = createContentLoader("Loading providers...");
  */
 function createContentLoader(message = "Loading...") {
-    return `
+  return `
         <div class="content-loader" role="status">
 
             <span
@@ -105,7 +96,6 @@ function createContentLoader(message = "Loading...") {
     `;
 }
 
-
 /**
  * Returns HTML for a small inline loader.
  *
@@ -114,7 +104,7 @@ function createContentLoader(message = "Loading...") {
  * element.innerHTML = createInlineLoader("Loading...");
  */
 function createInlineLoader(message = "Loading...") {
-    return `
+  return `
         <span class="inline-loader" role="status">
 
             <span
@@ -130,7 +120,6 @@ function createInlineLoader(message = "Loading...") {
     `;
 }
 
-
 /**
  * Sets a button into loading state.
  *
@@ -139,20 +128,20 @@ function createInlineLoader(message = "Loading...") {
  * setButtonLoading(button, "Saving...");
  */
 function setButtonLoading(button, message = "Loading...") {
-    if (!button) {
-        return;
-    }
+  if (!button) {
+    return;
+  }
 
-    // Save the original button content
-    if (!button.dataset.originalContent) {
-        button.dataset.originalContent = button.innerHTML;
-    }
+  // Save the original button content
+  if (!button.dataset.originalContent) {
+    button.dataset.originalContent = button.innerHTML;
+  }
 
-    button.disabled = true;
+  button.disabled = true;
 
-    button.classList.add("is-loading");
+  button.classList.add("is-loading");
 
-    button.innerHTML = `
+  button.innerHTML = `
         <span class="button-loader">
 
             <span
@@ -168,7 +157,6 @@ function setButtonLoading(button, message = "Loading...") {
     `;
 }
 
-
 /**
  * Restores a button after loading.
  *
@@ -177,21 +165,20 @@ function setButtonLoading(button, message = "Loading...") {
  * resetButtonLoading(button);
  */
 function resetButtonLoading(button) {
-    if (!button) {
-        return;
-    }
+  if (!button) {
+    return;
+  }
 
-    button.disabled = false;
+  button.disabled = false;
 
-    button.classList.remove("is-loading");
+  button.classList.remove("is-loading");
 
-    if (button.dataset.originalContent) {
-        button.innerHTML = button.dataset.originalContent;
+  if (button.dataset.originalContent) {
+    button.innerHTML = button.dataset.originalContent;
 
-        delete button.dataset.originalContent;
-    }
+    delete button.dataset.originalContent;
+  }
 }
-
 
 /**
  * Shows a full-page loading overlay.
@@ -201,18 +188,18 @@ function resetButtonLoading(button) {
  * showPageLoader("Loading your dashboard...");
  */
 function showPageLoader(message = "Loading...") {
-    // Prevent duplicate loaders
-    if (document.getElementById("pageLoader")) {
-        return;
-    }
+  // Prevent duplicate loaders
+  if (document.getElementById("pageLoader")) {
+    return;
+  }
 
-    const loader = document.createElement("div");
+  const loader = document.createElement("div");
 
-    loader.id = "pageLoader";
+  loader.id = "pageLoader";
 
-    loader.className = "page-loader";
+  loader.className = "page-loader";
 
-    loader.innerHTML = `
+  loader.innerHTML = `
         <div
             class="page-loader-content"
             role="status"
@@ -231,19 +218,18 @@ function showPageLoader(message = "Loading...") {
         </div>
     `;
 
-    document.body.appendChild(loader);
+  document.body.appendChild(loader);
 }
-
 
 /**
  * Removes the full-page loading overlay.
  */
 function hidePageLoader() {
-    const loader = document.getElementById("pageLoader");
+  const loader = document.getElementById("pageLoader");
 
-    if (loader) {
-        loader.remove();
-    }
+  if (loader) {
+    loader.remove();
+  }
 }
 
 // ======================================================
@@ -256,47 +242,31 @@ if (registerForm) {
   registerForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    const businessName = document
-      .getElementById("businessName")
-      .value.trim();
+    const businessName = document.getElementById("businessName").value.trim();
 
-    const email = document
-      .getElementById("email")
-      .value.trim();
+    const email = document.getElementById("email").value.trim();
 
-    const phone = document
-      .getElementById("phone")
-      .value.trim();
+    const phone = document.getElementById("phone").value.trim();
 
-    const location = document
-      .getElementById("location")
-      .value.trim();
+    const location = document.getElementById("location").value.trim();
 
-    const password =
-      document.getElementById("password").value;
+    const password = document.getElementById("password").value;
 
-    const message =
-      document.getElementById("registerMessage");
+    const message = document.getElementById("registerMessage");
 
-    const registerButton =
-      document.getElementById("registerButton");
+    const registerButton = document.getElementById("registerButton");
 
-    message.textContent =
-      "Creating your account...";
+    message.textContent = "Creating your account...";
 
     try {
       // Show loading state
-      setButtonLoading(
-        registerButton,
-        "Creating account..."
-      );
+      setButtonLoading(registerButton, "Creating account...");
 
       // 1. Create account in Supabase Auth
-      const { data, error } =
-        await supabaseClient.auth.signUp({
-          email: email,
-          password: password,
-        });
+      const { data, error } = await supabaseClient.auth.signUp({
+        email: email,
+        password: password,
+      });
 
       if (error) {
         throw error;
@@ -305,204 +275,121 @@ if (registerForm) {
       const authUser = data.user;
 
       if (!authUser) {
-        throw new Error(
-          "User account was not created."
-        );
+        throw new Error("User account was not created.");
       }
 
-      console.log(
-        "Auth user created:",
-        authUser.id
-      );
+      console.log("Auth user created:", authUser.id);
 
       // 2. Create provider profile
-      const response = await fetch(
-        `${API_BASE_URL}/api/providers/register`,
-        {
-          method: "POST",
+      const response = await fetch(`${API_BASE_URL}/api/providers/register`, {
+        method: "POST",
 
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
+        headers: {
+          "Content-Type": "application/json",
+        },
 
-          body: JSON.stringify({
-            user_id: authUser.id,
-            email: email,
-            phone: phone,
-            business_name: businessName,
-            location: location,
-          }),
-        }
-      );
+        body: JSON.stringify({
+          user_id: authUser.id,
+          email: email,
+          phone: phone,
+          business_name: businessName,
+          location: location,
+        }),
+      });
 
-      const result =
-        await response.json();
+      const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(
-          result.message ||
-          "Failed to create provider profile."
-        );
+        throw new Error(result.message || "Failed to create provider profile.");
       }
 
-      message.textContent =
-        "Account created successfully! Redirecting...";
+      message.textContent = "Account created successfully! Redirecting...";
 
-      window.location.href =
-        "provider-dashboard.html";
-
+      window.location.href = "provider-dashboard.html";
     } catch (error) {
-      console.error(
-        "Registration error:",
-        error
-      );
+      console.error("Registration error:", error);
 
-      message.textContent =
-        error.message;
-
+      message.textContent = error.message;
     } finally {
-      resetButtonLoading(
-        registerButton
-      );
+      resetButtonLoading(registerButton);
     }
   });
 }
-
 
 // ======================================================
 // LOGIN
 // ======================================================
 
-const loginForm =
-  document.getElementById("loginForm");
+const loginForm = document.getElementById("loginForm");
 
 if (loginForm) {
-  loginForm.addEventListener(
-    "submit",
-    async (event) => {
-      event.preventDefault();
+  loginForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
 
-      const email =
-        document
-          .getElementById("loginEmail")
-          .value.trim();
+    const email = document.getElementById("loginEmail").value.trim();
 
-      const password =
-        document.getElementById(
-          "loginPassword"
-        ).value;
+    const password = document.getElementById("loginPassword").value;
 
-      const message =
-        document.getElementById(
-          "loginMessage"
-        );
+    const message = document.getElementById("loginMessage");
 
-      const loginButton =
-        document.getElementById(
-          "loginButton"
-        );
+    const loginButton = document.getElementById("loginButton");
 
-      message.textContent =
-        "Logging in...";
+    message.textContent = "Logging in...";
 
-      try {
-        // Show loading state
-        setButtonLoading(
-          loginButton,
-          "Logging in..."
-        );
+    try {
+      // Show loading state
+      setButtonLoading(loginButton, "Logging in...");
 
-        // Authenticate with Supabase
-        const { data, error } =
-          await supabaseClient.auth
-            .signInWithPassword({
-              email: email,
-              password: password,
-            });
+      // Authenticate with Supabase
+      const { data, error } = await supabaseClient.auth.signInWithPassword({
+        email: email,
+        password: password,
+      });
 
-        if (error) {
-          throw error;
-        }
-
-        console.log(
-          "Logged in user:",
-          data.user
-        );
-
-        // Get platform profile and role
-        const response =
-          await fetch(
-            `${API_BASE_URL}/api/me`,
-            {
-              method: "GET",
-
-              headers: {
-                Authorization:
-                  `Bearer ${data.session.access_token}`,
-              },
-            }
-          );
-
-        const result =
-          await response.json();
-
-        if (!response.ok) {
-          throw new Error(
-            result.message ||
-            "Failed to load user profile."
-          );
-        }
-
-        const user =
-          result.user;
-
-        console.log(
-          "Logged in role:",
-          user.role
-        );
-
-        // Redirect based on role
-        if (user.role === "ADMIN") {
-          window.location.href =
-            "admin-dashboard.html";
-
-        } else if (
-          user.role === "PROVIDER"
-        ) {
-          window.location.href =
-            "provider-dashboard.html";
-
-        } else if (
-          user.role === "CLIENT"
-        ) {
-          window.location.href =
-            "providers.html";
-
-        } else {
-          throw new Error(
-            "Your account has an unsupported role."
-          );
-        }
-
-      } catch (error) {
-        console.error(
-          "Login error:",
-          error
-        );
-
-        message.textContent =
-          error.message;
-
-      } finally {
-        resetButtonLoading(
-          loginButton
-        );
+      if (error) {
+        throw error;
       }
-    }
-  );
-}
 
+      console.log("Logged in user:", data.user);
+
+      // Get platform profile and role
+      const response = await fetch(`${API_BASE_URL}/api/me`, {
+        method: "GET",
+
+        headers: {
+          Authorization: `Bearer ${data.session.access_token}`,
+        },
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to load user profile.");
+      }
+
+      const user = result.user;
+
+      console.log("Logged in role:", user.role);
+
+      // Redirect based on role
+      if (user.role === "ADMIN") {
+        window.location.href = "admin-dashboard.html";
+      } else if (user.role === "PROVIDER") {
+        window.location.href = "provider-dashboard.html";
+      } else if (user.role === "CLIENT") {
+        window.location.href = "providers.html";
+      } else {
+        throw new Error("Your account has an unsupported role.");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+
+      message.textContent = error.message;
+    } finally {
+      resetButtonLoading(loginButton);
+    }
+  });
+}
 
 // ======================================================
 // GET MY PROFILE
@@ -969,22 +856,19 @@ async function saveProviderServices() {
       .filter((checkbox) => checkbox.checked)
       .map((checkbox) => checkbox.value);
 
-    const response = await fetch(
-      `${API_BASE_URL}/api/providers/services`,
-      {
-        method: "POST",
+    const response = await fetch(`${API_BASE_URL}/api/providers/services`, {
+      method: "POST",
 
-        headers: {
-          "Content-Type": "application/json",
+      headers: {
+        "Content-Type": "application/json",
 
-          Authorization: `Bearer ${session.access_token}`,
-        },
-
-        body: JSON.stringify({
-          service_ids: selectedServiceIds,
-        }),
+        Authorization: `Bearer ${session.access_token}`,
       },
-    );
+
+      body: JSON.stringify({
+        service_ids: selectedServiceIds,
+      }),
+    });
 
     const result = await response.json();
 
@@ -1069,20 +953,17 @@ async function saveProviderProfile(event) {
       tiktok_url: document.getElementById("profileTiktok").value.trim(),
     };
 
-    const response = await fetch(
-      `${API_BASE_URL}/api/providers/profile`,
-      {
-        method: "PUT",
+    const response = await fetch(`${API_BASE_URL}/api/providers/profile`, {
+      method: "PUT",
 
-        headers: {
-          "Content-Type": "application/json",
+      headers: {
+        "Content-Type": "application/json",
 
-          Authorization: `Bearer ${session.access_token}`,
-        },
-
-        body: JSON.stringify(profileData),
+        Authorization: `Bearer ${session.access_token}`,
       },
-    );
+
+      body: JSON.stringify(profileData),
+    });
 
     const result = await response.json();
 
@@ -1115,8 +996,37 @@ async function saveProviderProfile(event) {
 // PROVIDER MEDIA UPLOAD
 // ======================================================
 
+const MAX_PROVIDER_MEDIA = 4;
+const MAX_MEDIA_FILE_SIZE = 25 * 1024 * 1024; // 25 MB
+
 async function uploadProviderMedia(file, mediaType) {
   try {
+    // --------------------------------------------
+    // FILE SIZE CHECK
+    // --------------------------------------------
+
+    if (file.size > MAX_MEDIA_FILE_SIZE) {
+      throw new Error(
+        `"${file.name}" is too large. Each media file must be 25 MB or smaller.`,
+      );
+    }
+
+    // --------------------------------------------
+    // FILE TYPE CHECK
+    // --------------------------------------------
+
+    if (mediaType === "IMAGE" && !file.type.startsWith("image/")) {
+      throw new Error(`"${file.name}" is not a valid image file.`);
+    }
+
+    if (mediaType === "VIDEO" && !file.type.startsWith("video/")) {
+      throw new Error(`"${file.name}" is not a valid video file.`);
+    }
+
+    // --------------------------------------------
+    // AUTHENTICATION
+    // --------------------------------------------
+
     const {
       data: { session },
       error,
@@ -1128,17 +1038,25 @@ async function uploadProviderMedia(file, mediaType) {
 
     if (!session) {
       window.location.href = "login.html";
-
       return;
     }
 
     const userId = session.user.id;
 
+    // --------------------------------------------
+    // FILE NAME
+    // --------------------------------------------
+
     const fileExtension = file.name.split(".").pop();
 
-    const fileName = `${userId}/${Date.now()}.${fileExtension}`;
+    const fileName = `${userId}/${Date.now()}-${Math.random()
+      .toString(36)
+      .substring(2, 8)}.${fileExtension}`;
 
-    // Upload file
+    // --------------------------------------------
+    // UPLOAD TO SUPABASE STORAGE
+    // --------------------------------------------
+
     const { error: uploadError } = await supabaseClient.storage
       .from("provider-media")
       .upload(fileName, file);
@@ -1147,26 +1065,30 @@ async function uploadProviderMedia(file, mediaType) {
       throw uploadError;
     }
 
-    // Get public URL
+    // --------------------------------------------
+    // GET PUBLIC URL
+    // --------------------------------------------
+
     const { data: publicUrlData } = supabaseClient.storage
       .from("provider-media")
       .getPublicUrl(fileName);
 
     const mediaUrl = publicUrlData.publicUrl;
 
-    // Save media record in backend
+    // --------------------------------------------
+    // SAVE MEDIA RECORD
+    // --------------------------------------------
+
     const response = await fetch(`${API_BASE_URL}/api/providers/media`, {
       method: "POST",
 
       headers: {
         "Content-Type": "application/json",
-
         Authorization: `Bearer ${session.access_token}`,
       },
 
       body: JSON.stringify({
         media_type: mediaType,
-
         media_url: mediaUrl,
       }),
     });
@@ -1174,7 +1096,7 @@ async function uploadProviderMedia(file, mediaType) {
     const result = await response.json();
 
     if (!response.ok) {
-      throw new Error(result.message || "Failed to save media");
+      throw new Error(result.message || "Failed to save media.");
     }
 
     return result;
@@ -1186,7 +1108,7 @@ async function uploadProviderMedia(file, mediaType) {
 }
 
 // ======================================================
-// UPLOAD IMAGES
+// MEDIA ELEMENTS
 // ======================================================
 
 const uploadImagesButton = document.getElementById("uploadImagesButton");
@@ -1199,19 +1121,72 @@ const imagePreview = document.getElementById("imagePreview");
 
 const imageCountLabel = document.getElementById("imageCountLabel");
 
+const uploadVideoButton = document.getElementById("uploadVideoButton");
+
+const videoInput = document.getElementById("videoUpload");
+
+const videoDropzone = document.getElementById("videoDropzone");
+
+const videoPreview = document.getElementById("videoPreview");
+
 let selectedImageFiles = [];
 
-if (uploadImagesButton) {
-  uploadImagesButton.addEventListener("click", uploadProviderImages);
+// ======================================================
+// GET CURRENT MEDIA COUNT
+// ======================================================
+
+async function getCurrentProviderMediaCount() {
+  try {
+    const {
+      data: { session },
+      error,
+    } = await supabaseClient.auth.getSession();
+
+    if (error) {
+      throw error;
+    }
+
+    if (!session) {
+      return 0;
+    }
+
+    const response = await fetch(`${API_BASE_URL}/api/providers/media`, {
+      headers: {
+        Authorization: `Bearer ${session.access_token}`,
+      },
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || "Failed to check existing media.");
+    }
+
+    return (result.media || []).length;
+  } catch (error) {
+    console.error("Media count error:", error);
+
+    throw error;
+  }
 }
+
+// ======================================================
+// IMAGE SELECTION
+// ======================================================
 
 if (imageInput) {
   imageInput.addEventListener("change", () => {
-    selectedImageFiles = Array.from(imageInput.files);
+    const files = Array.from(imageInput.files);
+
+    selectedImageFiles = files;
 
     renderImagePreview();
   });
 }
+
+// ======================================================
+// IMAGE PREVIEW
+// ======================================================
 
 function renderImagePreview() {
   if (!imagePreview) {
@@ -1225,74 +1200,112 @@ function renderImagePreview() {
   }
 
   selectedImageFiles.forEach((file, index) => {
+    const item = document.createElement("div");
+
+    item.className = "media-preview-item";
+
     const reader = new FileReader();
 
     reader.onload = function (event) {
-      const item = document.createElement("div");
-
-      item.className = "media-preview-item";
-
       item.innerHTML = `
-                    <img
-                        src="${event.target.result}"
-                        alt="Photo preview"
-                    >
+          <img
+            src="${event.target.result}"
+            alt="Media preview"
+          >
 
-                    <button
-                        type="button"
-                        class="media-preview-remove"
-                        data-index="${index}"
-                    >
-                        ×
-                    </button>
-                `;
+          <button
+            type="button"
+            class="media-preview-remove"
+            data-index="${index}"
+          >
+            ×
+          </button>
+        `;
 
-      item
-        .querySelector(".media-preview-remove")
-        .addEventListener("click", () => {
-          selectedImageFiles = selectedImageFiles.filter(
-            (_, fileIndex) => fileIndex !== index,
-          );
+      const removeButton = item.querySelector(".media-preview-remove");
 
-          renderImagePreview();
-        });
+      removeButton.addEventListener("click", () => {
+        selectedImageFiles = selectedImageFiles.filter(
+          (_, fileIndex) => fileIndex !== index,
+        );
+
+        renderImagePreview();
+      });
 
       imagePreview.appendChild(item);
     };
 
     reader.readAsDataURL(file);
   });
+}
 
-  if (imageCountLabel) {
-    imageCountLabel.textContent = `${selectedImageFiles.length} / 4`;
-  }
+// ======================================================
+// UPLOAD IMAGES
+// ======================================================
+
+if (uploadImagesButton) {
+  uploadImagesButton.addEventListener("click", uploadProviderImages);
 }
 
 async function uploadProviderImages() {
   const message = document.getElementById("mediaMessage");
 
   if (selectedImageFiles.length === 0) {
-    message.textContent = "Please select at least one photo.";
-
-    return;
-  }
-
-  if (selectedImageFiles.length > 4) {
-    message.textContent = "You can upload a maximum of 4 photos.";
+    if (message) {
+      message.textContent = "Please select at least one image.";
+    }
 
     return;
   }
 
   try {
-    message.textContent = "Uploading photos...";
+    // --------------------------------------------
+    // CHECK CURRENT MEDIA COUNT
+    // --------------------------------------------
+
+    const currentMediaCount = await getCurrentProviderMediaCount();
+
+    const totalAfterUpload = currentMediaCount + selectedImageFiles.length;
+
+    if (totalAfterUpload > MAX_PROVIDER_MEDIA) {
+      const remaining = MAX_PROVIDER_MEDIA - currentMediaCount;
+
+      throw new Error(
+        remaining > 0
+          ? `You can upload ${remaining} more media file${remaining === 1 ? "" : "s"}.`
+          : "You already have the maximum of 4 media files.",
+      );
+    }
+
+    // --------------------------------------------
+    // CHECK FILE SIZES
+    // --------------------------------------------
+
+    for (const file of selectedImageFiles) {
+      if (file.size > MAX_MEDIA_FILE_SIZE) {
+        throw new Error(
+          `"${file.name}" is too large. Each media file must be 25 MB or smaller.`,
+        );
+      }
+    }
+
+    if (message) {
+      message.textContent = "Uploading media...";
+    }
 
     uploadImagesButton.disabled = true;
+
+    // --------------------------------------------
+    // UPLOAD EACH IMAGE
+    // --------------------------------------------
 
     for (const file of selectedImageFiles) {
       await uploadProviderMedia(file, "IMAGE");
     }
 
-    message.textContent = "Photos uploaded successfully!";
+    if (message) {
+      message.textContent = "Media uploaded successfully!";
+    }
 
     selectedImageFiles = [];
 
@@ -1304,67 +1317,19 @@ async function uploadProviderImages() {
 
     await loadProviderMedia();
   } catch (error) {
-    message.textContent = error.message;
+    console.error("Image upload error:", error);
+
+    if (message) {
+      message.textContent = error.message;
+    }
   } finally {
     uploadImagesButton.disabled = false;
   }
 }
 
-async function uploadProviderImages() {
-  const input = document.getElementById("imageUpload");
-
-  const message = document.getElementById("mediaMessage");
-
-  if (!input || !message) {
-    return;
-  }
-
-  const files = Array.from(input.files);
-
-  if (files.length === 0) {
-    message.textContent = "Please select at least one photo.";
-
-    return;
-  }
-
-  if (files.length > 4) {
-    message.textContent = "You can upload a maximum of 4 photos.";
-
-    return;
-  }
-
-  try {
-    message.textContent = "Uploading photos...";
-
-    for (const file of files) {
-      await uploadProviderMedia(file, "IMAGE");
-    }
-
-    message.textContent = "Photos uploaded successfully!";
-
-    input.value = "";
-
-    await loadProviderMedia();
-  } catch (error) {
-    message.textContent = error.message;
-  }
-}
-
 // ======================================================
-// UPLOAD VIDEO
+// VIDEO SELECTION & PREVIEW
 // ======================================================
-
-const uploadVideoButton = document.getElementById("uploadVideoButton");
-
-const videoInput = document.getElementById("videoUpload");
-
-const videoDropzone = document.getElementById("videoDropzone");
-
-const videoPreview = document.getElementById("videoPreview");
-
-if (uploadVideoButton) {
-  uploadVideoButton.addEventListener("click", uploadProviderVideo);
-}
 
 if (videoInput) {
   videoInput.addEventListener("change", previewSelectedVideo);
@@ -1383,6 +1348,23 @@ function previewSelectedVideo() {
     return;
   }
 
+  if (!file.type.startsWith("video/")) {
+    videoPreview.innerHTML = `<p>Please select a valid video file.</p>`;
+
+    return;
+  }
+
+  if (file.size > MAX_MEDIA_FILE_SIZE) {
+    videoPreview.innerHTML = `
+      <p>
+        This video is too large.
+        Maximum file size is 25 MB.
+      </p>
+    `;
+
+    return;
+  }
+
   const videoUrl = URL.createObjectURL(file);
 
   const video = document.createElement("video");
@@ -1396,33 +1378,81 @@ function previewSelectedVideo() {
   videoPreview.appendChild(video);
 }
 
+// ======================================================
+// UPLOAD VIDEO
+// ======================================================
+
+if (uploadVideoButton) {
+  uploadVideoButton.addEventListener("click", uploadProviderVideo);
+}
+
 async function uploadProviderVideo() {
   const message = document.getElementById("mediaMessage");
 
   const file = videoInput.files[0];
 
   if (!file) {
-    message.textContent = "Please select a video.";
+    if (message) {
+      message.textContent = "Please select a video.";
+    }
 
     return;
   }
 
   try {
-    message.textContent = "Uploading video...";
+    // --------------------------------------------
+    // CHECK CURRENT MEDIA COUNT
+    // --------------------------------------------
+
+    const currentMediaCount = await getCurrentProviderMediaCount();
+
+    if (currentMediaCount >= MAX_PROVIDER_MEDIA) {
+      throw new Error("You already have the maximum of 4 media files.");
+    }
+
+    // --------------------------------------------
+    // CHECK FILE SIZE
+    // --------------------------------------------
+
+    if (file.size > MAX_MEDIA_FILE_SIZE) {
+      throw new Error(
+        `"${file.name}" is too large. Each media file must be 25 MB or smaller.`,
+      );
+    }
+
+    // --------------------------------------------
+    // CHECK FILE TYPE
+    // --------------------------------------------
+
+    if (!file.type.startsWith("video/")) {
+      throw new Error("Please select a valid video file.");
+    }
+
+    if (message) {
+      message.textContent = "Uploading video...";
+    }
 
     uploadVideoButton.disabled = true;
 
     await uploadProviderMedia(file, "VIDEO");
 
-    message.textContent = "Video uploaded successfully!";
+    if (message) {
+      message.textContent = "Video uploaded successfully!";
+    }
 
     videoInput.value = "";
 
-    videoPreview.innerHTML = "";
+    if (videoPreview) {
+      videoPreview.innerHTML = "";
+    }
 
     await loadProviderMedia();
   } catch (error) {
-    message.textContent = error.message;
+    console.error("Video upload error:", error);
+
+    if (message) {
+      message.textContent = error.message;
+    }
   } finally {
     uploadVideoButton.disabled = false;
   }
@@ -1677,9 +1707,8 @@ async function loadFeaturedProviders() {
   }
 
   try {
-
     featuredProvidersList.innerHTML = createContentLoader(
-        "Loading providers..."
+      "Loading providers...",
     );
     const response = await fetch(`${API_BASE_URL}/api/providers`);
 
@@ -1850,14 +1879,12 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-//   FOOTER
+  //   FOOTER
 
   fetch("footer.html")
     .then((response) => {
       if (!response.ok) {
-        throw new Error(
-          `Failed to load footer: ${response.status}`
-        );
+        throw new Error(`Failed to load footer: ${response.status}`);
       }
 
       return response.text();

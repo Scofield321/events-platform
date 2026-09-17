@@ -7,6 +7,7 @@ const { createClient } = require("@supabase/supabase-js");
 const authenticateUser = require("../middleware/auth");
 
 // Save provider media
+
 router.post("/providers/media", authenticateUser, async (req, res) => {
   const { media_type, media_url } = req.body;
 
@@ -27,10 +28,10 @@ router.post("/providers/media", authenticateUser, async (req, res) => {
   try {
     const providerResult = await pool.query(
       `
-                SELECT id
-                FROM service_providers
-                WHERE user_id = $1
-                `,
+        SELECT id
+        FROM service_providers
+        WHERE user_id = $1
+      `,
       [req.user.id],
     );
 
@@ -43,60 +44,40 @@ router.post("/providers/media", authenticateUser, async (req, res) => {
 
     const providerId = providerResult.rows[0].id;
 
-    // Check current media count
+    // Check total current media count
     const countResult = await pool.query(
       `
-                SELECT
-                    media_type,
-                    COUNT(*)::int AS count
-                FROM provider_media
-                WHERE provider_id = $1
-                GROUP BY media_type
-                `,
+        SELECT COUNT(*)::int AS count
+        FROM provider_media
+        WHERE provider_id = $1
+      `,
       [providerId],
     );
 
-    let imageCount = 0;
-    let videoCount = 0;
+    const mediaCount = countResult.rows[0].count;
 
-    countResult.rows.forEach((row) => {
-      if (row.media_type === "IMAGE") {
-        imageCount = row.count;
-      }
-
-      if (row.media_type === "VIDEO") {
-        videoCount = row.count;
-      }
-    });
-
-    if (media_type === "IMAGE" && imageCount >= 4) {
+    // Maximum of 4 total media files
+    if (mediaCount >= 4) {
       return res.status(400).json({
         status: "ERROR",
-        message: "Maximum of 4 photos allowed",
-      });
-    }
-
-    if (media_type === "VIDEO" && videoCount >= 1) {
-      return res.status(400).json({
-        status: "ERROR",
-        message: "Maximum of 1 video allowed",
+        message: "Maximum of 4 media files allowed",
       });
     }
 
     const result = await pool.query(
       `
-                INSERT INTO provider_media
-                    (
-                        provider_id,
-                        media_type,
-                        media_url,
-                        display_order
-                    )
-                VALUES
-                    ($1, $2, $3, $4)
-                RETURNING *
-                `,
-      [providerId, media_type, media_url, imageCount + videoCount],
+        INSERT INTO provider_media
+          (
+            provider_id,
+            media_type,
+            media_url,
+            display_order
+          )
+        VALUES
+          ($1, $2, $3, $4)
+        RETURNING *
+      `,
+      [providerId, media_type, media_url, mediaCount],
     );
 
     res.status(201).json({
