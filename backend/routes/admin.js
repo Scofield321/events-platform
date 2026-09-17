@@ -138,10 +138,10 @@ router.put(
                 `
                 UPDATE service_providers
                 SET
-                    verification_status = $1,
+                    verification_status = $1::VARCHAR,
                     verified_at =
                         CASE
-                            WHEN $1 = 'VERIFIED'
+                            WHEN $1::VARCHAR = 'VERIFIED'
                             THEN NOW()
                             ELSE NULL
                         END,
