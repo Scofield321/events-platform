@@ -4205,3 +4205,262 @@ background: #ecfdf5;
     height: auto;
     display: block;
 }
+
+/* ========================================
+   ADMIN DASHBOARD
+======================================== */
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 30px;
+    padding: 20px 40px;
+}
+
+.admin-header .brand-logo img {
+    width: 150px;
+    height: auto;
+    display: block;
+}
+
+.admin-header p {
+    margin: 8px 0 0;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.admin-dashboard-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px 24px 60px;
+}
+
+.admin-dashboard-intro {
+    margin-bottom: 30px;
+}
+
+.admin-dashboard-intro h1 {
+    margin: 0 0 8px;
+    font-size: 32px;
+}
+
+.admin-dashboard-intro p {
+    margin: 0;
+    color: #6b7280;
+}
+
+
+/* ========================================
+   STATISTICS
+======================================== */
+
+.admin-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 18px;
+    margin-bottom: 30px;
+}
+
+.admin-stat-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    padding: 22px;
+
+    background: #ffffff;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 14px;
+
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+}
+
+.admin-stat-icon {
+    width: 48px;
+    height: 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 12px;
+
+    background: #f3f4f6;
+
+    font-size: 22px;
+}
+
+.admin-stat-label {
+    display: block;
+
+    margin-bottom: 6px;
+
+    color: #6b7280;
+
+    font-size: 13px;
+}
+
+.admin-stat-card strong {
+    display: block;
+
+    color: #111827;
+
+    font-size: 26px;
+    line-height: 1;
+}
+
+
+/* ========================================
+   SECTION HEADERS
+======================================== */
+
+.admin-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+
+    margin-bottom: 24px;
+}
+
+.admin-section-header h2 {
+    margin: 0 0 6px;
+}
+
+.admin-section-header p {
+    margin: 0;
+
+    color: #6b7280;
+
+    font-size: 14px;
+}
+
+
+/* ========================================
+   CATEGORY GRID
+======================================== */
+
+.admin-category-card {
+    margin-bottom: 30px;
+}
+
+.admin-categories-grid {
+    display: grid;
+
+    grid-template-columns: repeat(4, 1fr);
+
+    gap: 16px;
+}
+
+.admin-category-item {
+    padding: 20px;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 12px;
+
+    background: #fafafa;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.admin-category-item:hover {
+    transform: translateY(-2px);
+
+    border-color: #d1d5db;
+
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+}
+
+.admin-category-name {
+    display: block;
+
+    margin-bottom: 10px;
+
+    font-weight: 600;
+
+    color: #111827;
+}
+
+.admin-category-count {
+    display: flex;
+
+    align-items: baseline;
+
+    gap: 6px;
+}
+
+.admin-category-count strong {
+    font-size: 28px;
+
+    color: #111827;
+}
+
+.admin-category-count span {
+    color: #6b7280;
+
+    font-size: 13px;
+}
+
+
+/* ========================================
+   RESPONSIVE
+======================================== */
+
+@media (max-width: 1100px) {
+
+    .admin-stats-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .admin-categories-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+
+@media (max-width: 750px) {
+
+    .admin-header {
+        flex-direction: column;
+        align-items: flex-start;
+
+        padding: 20px;
+    }
+
+    .admin-dashboard-container {
+        padding: 30px 16px 50px;
+    }
+
+    .admin-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .admin-categories-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+
+@media (max-width: 480px) {
+
+    .admin-stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-categories-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-dashboard-intro h1 {
+        font-size: 26px;
+    }
+}

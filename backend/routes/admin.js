@@ -183,7 +183,7 @@ router.put(
             res.status(500).json({
                 status: "ERROR",
                 message:
-                    "Failed to update provider verification",
+                    error.message,
             });
         }
     },

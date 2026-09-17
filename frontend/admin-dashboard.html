@@ -5,28 +5,198 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Admin Dashboard</title>
+    <title>Admin Dashboard | Bide Hub</title>
 
     <link rel="stylesheet" href="style.css" />
   </head>
 
   <body>
-    <header>
-      <h1>Admin Dashboard</h1>
+    <header class="admin-header">
+      <div>
+        <a href="index.html" class="brand-logo">
+          <img src="bide-hub-logo.png" alt="Bide Hub" />
+        </a>
 
-      <p>Manage event service providers.</p>
+        <p>Platform overview and provider management.</p>
+      </div>
+
+      <nav>
+        <a href="index.html">View Platform</a>
+      </nav>
     </header>
 
-    <main>
-      <section class="dashboard-card">
-        <h2>Providers</h2>
+    <main class="admin-dashboard-container">
 
-        <div id="adminMessage">Loading providers...</div>
+      <!-- ========================================
+           DASHBOARD TITLE
+      ========================================= -->
 
-        <div id="adminProvidersList" class="admin-providers-list"></div>
+      <section class="admin-dashboard-intro">
+        <div>
+          <h1>Admin Dashboard</h1>
+
+          <p>
+            Monitor Bide Hub's service provider network and platform activity.
+          </p>
+        </div>
       </section>
+
+
+      <!-- ========================================
+           PLATFORM STATISTICS
+      ======================================== -->
+
+      <section class="admin-stats-grid">
+
+        <div class="admin-stat-card">
+          <div class="admin-stat-icon">
+            👥
+          </div>
+
+          <div>
+            <span class="admin-stat-label">
+              Total Providers
+            </span>
+
+            <strong id="totalProvidersStat">
+              0
+            </strong>
+          </div>
+        </div>
+
+
+        <div class="admin-stat-card">
+          <div class="admin-stat-icon">
+            ✓
+          </div>
+
+          <div>
+            <span class="admin-stat-label">
+              Verified Providers
+            </span>
+
+            <strong id="verifiedProvidersStat">
+              0
+            </strong>
+          </div>
+        </div>
+
+
+        <div class="admin-stat-card">
+          <div class="admin-stat-icon">
+            ⏳
+          </div>
+
+          <div>
+            <span class="admin-stat-label">
+              Pending Verification
+            </span>
+
+            <strong id="pendingProvidersStat">
+              0
+            </strong>
+          </div>
+        </div>
+
+
+        <div class="admin-stat-card">
+          <div class="admin-stat-icon">
+            ⭐
+          </div>
+
+          <div>
+            <span class="admin-stat-label">
+              Total Reviews
+            </span>
+
+            <strong id="totalReviewsStat">
+              0
+            </strong>
+          </div>
+        </div>
+
+
+        <div class="admin-stat-card">
+          <div class="admin-stat-icon">
+            ★
+          </div>
+
+          <div>
+            <span class="admin-stat-label">
+              Platform Rating
+            </span>
+
+            <strong id="platformRatingStat">
+              0.0
+            </strong>
+          </div>
+        </div>
+
+      </section>
+
+
+      <!-- ========================================
+           CATEGORY OVERVIEW
+      ======================================== -->
+
+      <section class="dashboard-card admin-category-card">
+
+        <div class="admin-section-header">
+          <div>
+            <h2>Service Categories</h2>
+
+            <p>
+              See how providers are distributed across Bide Hub's categories.
+            </p>
+          </div>
+        </div>
+
+        <div
+          id="adminCategoriesList"
+          class="admin-categories-grid"
+        >
+          <div class="content-loader">
+            <span class="loader-spinner"></span>
+
+            <p class="content-loader-message">
+              Loading categories...
+            </p>
+          </div>
+        </div>
+
+      </section>
+
+
+      <!-- ========================================
+           PROVIDER MANAGEMENT
+      ======================================== -->
+
+      <section class="dashboard-card">
+
+        <div class="admin-section-header">
+
+          <div>
+            <h2>Provider Management</h2>
+
+            <p>
+              Review, verify and manage service providers on the platform.
+            </p>
+          </div>
+
+        </div>
+
+        <div id="adminMessage">
+          Loading providers...
+        </div>
+
+        <div
+          id="adminProvidersList"
+          class="admin-providers-list"
+        ></div>
+
+      </section>
+
     </main>
-    
     <div id="footer"></div>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="app.js"></script>
