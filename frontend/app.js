@@ -537,6 +537,12 @@ async function loadProviderDashboard() {
 
     if (descriptionInput) {
       descriptionInput.value = user.description || "";
+
+      const descriptionCounter = document.querySelector(".description-counter");
+
+      if (descriptionCounter) {
+        descriptionCounter.textContent = `${descriptionInput.value.length} / 180 characters`;
+      }
     }
 
     const websiteInput = document.getElementById("profileWebsite");
@@ -604,6 +610,40 @@ async function loadProviderDashboard() {
   } catch (error) {
     console.error("Dashboard error:", error);
   }
+}
+
+// Business description character counter
+const descriptionInput = document.getElementById("profileDescription");
+const descriptionCounter = document.querySelector(".description-counter");
+
+if (descriptionInput && descriptionCounter) {
+  const updateDescriptionCounter = () => {
+    descriptionCounter.textContent =
+      `${descriptionInput.value.length} / 180 characters`;
+  };
+
+  descriptionInput.addEventListener("input", updateDescriptionCounter);
+
+  updateDescriptionCounter();
+}
+
+// ======================================================
+// BUSINESS DESCRIPTION CHARACTER COUNTER
+// ======================================================
+
+const profileDescription = document.getElementById("profileDescription");
+const descriptionCounter = document.querySelector(".description-counter");
+
+if (profileDescription && descriptionCounter) {
+  const MAX_DESCRIPTION_LENGTH = 180;
+
+  const updateDescriptionCounter = () => {
+    descriptionCounter.textContent = `${profileDescription.value.length} / ${MAX_DESCRIPTION_LENGTH} characters`;
+  };
+
+  profileDescription.addEventListener("input", updateDescriptionCounter);
+
+  updateDescriptionCounter();
 }
 
 // ======================================================
@@ -1994,14 +2034,14 @@ async function loadFeaturedProviders() {
 
       // Provider profile image
       const imageHTML = provider.profile_image_url
-                ? `
+        ? `
             <img
             src="${provider.profile_image_url}"
             alt="${provider.business_name}"
             class="featured-provider-image"
             >
         `
-                : `
+        : `
             <div class="featured-provider-placeholder">
             ${getProviderInitial(provider.business_name)}
             </div>

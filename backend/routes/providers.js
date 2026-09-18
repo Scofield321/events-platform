@@ -22,6 +22,14 @@ router.put(
             tiktok_url,
         } = req.body;
 
+        // Validate business description length
+        if (description && description.length > 180) {
+            return res.status(400).json({
+                status: "ERROR",
+                message: "Business description cannot exceed 180 characters.",
+            });
+        }
+
         try {
             // Update user's phone number
             await pool.query(
