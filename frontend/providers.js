@@ -20,7 +20,6 @@ async function loadCategories() {
   }
 }
 
-
 async function loadProviders(categoryId = "") {
   const providersList = document.getElementById("providersList");
 
@@ -31,7 +30,7 @@ async function loadProviders(categoryId = "") {
   // Show reusable loader
   providersList.innerHTML = createContentLoader(
     "Finding event professionals...",
-    true
+    true,
   );
 
   try {
@@ -46,15 +45,12 @@ async function loadProviders(categoryId = "") {
     const result = await response.json();
 
     if (!response.ok) {
-      throw new Error(
-        result.message || "Failed to load providers"
-      );
+      throw new Error(result.message || "Failed to load providers");
     }
 
     allProviders = result.providers || [];
 
     filterProviders();
-
   } catch (error) {
     console.error("Providers error:", error);
 
@@ -65,7 +61,6 @@ async function loadProviders(categoryId = "") {
     `;
   }
 }
-
 
 function filterProviders() {
   const searchTerm = document
@@ -151,19 +146,19 @@ function displayProviders(providers) {
                     </span>
                 `;
 
-    const imageHTML = provider.cover_image
+    const imageHTML = provider.profile_image_url
       ? `
-                    <img
-                        src="${provider.cover_image}"
-                        alt="${provider.business_name}"
-                        class="provider-card-image"
-                    >
-                `
+                <img
+                    src="${provider.profile_image_url}"
+                    alt="${provider.business_name}"
+                    class="provider-card-image"
+                >
+            `
       : `
-                    <div class="provider-card-placeholder">
-                        No image available
-                    </div>
-                `;
+                <div class="provider-card-placeholder">
+                    ${getProviderInitial(provider.business_name)}
+                </div>
+            `;
 
     const rating = Number(provider.average_rating || 0).toFixed(1);
 
