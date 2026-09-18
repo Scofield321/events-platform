@@ -112,7 +112,8 @@ router.get("/providers", async (req, res) => {
                 sp.review_count,
                 sp.reliability_score,
                 sp.verification_status,
-                sp.verified_at
+                sp.verified_at,
+                sp.profile_image_url
             FROM service_providers sp
 
             JOIN users u
