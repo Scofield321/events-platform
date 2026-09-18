@@ -2177,3 +2177,18 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("Footer loading error:", error);
     });
 });
+
+// Password visibility toggle
+document.querySelectorAll(".password-toggle").forEach((toggle) => {
+    toggle.addEventListener("click", () => {
+        const input = document.getElementById(toggle.dataset.target);
+
+        if (input.type === "password") {
+            input.type = "text";
+            toggle.setAttribute("aria-label", "Hide password");
+        } else {
+            input.type = "password";
+            toggle.setAttribute("aria-label", "Show password");
+        }
+    });
+});
