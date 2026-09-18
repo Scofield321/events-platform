@@ -4770,3 +4770,10 @@ background: #ecfdf5;
         font-size: 30px;
     }
 }
+
+.provider-description {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
