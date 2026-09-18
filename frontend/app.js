@@ -1993,18 +1993,19 @@ async function loadFeaturedProviders() {
       const reviewCount = Number(provider.review_count || 0);
 
       // Provider cover image
-      const imageHTML = provider.cover_image
-        ? `
-          <img
-            src="${provider.cover_image}"
+      // Provider profile image
+      const imageHTML = provider.profile_image_url
+                ? `
+            <img
+            src="${provider.profile_image_url}"
             alt="${provider.business_name}"
             class="featured-provider-image"
-          >
+            >
         `
-        : `
-          <div class="featured-provider-placeholder">
+                : `
+            <div class="featured-provider-placeholder">
             ${getProviderInitial(provider.business_name)}
-          </div>
+            </div>
         `;
 
       // Provider services
