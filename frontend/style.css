@@ -4648,3 +4648,64 @@ background: #ecfdf5;
         min-width: 110px;
     }
 }
+
+/* ======================================================
+   PUBLIC PROVIDER PROFILE IMAGE
+   ====================================================== */
+
+.provider-profile-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.provider-profile-image {
+    width: 110px;
+    height: 110px;
+    min-width: 110px;
+    border-radius: 50%;
+    overflow: hidden;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #eef1f5;
+    border: 3px solid rgba(255, 255, 255, 0.8);
+
+    font-size: 40px;
+    font-weight: 700;
+    color: #667085;
+}
+
+.provider-profile-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.provider-profile-image span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.provider-profile-info {
+    min-width: 0;
+}
+
+@media (max-width: 600px) {
+    .provider-profile-header {
+        gap: 14px;
+    }
+
+    .provider-profile-image {
+        width: 80px;
+        height: 80px;
+        min-width: 80px;
+        font-size: 30px;
+    }
+}
