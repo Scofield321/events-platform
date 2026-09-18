@@ -239,6 +239,7 @@ router.get("/providers/:id", async (req, res) => {
                 sp.location,
                 sp.address,
                 sp.website_url,
+                sp.profile_image_url,
                 sp.whatsapp_number,
                 sp.instagram_url,
                 sp.facebook_url,
