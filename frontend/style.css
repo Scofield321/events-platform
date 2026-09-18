@@ -4542,3 +4542,109 @@ background: #ecfdf5;
         max-width: none;
     }
 }
+
+/* ======================================================
+   PROVIDER PROFILE PICTURE
+   ====================================================== */
+
+.profile-picture-section {
+    margin-bottom: 24px;
+}
+
+.profile-picture-container {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-top: 20px;
+    padding: 20px;
+    border: 2px dashed #d9dee7;
+    border-radius: 12px;
+    background: #fafbfc;
+}
+
+.profile-image-preview {
+    width: 120px;
+    height: 120px;
+    min-width: 120px;
+    border-radius: 50%;
+    background: #eef1f5;
+    border: 3px solid #e1e5eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    font-size: 42px;
+    font-weight: 600;
+    color: #667085;
+}
+
+.profile-image-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.profile-image-upload {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.profile-image-upload-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 11px 18px;
+
+    background-color: #111827 !important;
+    color: #ffffff !important;
+
+    border: none;
+    border-radius: 8px;
+
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1;
+    text-decoration: none;
+
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.profile-image-upload-button:hover {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+}
+
+.profile-picture-info {
+    margin: 0;
+    font-size: 13px;
+    color: #667085;
+}
+
+.profile-image-message {
+    margin: 2px 0 0;
+    font-size: 13px;
+    color: #475467;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    .profile-picture-container {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .profile-image-upload {
+        align-items: center;
+    }
+
+    .profile-image-preview {
+        width: 110px;
+        height: 110px;
+        min-width: 110px;
+    }
+}

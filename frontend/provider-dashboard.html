@@ -53,6 +53,46 @@
         </div>
       </section>
 
+      <!-- Profile Picture -->
+
+      <section class="dashboard-card profile-picture-section">
+        <div class="section-heading">
+          <div>
+            <h2>Profile Picture</h2>
+
+            <p>
+              Add a profile picture or business logo that clients will see on
+              your public profile.
+            </p>
+          </div>
+        </div>
+
+        <div class="profile-picture-container">
+          <div id="profileImagePreview" class="profile-image-preview">
+            <span id="profileImageInitial">D</span>
+          </div>
+
+          <div class="profile-picture-upload">
+            <label for="profileImageUpload" class="profile-image-upload-button">
+              Choose Profile Picture
+            </label>
+
+            <input
+              type="file"
+              id="profileImageUpload"
+              accept="image/jpeg,image/png,image/webp"
+              hidden
+            />
+
+            <p class="profile-picture-info">
+              JPG, PNG or WEBP · Recommended square image
+            </p>
+
+            <p id="profileImageMessage" class="profile-image-message"></p>
+          </div>
+        </div>
+      </section>
+
       <!-- Business Profile -->
 
       <section class="dashboard-card">

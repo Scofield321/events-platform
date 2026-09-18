@@ -492,6 +492,9 @@ async function loadProviderDashboard() {
     // for profile completion
     window.currentProviderUser = user;
 
+    // Load provider profile picture
+    await loadProviderProfileImage();
+
     // Public profile button
     const viewProfileButton = document.getElementById("viewProfileButton");
 
@@ -1689,6 +1692,238 @@ async function deleteProviderMedia(mediaId) {
 
     if (message) {
       message.textContent = error.message;
+    }
+  }
+}
+
+// ======================================================
+// PROVIDER PROFILE PICTURE
+// ======================================================
+
+const profileImageInput = document.getElementById("profileImageUpload");
+const profileImagePreview = document.getElementById("profileImagePreview");
+const profileImageInitial = document.getElementById("profileImageInitial");
+const profileImageMessage = document.getElementById("profileImageMessage");
+
+const MAX_PROFILE_IMAGE_SIZE = 5 * 1024 * 1024; // 5 MB
+
+// ------------------------------------------------------
+// LOAD SAVED PROFILE IMAGE
+// ------------------------------------------------------
+
+async function loadProviderProfileImage() {
+  try {
+    const {
+      data: { session },
+      error,
+    } = await supabaseClient.auth.getSession();
+
+    if (error) {
+      throw error;
+    }
+
+    if (!session) {
+      return;
+    }
+
+    const response = await fetch(
+      `${API_BASE_URL}/api/providers/profile-image`,
+      {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      },
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || "Failed to load profile picture.");
+    }
+
+    const profileImageUrl = result.provider?.profile_image_url;
+
+    if (profileImageUrl) {
+      showProviderProfileImage(profileImageUrl);
+    } else {
+      showProviderProfileInitial();
+    }
+  } catch (error) {
+    console.error("Profile image loading error:", error);
+  }
+}
+
+// ------------------------------------------------------
+// SHOW PROFILE IMAGE
+// ------------------------------------------------------
+
+function showProviderProfileImage(imageUrl) {
+  if (!profileImagePreview) {
+    return;
+  }
+
+  profileImagePreview.innerHTML = "";
+
+  const image = document.createElement("img");
+
+  image.src = imageUrl;
+  image.alt = "Profile picture";
+
+  profileImagePreview.appendChild(image);
+}
+
+// ------------------------------------------------------
+// SHOW BUSINESS INITIAL
+// ------------------------------------------------------
+
+function showProviderProfileInitial() {
+  if (!profileImagePreview) {
+    return;
+  }
+
+  profileImagePreview.innerHTML = "";
+
+  const initial = document.createElement("span");
+
+  initial.id = "profileImageInitial";
+
+  initial.textContent = getProviderInitial(
+    window.currentProviderUser?.business_name,
+  );
+
+  profileImagePreview.appendChild(initial);
+}
+
+// ------------------------------------------------------
+// PROFILE IMAGE SELECTION
+// ------------------------------------------------------
+
+if (profileImageInput) {
+  profileImageInput.addEventListener("change", handleProfileImageSelection);
+}
+
+function handleProfileImageSelection() {
+  const file = profileImageInput.files[0];
+
+  if (!file) {
+    return;
+  }
+
+  // File type check
+  if (!file.type.startsWith("image/")) {
+    if (profileImageMessage) {
+      profileImageMessage.textContent = "Please select a valid image file.";
+    }
+
+    profileImageInput.value = "";
+    return;
+  }
+
+  // File size check
+  if (file.size > MAX_PROFILE_IMAGE_SIZE) {
+    if (profileImageMessage) {
+      profileImageMessage.textContent =
+        "Profile picture must be 5 MB or smaller.";
+    }
+
+    profileImageInput.value = "";
+    return;
+  }
+
+  // Show immediate preview
+  const imageUrl = URL.createObjectURL(file);
+
+  showProviderProfileImage(imageUrl);
+
+  if (profileImageMessage) {
+    profileImageMessage.textContent = "Uploading profile picture...";
+  }
+
+  uploadProviderProfileImage(file);
+}
+
+// ------------------------------------------------------
+// UPLOAD PROFILE IMAGE
+// ------------------------------------------------------
+
+async function uploadProviderProfileImage(file) {
+  try {
+    const {
+      data: { session },
+      error,
+    } = await supabaseClient.auth.getSession();
+
+    if (error) {
+      throw error;
+    }
+
+    if (!session) {
+      window.location.href = "login.html";
+      return;
+    }
+
+    const userId = session.user.id;
+
+    // File extension
+    const fileExtension = file.name.split(".").pop().toLowerCase();
+
+    // Unique profile image path
+    const fileName = `${userId}/profile-${Date.now()}.${fileExtension}`;
+
+    // Upload to Supabase Storage
+    const { error: uploadError } = await supabaseClient.storage
+      .from("provider-media")
+      .upload(fileName, file);
+
+    if (uploadError) {
+      throw uploadError;
+    }
+
+    // Get public URL
+    const { data: publicUrlData } = supabaseClient.storage
+      .from("provider-media")
+      .getPublicUrl(fileName);
+
+    const profileImageUrl = publicUrlData.publicUrl;
+
+    // Save URL in backend
+    const response = await fetch(
+      `${API_BASE_URL}/api/providers/profile-image`,
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+
+        body: JSON.stringify({
+          profile_image_url: profileImageUrl,
+        }),
+      },
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || "Failed to save profile picture.");
+    }
+
+    if (profileImageMessage) {
+      profileImageMessage.textContent = "Profile picture updated successfully!";
+    }
+
+    // Make sure saved image is displayed
+    showProviderProfileImage(profileImageUrl);
+
+    // Clear file input
+    profileImageInput.value = "";
+  } catch (error) {
+    console.error("Profile image upload error:", error);
+
+    if (profileImageMessage) {
+      profileImageMessage.textContent =
+        error.message || "Failed to upload profile picture.";
     }
   }
 }
