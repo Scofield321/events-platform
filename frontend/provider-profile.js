@@ -61,6 +61,31 @@ async function loadProviderProfile() {
     document.getElementById("providerLocation").textContent =
       provider.location || "Location not provided";
 
+    // ==========================================
+    // PROFILE IMAGE
+    // ==========================================
+
+    const profileImageContainer = document.getElementById(
+      "providerProfileImage",
+    );
+
+    if (profileImageContainer) {
+      if (provider.profile_image_url) {
+        profileImageContainer.innerHTML = `
+      <img
+        src="${provider.profile_image_url}"
+        alt="${provider.business_name} profile picture"
+      />
+    `;
+      } else {
+        profileImageContainer.innerHTML = `
+      <span>
+        ${getProviderInitial(provider.business_name)}
+      </span>
+    `;
+      }
+    }
+
     document.getElementById("providerDescription").textContent =
       provider.description || "No description provided.";
 
