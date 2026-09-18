@@ -1992,7 +1992,6 @@ async function loadFeaturedProviders() {
 
       const reviewCount = Number(provider.review_count || 0);
 
-      // Provider cover image
       // Provider profile image
       const imageHTML = provider.profile_image_url
                 ? `
