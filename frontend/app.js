@@ -613,16 +613,22 @@ async function loadProviderDashboard() {
 }
 
 // Business description character counter
-const descriptionInput = document.getElementById("profileDescription");
-const descriptionCounter = document.querySelector(".description-counter");
+const businessDescriptionInput =
+  document.getElementById("profileDescription");
 
-if (descriptionInput && descriptionCounter) {
+const businessDescriptionCounter =
+  document.querySelector(".description-counter");
+
+if (businessDescriptionInput && businessDescriptionCounter) {
   const updateDescriptionCounter = () => {
-    descriptionCounter.textContent =
-      `${descriptionInput.value.length} / 180 characters`;
+    businessDescriptionCounter.textContent =
+      `${businessDescriptionInput.value.length} / 180 characters`;
   };
 
-  descriptionInput.addEventListener("input", updateDescriptionCounter);
+  businessDescriptionInput.addEventListener(
+    "input",
+    updateDescriptionCounter,
+  );
 
   updateDescriptionCounter();
 }
