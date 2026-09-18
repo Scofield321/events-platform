@@ -1586,48 +1586,109 @@ footer p {
 }
 
 
-/* =========================================================
-   26. PUBLIC PROFILE NAVIGATION
-========================================================= */
+/* ==========================================
+   PROVIDER PROFILE NAVIGATION
+   ========================================== */
 
 .profile-navigation {
     display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
 
-    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 14px 20px;
 
-    gap: 8px;
-
-    margin-top: 15px;
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
 }
 
+/* Navigation links */
 
 .profile-navigation a {
     display: inline-flex;
-
     align-items: center;
+    justify-content: center;
 
-    min-height: 40px;
+    min-height: 42px;
+    padding: 10px 16px;
 
-    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
 
-    border-radius: var(--radius-sm);
+    background: #ffffff;
+    color: #374151;
 
-    background: var(--surface-soft);
-
-    color: var(--text-secondary);
-
+    font-size: 14px;
+    font-weight: 600;
     text-decoration: none;
 
-    font-size: 0.85rem;
-
-    font-weight: 600;
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
 }
 
+/* Back to Providers */
+
+.profile-navigation a:first-child {
+    color: #111827;
+}
+
+/* Home */
+
+.profile-navigation a:last-child {
+    background: #111827;
+    border-color: #111827;
+    color: #ffffff;
+}
+
+/* Hover */
 
 .profile-navigation a:hover {
-    background: var(--border);
+    transform: translateY(-1px);
+    border-color: #9ca3af;
+    background: #f9fafb;
+}
 
-    color: var(--text);
+.profile-navigation a:last-child:hover {
+    background: #000000;
+    border-color: #000000;
+    color: #ffffff;
+}
+
+/* ==========================================
+   MOBILE
+   ========================================== */
+
+@media (max-width: 600px) {
+
+    .profile-navigation {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+
+        padding: 10px 12px;
+
+        gap: 10px;
+
+        background: rgba(255, 255, 255, 0.96);
+        backdrop-filter: blur(8px);
+
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .profile-navigation a {
+        flex: 1;
+
+        min-height: 44px;
+        padding: 10px 12px;
+
+        font-size: 13px;
+        text-align: center;
+    }
 }
 
 
