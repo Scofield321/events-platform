@@ -1,11 +1,13 @@
 const API_BASE_URL = "https://events-platform-ym0v.onrender.com";
+
 const SUPABASE_URL = "https://uainkysoifpgvqxcnpde.supabase.co";
-const SUPABASE_ANON_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVhaW5reXNvaWZwZ3ZxeGNucGRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk0MjAxOTMsImV4cCI6MjEwNDk5NjE5M30.5mvpz4XVX64S9AwcmGeDtvynyawGEbuC0MfweNB63rM";
+
+const SUPABASE_PUBLISHABLE_KEY =
+  "sb_publishable_LrqM9VZowtFTQLPDBus-aw_sm68SfRU";
 
 const supabaseClient = window.supabase.createClient(
   SUPABASE_URL,
-  SUPABASE_ANON_KEY,
+  SUPABASE_PUBLISHABLE_KEY,
 );
 
 window.currentProviderUser = {};
@@ -326,7 +328,7 @@ if (loginForm) {
 
     const email = document.getElementById("loginEmail").value.trim();
 
-    const password = document.getElementById("loginPassword").value;
+    const password = document.getElementById("password").value;
 
     const message = document.getElementById("loginMessage");
 
