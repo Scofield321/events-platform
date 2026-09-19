@@ -1,13 +1,19 @@
 // Bide Hub - Supabase password recovery, added
 
+// Bide Hub - Supabase password recovery
+
 const SUPABASE_URL = "https://uainkysoifpgvqxcnpde.supabase.co";
 
-const SUPABASE_ANON_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVhaW5reXNvaWZwZ3ZxeGNwZGUiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc4OTQyMDE5MywiZXhwIjoyMTA0OTk2MTkzfQ.5mvpz4XVX64S9AwcmGeDtvynyawGEbuC0MfweNB63rM";
+const SUPABASE_PUBLISHABLE_KEY =
+  "sb_publishable_LrqM9VZowtFTQLPDBus-aw_sm68SfRU";
 
-const recoverySupabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-const PRODUCTION_RESET_URL = "https://events-platform-weld.vercel.app/reset-password.html";
+const recoverySupabase = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
+);
 
+const PRODUCTION_RESET_URL =
+  "https://events-platform-weld.vercel.app/reset-password.html";
 function setMessage(el, text, type) {
   if (!el) return;
   el.textContent = text;
