@@ -502,6 +502,67 @@ async function loadProviderDashboard() {
       viewProfileButton.href = `provider-profile.html?id=${user.provider_id}`;
     }
 
+    // ==========================================
+    // SHARE PROVIDER PROFILE
+    // ==========================================
+
+    const shareProfileButton = document.getElementById("shareProfileButton");
+
+    const shareProfileMessage = document.getElementById("shareProfileMessage");
+
+    if (shareProfileButton && user.provider_id) {
+      const profileUrl = `${window.location.origin}/provider-profile.html?id=${user.provider_id}`;
+
+      const businessName = user.business_name || "this event professional";
+
+      shareProfileButton.addEventListener("click", async () => {
+        const shareData = {
+          title: `${businessName} | Bide Hub`,
+          text: `Check out ${businessName} on Bide Hub.`,
+          url: profileUrl,
+        };
+
+        try {
+          // Phone/tablet browsers
+          if (navigator.share) {
+            await navigator.share(shareData);
+            return;
+          }
+
+          // Desktop/browser fallback
+          await navigator.clipboard.writeText(profileUrl);
+
+          if (shareProfileMessage) {
+            shareProfileMessage.textContent =
+              "Profile link copied! You can now share it anywhere.";
+
+            setTimeout(() => {
+              shareProfileMessage.textContent = "";
+            }, 3000);
+          }
+        } catch (error) {
+          // User closed the share window
+          if (error.name === "AbortError") {
+            return;
+          }
+
+          console.error("Profile sharing error:", error);
+
+          // Final fallback
+          try {
+            await navigator.clipboard.writeText(profileUrl);
+
+            if (shareProfileMessage) {
+              shareProfileMessage.textContent =
+                "Profile link copied! You can now share it anywhere.";
+            }
+          } catch (clipboardError) {
+            console.error("Could not copy profile link:", clipboardError);
+          }
+        }
+      });
+    }
+
     // Populate profile form
     const businessNameInput = document.getElementById("profileBusinessName");
 
@@ -613,22 +674,18 @@ async function loadProviderDashboard() {
 }
 
 // Business description character counter
-const businessDescriptionInput =
-  document.getElementById("profileDescription");
+const businessDescriptionInput = document.getElementById("profileDescription");
 
-const businessDescriptionCounter =
-  document.querySelector(".description-counter");
+const businessDescriptionCounter = document.querySelector(
+  ".description-counter",
+);
 
 if (businessDescriptionInput && businessDescriptionCounter) {
   const updateDescriptionCounter = () => {
-    businessDescriptionCounter.textContent =
-      `${businessDescriptionInput.value.length} / 180 characters`;
+    businessDescriptionCounter.textContent = `${businessDescriptionInput.value.length} / 180 characters`;
   };
 
-  businessDescriptionInput.addEventListener(
-    "input",
-    updateDescriptionCounter,
-  );
+  businessDescriptionInput.addEventListener("input", updateDescriptionCounter);
 
   updateDescriptionCounter();
 }
@@ -2180,15 +2237,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Password visibility toggle
 document.querySelectorAll(".password-toggle").forEach((toggle) => {
-    toggle.addEventListener("click", () => {
-        const input = document.getElementById(toggle.dataset.target);
+  toggle.addEventListener("click", () => {
+    const input = document.getElementById(toggle.dataset.target);
 
-        if (input.type === "password") {
-            input.type = "text";
-            toggle.setAttribute("aria-label", "Hide password");
-        } else {
-            input.type = "password";
-            toggle.setAttribute("aria-label", "Show password");
-        }
-    });
+    if (input.type === "password") {
+      input.type = "text";
+      toggle.setAttribute("aria-label", "Hide password");
+    } else {
+      input.type = "password";
+      toggle.setAttribute("aria-label", "Show password");
+    }
+  });
 });

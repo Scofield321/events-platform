@@ -6,17 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Provider Dashboard | Event Platform</title>
-    <link rel="icon" type="image/png" href="bidehub-social-profile-logo.png">
+    <link rel="icon" type="image/png" href="bidehub-social-profile-logo.png" />
     <link rel="stylesheet" href="style.css" />
   </head>
 
   <body>
     <header class="dashboard-header">
       <div>
-        <!-- <h1>Provider Dashboard</h1> -->
-         <a href="index.html" class="brand-logo">
-        <img src="bide-hub-logo.png" alt="Bide Hub" />
-      </a>
+        <a href="index.html" class="brand-logo">
+          <img src="bide-hub-logo.png" alt="Bide Hub" />
+        </a>
+
         <p id="welcomeMessage">Loading...</p>
       </div>
 
@@ -25,11 +25,15 @@
 
         <a href="#" id="viewProfileButton"> My Public Profile </a>
 
+        <button type="button" id="shareProfileButton">🔗 Share Profile</button>
+
         <a href="providers.html"> Browse Providers </a>
 
         <button id="logoutButton">Logout</button>
       </div>
     </header>
+
+    <p id="shareProfileMessage" class="share-profile-message"></p>
 
     <main class="dashboard-container">
       <section class="dashboard-card dashboard-overview">
