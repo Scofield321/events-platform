@@ -13,7 +13,7 @@ const recoverySupabase = window.supabase.createClient(
 );
 
 const PRODUCTION_RESET_URL =
-  "https://events-platform-weld.vercel.app/reset-password.html";
+  "https://bidehub.com/reset-password.html";
 function setMessage(el, text, type) {
   if (!el) return;
   el.textContent = text;
