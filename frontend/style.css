@@ -367,7 +367,7 @@ select:focus-visible {
 }
 
 
-.hero h2 {
+.hero h1 {
     max-width: 760px;
 
     margin: 0 auto;
@@ -1937,7 +1937,7 @@ footer p {
     }
 
 
-    .hero h2 {
+    .hero h1 {
         font-size: 3.2rem;
     }
 
@@ -2141,7 +2141,7 @@ footer p {
     }
 
 
-    .hero h2 {
+    .hero h1 {
         font-size: 4rem;
     }
 
@@ -4841,4 +4841,661 @@ background: #ecfdf5;
 
 .password-toggle:hover {
     color: #111827;
+}
+
+/* =========================================================
+   BIDE HUB — ABOUT PAGE
+   Mobile-first responsive CSS
+   ========================================================= */
+
+
+/* =========================================================
+   GLOBAL
+   ========================================================= */
+
+.container {
+  width: min(100% - 32px, 1100px);
+  margin-inline: auto;
+}
+
+
+/* =========================================================
+   ABOUT PAGE
+   ========================================================= */
+
+.about-page {
+  min-height: 100vh;
+
+  padding:
+    64px 0
+    72px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #f8fafc 0%,
+      #ffffff 45%,
+      #ffffff 100%
+    );
+}
+
+
+/* =========================================================
+   EYEBROW
+   ========================================================= */
+
+.section-eyebrow {
+  display: inline-flex;
+  align-items: center;
+
+  margin: 0 0 16px;
+
+  padding: 7px 12px;
+
+  border-radius: 999px;
+
+  background: #eef2ff;
+
+  color: #4f46e5;
+
+  font-size: 0.72rem;
+  font-weight: 800;
+
+  letter-spacing: 0.12em;
+
+  line-height: 1.2;
+}
+
+
+/* =========================================================
+   MAIN HEADING
+   ========================================================= */
+
+.about-page h1 {
+  max-width: 850px;
+
+  margin: 0 0 24px;
+
+  color: #111827;
+
+  font-size: clamp(
+    2.2rem,
+    9vw,
+    4.5rem
+  );
+
+  font-weight: 800;
+
+  line-height: 1.05;
+
+  letter-spacing: -0.045em;
+}
+
+
+/* =========================================================
+   BODY TEXT
+   ========================================================= */
+
+.about-page p {
+  max-width: 760px;
+
+  margin: 0 0 22px;
+
+  color: #4b5563;
+
+  font-size: 1rem;
+
+  line-height: 1.8;
+}
+
+
+/* Make the opening paragraph slightly stronger */
+
+.about-page h1 + p {
+  max-width: 720px;
+
+  color: #374151;
+
+  font-size: 1.1rem;
+
+  line-height: 1.75;
+}
+
+
+/* =========================================================
+   SECTION HEADINGS
+   ========================================================= */
+
+.about-page h2 {
+  max-width: 800px;
+
+  margin:
+    58px
+    0
+    18px;
+
+  color: #111827;
+
+  font-size: 1.55rem;
+
+  font-weight: 750;
+
+  line-height: 1.25;
+
+  letter-spacing: -0.025em;
+}
+
+
+.about-page h3 {
+  max-width: 760px;
+
+  margin:
+    30px
+    0
+    7px;
+
+  color: #111827;
+
+  font-size: 1.05rem;
+
+  font-weight: 750;
+
+  line-height: 1.4;
+}
+
+
+/* =========================================================
+   DISCOVERY LIST
+   ========================================================= */
+
+.about-page ul {
+  display: grid;
+
+  grid-template-columns: 1fr;
+
+  gap: 10px;
+
+  max-width: 800px;
+
+  margin:
+    0
+    0
+    10px;
+
+  padding: 0;
+
+  list-style: none;
+}
+
+
+.about-page li {
+  position: relative;
+
+  padding:
+    13px
+    16px
+    13px
+    42px;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 12px;
+
+  background: #ffffff;
+
+  color: #374151;
+
+  font-size: 0.96rem;
+
+  box-shadow:
+    0 2px 8px
+    rgba(15, 23, 42, 0.035);
+}
+
+
+.about-page li::before {
+  content: "✓";
+
+  position: absolute;
+
+  left: 16px;
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  width: 20px;
+  height: 20px;
+
+  border-radius: 50%;
+
+  background: #eef2ff;
+
+  color: #4f46e5;
+
+  font-size: 0.72rem;
+
+  font-weight: 800;
+}
+
+
+/* =========================================================
+   HOW BIDE HUB WORKS
+   ========================================================= */
+
+/*
+  The existing HTML doesn't have a wrapper around the
+  Discover / Evaluate / Contact steps, so we style the
+  h3 + paragraph sequence directly.
+*/
+
+.about-page h2 + h3 {
+  margin-top: 26px;
+}
+
+
+/* Step numbers */
+
+.about-page h3 {
+  position: relative;
+
+  color: #111827;
+}
+
+
+/* =========================================================
+   PROVIDER SECTION
+   ========================================================= */
+
+.about-page h2 {
+  scroll-margin-top: 30px;
+}
+
+
+/* =========================================================
+   BRAND TAGLINE
+   ========================================================= */
+
+.about-page .brand-tagline {
+  max-width: 100%;
+
+  margin-top: 56px;
+  margin-bottom: 0;
+
+  padding-top: 28px;
+
+  border-top: 1px solid #e5e7eb;
+
+  color: #111827;
+
+  font-size: 0.8rem;
+
+  font-weight: 800;
+
+  letter-spacing: 0.12em;
+
+  line-height: 1.6;
+}
+
+
+/* =========================================================
+   TABLET — 600px+
+   ========================================================= */
+
+@media (min-width: 600px) {
+
+  .container {
+    width: min(
+      100% - 48px,
+      1100px
+    );
+  }
+
+
+  .about-page {
+    padding:
+      80px 0
+      90px;
+  }
+
+
+  .about-page h1 {
+    font-size: clamp(
+      3rem,
+      7vw,
+      4.5rem
+    );
+  }
+
+
+  .about-page h1 + p {
+    font-size: 1.15rem;
+  }
+
+
+  .about-page ul {
+    grid-template-columns:
+      repeat(2, 1fr);
+
+    gap: 12px;
+  }
+
+
+  .about-page h2 {
+    margin-top: 70px;
+
+    font-size: 1.7rem;
+  }
+
+
+  .about-page h3 {
+    font-size: 1.1rem;
+  }
+
+}
+
+
+/* =========================================================
+   DESKTOP — 900px+
+   ========================================================= */
+
+@media (min-width: 900px) {
+
+  .container {
+    width: min(
+      100% - 64px,
+      1100px
+    );
+  }
+
+
+  .about-page {
+    padding:
+      110px 0
+      120px;
+  }
+
+
+  .section-eyebrow {
+    margin-bottom: 20px;
+
+    font-size: 0.75rem;
+  }
+
+
+  .about-page h1 {
+    max-width: 900px;
+
+    margin-bottom: 28px;
+
+    font-size: 4.5rem;
+  }
+
+
+  .about-page h1 + p {
+    font-size: 1.2rem;
+  }
+
+
+  .about-page p {
+    font-size: 1.05rem;
+  }
+
+
+  .about-page h2 {
+    margin-top: 82px;
+
+    font-size: 1.85rem;
+  }
+
+
+  .about-page h3 {
+    margin-top: 34px;
+
+    font-size: 1.1rem;
+  }
+
+
+  .about-page li {
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease,
+      border-color 0.2s ease;
+  }
+
+
+  .about-page li:hover {
+    transform: translateY(-2px);
+
+    border-color: #dbe1f5;
+
+    box-shadow:
+      0 8px 24px
+      rgba(15, 23, 42, 0.07);
+  }
+
+
+  .about-page .brand-tagline {
+    margin-top: 70px;
+
+    padding-top: 32px;
+  }
+
+}
+
+
+/* =========================================================
+   LARGE DESKTOP — 1200px+
+   ========================================================= */
+
+@media (min-width: 1200px) {
+
+  .about-page {
+    padding:
+      130px 0
+      140px;
+  }
+
+
+  .about-page h1 {
+    font-size: 5rem;
+  }
+
+}
+
+/* =========================================================
+   ABOUT PAGE HEADER
+   ========================================================= */
+
+.about-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  width: 100%;
+
+  background: rgba(255, 255, 255, 0.96);
+
+  border-bottom: 1px solid #e5e7eb;
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+
+.about-header-inner {
+  width: min(100% - 32px, 1100px);
+
+  min-height: 68px;
+
+  margin-inline: auto;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 20px;
+}
+
+
+/* =========================================================
+   LOGO
+   ========================================================= */
+
+.about-logo {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 9px;
+
+  color: #111827;
+
+  text-decoration: none;
+
+  font-size: 1.05rem;
+
+  font-weight: 800;
+
+  letter-spacing: -0.02em;
+}
+
+
+.about-logo img {
+  width: 38px;
+  height: 38px;
+
+  display: block;
+
+  object-fit: contain;
+
+  border-radius: 10px;
+}
+
+
+.about-logo span {
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   NAVIGATION
+   ========================================================= */
+
+.about-navigation {
+  display: flex;
+
+  align-items: center;
+}
+
+
+.about-home-link {
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  min-height: 40px;
+
+  padding: 8px 16px;
+
+  border-radius: 999px;
+
+  background: #111827;
+
+  color: #ffffff;
+
+  text-decoration: none;
+
+  font-size: 0.9rem;
+
+  font-weight: 700;
+
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
+}
+
+
+.about-home-link:hover {
+  opacity: 0.9;
+
+  transform: translateY(-1px);
+}
+
+
+.about-home-link:active {
+  transform: translateY(0);
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (min-width: 600px) {
+
+  .about-header-inner {
+    width: min(100% - 48px, 1100px);
+
+    min-height: 74px;
+  }
+
+
+  .about-logo img {
+    width: 42px;
+    height: 42px;
+  }
+
+
+  .about-logo {
+    font-size: 1.1rem;
+  }
+
+
+  .about-home-link {
+    padding-inline: 19px;
+  }
+
+}
+
+
+/* =========================================================
+   DESKTOP
+   ========================================================= */
+
+@media (min-width: 900px) {
+
+  .about-header-inner {
+    width: min(100% - 64px, 1100px);
+
+    min-height: 78px;
+  }
+
+
+  .about-logo {
+    font-size: 1.15rem;
+  }
+
+
+  .about-logo img {
+    width: 44px;
+    height: 44px;
+  }
+
+
+  .about-home-link {
+    min-height: 42px;
+
+    padding-inline: 22px;
+
+    font-size: 0.92rem;
+  }
+
 }
