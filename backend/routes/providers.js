@@ -20,6 +20,7 @@ router.put(
             instagram_url,
             facebook_url,
             tiktok_url,
+            youtube_url,
         } = req.body;
 
         // Validate business description length
@@ -57,8 +58,9 @@ router.put(
                     instagram_url = $7,
                     facebook_url = $8,
                     tiktok_url = $9,
+                    youtube_url = $10,
                     updated_at = NOW()
-                WHERE user_id = $10
+                WHERE user_id = $11
                 RETURNING *
                 `,
                 [
@@ -71,6 +73,7 @@ router.put(
                     instagram_url || null,
                     facebook_url || null,
                     tiktok_url || null,
+                    youtube_url || null,
                     req.user.id,
                 ],
             );
@@ -115,6 +118,7 @@ router.get("/providers", async (req, res) => {
                 sp.instagram_url,
                 sp.facebook_url,
                 sp.tiktok_url,
+                sp.youtube_url,
                 u.phone,
                 sp.average_rating,
                 sp.review_count,
@@ -253,6 +257,7 @@ router.get("/providers/:id", async (req, res) => {
                 sp.instagram_url,
                 sp.facebook_url,
                 sp.tiktok_url,
+                sp.youtube_url,
                 u.phone,
                 sp.average_rating,
                 sp.review_count,

@@ -636,6 +636,12 @@ async function loadProviderDashboard() {
       tiktokInput.value = user.tiktok_url || "";
     }
 
+    const youtubeInput = document.getElementById("profileYoutube");
+
+    if (youtubeInput) {
+      youtubeInput.value = user.youtube_url || "";
+    }
+
     // Welcome message
     const welcomeMessage = document.getElementById("welcomeMessage");
 
@@ -747,7 +753,8 @@ function updateProfileCompletion() {
     (user.whatsapp_number && user.whatsapp_number.trim()) ||
     (user.instagram_url && user.instagram_url.trim()) ||
     (user.facebook_url && user.facebook_url.trim()) ||
-    (user.tiktok_url && user.tiktok_url.trim())
+    (user.tiktok_url && user.tiktok_url.trim()) ||
+    (user.youtube_url && user.youtube_url.trim())
   ) {
     completed += 10;
   }
@@ -1057,6 +1064,8 @@ async function saveProviderProfile(event) {
       facebook_url: document.getElementById("profileFacebook").value.trim(),
 
       tiktok_url: document.getElementById("profileTiktok").value.trim(),
+
+      youtube_url: document.getElementById("profileYoutube").value.trim(),
     };
 
     const response = await fetch(`${API_BASE_URL}/api/providers/profile`, {
