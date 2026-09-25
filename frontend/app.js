@@ -1812,13 +1812,35 @@ async function deleteProviderMedia(mediaId) {
 // PROVIDER PROFILE PICTURE
 // ======================================================
 
+function getBusinessInitials(businessName) {
+  if (!businessName) {
+    return "BH";
+  }
+
+  const words = businessName.trim().split(/\s+/).filter(Boolean);
+
+  if (words.length === 1) {
+    return words[0].substring(0, 2).toUpperCase();
+  }
+
+  return (words[0].charAt(0) + words[1].charAt(0)).toUpperCase();
+}
+
 const profileImageInput = document.getElementById("profileImageUpload");
+
 const profileImagePreview = document.getElementById("profileImagePreview");
-const profileImageInitial = document.getElementById("profileImageInitial");
+
+// const profileImageInitial = document.getElementById("profileImageInitial");
+
+// if (profileImageInitial) {
+//   profileImageInitial.textContent = getBusinessInitials(
+//     window.currentProviderUser?.business_name,
+//   );
+// }
+
 const profileImageMessage = document.getElementById("profileImageMessage");
 
 const MAX_PROFILE_IMAGE_SIZE = 5 * 1024 * 1024; // 5 MB
-
 // ------------------------------------------------------
 // LOAD SAVED PROFILE IMAGE
 // ------------------------------------------------------
@@ -1899,7 +1921,7 @@ function showProviderProfileInitial() {
 
   initial.id = "profileImageInitial";
 
-  initial.textContent = getProviderInitial(
+  initial.textContent = getBusinessInitials(
     window.currentProviderUser?.business_name,
   );
 
