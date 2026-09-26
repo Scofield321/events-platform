@@ -65,17 +65,17 @@ router.post(
 
       // Recalculate provider rating
       const ratingResult = await pool.query(
-        `
-                SELECT
-                    ROUND(AVG(rating), 2) AS average_rating,
-                    COUNT(*) AS review_count
-                FROM reviews
-                WHERE
-                    provider_id = $1
-                    AND status = 'ACTIVE'
-                `,
-        [providerId],
-      );
+                  `
+              SELECT
+                  ROUND(AVG(rating), 2) AS average_rating,
+                  COUNT(*)::int AS review_count
+              FROM reviews
+              WHERE
+                  provider_id = $1
+                  AND status = 'ACTIVE'
+            `,
+                  [providerId],
+                );
 
       const { average_rating, review_count } = ratingResult.rows[0];
 
@@ -93,16 +93,20 @@ router.post(
       );
 
       // Recalculate provider reliability
-      await calculateReliabilityScore(providerId);
+      const reliabilityScore = await calculateReliabilityScore(providerId);
 
       res.status(201).json({
         status: "OK",
         message: "Review submitted successfully",
+
         review: reviewResult.rows[0],
+
         provider_rating: {
           average_rating: average_rating || 0,
           review_count: Number(review_count) || 0,
         },
+
+        reliability_score: reliabilityScore,
       });
     } catch (error) {
       // PostgreSQL unique constraint violation
