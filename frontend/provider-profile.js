@@ -250,23 +250,23 @@ async function loadProviderProfile() {
 
     const reviewCount = provider.review_count || 0;
 
-    const reliability = Number(provider.reliability_score || 0).toFixed(0);
+    // const reliability = Number(provider.reliability_score || 0).toFixed(0);
 
     // Hero reputation
     document.getElementById("providerRating").textContent = rating;
 
     document.getElementById("providerReviews").textContent = reviewCount;
 
-    document.getElementById("providerReliability").textContent =
-      `${reliability}%`;
+    // document.getElementById("providerReliability").textContent =
+    //   `${reliability}%`;
 
     // Reputation section
     document.getElementById("reputationRating").textContent = rating;
 
     document.getElementById("reputationReviews").textContent = reviewCount;
 
-    document.getElementById("reputationReliability").textContent =
-      `${reliability}%`;
+    // document.getElementById("reputationReliability").textContent =
+    //   `${reliability}%`;
 
     // ==========================================
     // CONTACT OPTIONS
