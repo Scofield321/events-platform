@@ -16,6 +16,87 @@ window.currentProviderMedia = [];
 
 console.log("Supabase connected:", supabaseClient);
 
+// ======================================================
+// EMAIL CONFIRMATION HANDLER
+// ======================================================
+
+async function handleEmailConfirmation() {
+  try {
+    const url = new URL(window.location.href);
+
+    const hash = window.location.hash;
+
+    // Supabase may return authentication information
+    // in the URL hash after email confirmation.
+    if (hash && hash.includes("access_token")) {
+      console.log("Email confirmation session detected.");
+
+      // Give Supabase a moment to process the session.
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      // Sign the user out immediately.
+      //
+      // We want the user to explicitly log in after
+      // confirming their email rather than being
+      // automatically sent into the dashboard.
+      await supabaseClient.auth.signOut();
+
+      // Clean the URL.
+      window.history.replaceState(
+        {},
+        document.title,
+        `${url.origin}${url.pathname}`,
+      );
+
+      showToast(
+        "Email confirmed successfully! You can now log in.",
+        "success",
+      );
+
+      const loginMessage = document.getElementById("loginMessage");
+
+      if (loginMessage) {
+        loginMessage.textContent =
+          "Your email has been confirmed successfully. Please log in to continue.";
+      }
+
+      return;
+    }
+
+    // --------------------------------------------------
+    // Handle errors returned through the URL
+    // --------------------------------------------------
+
+    const params = new URLSearchParams(
+      window.location.search,
+    );
+
+    const errorDescription = params.get("error_description");
+
+    if (errorDescription) {
+      console.error(
+        "Email confirmation error:",
+        errorDescription,
+      );
+
+      const loginMessage =
+        document.getElementById("loginMessage");
+
+      if (loginMessage) {
+        loginMessage.textContent =
+          decodeURIComponent(errorDescription);
+      }
+    }
+  } catch (error) {
+    console.error(
+      "Email confirmation handling error:",
+      error,
+    );
+  }
+}
+
+handleEmailConfirmation();
+
 /* ========================================
    REUSABLE LOADING SYSTEM
 ======================================== */
@@ -242,7 +323,10 @@ if (registerForm) {
   registerForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    const businessName = document.getElementById("businessName").value.trim();
+    const businessName = document
+      .getElementById("businessName")
+      .value
+      .trim();
 
     const email = document.getElementById("email").value.trim();
 
@@ -256,16 +340,33 @@ if (registerForm) {
 
     const registerButton = document.getElementById("registerButton");
 
-    message.textContent = "Creating your account...";
+    // Basic validation
+    if (!businessName || !email || !phone || !location || !password) {
+      if (message) {
+        message.textContent = "Please complete all required fields.";
+      }
+
+      return;
+    }
 
     try {
-      // Show loading state
       setButtonLoading(registerButton, "Creating account...");
 
-      // 1. Create account in Supabase Auth
+      if (message) {
+        message.textContent = "";
+      }
+
+      // ==================================================
+      // 1. CREATE SUPABASE AUTH ACCOUNT
+      // ==================================================
+
       const { data, error } = await supabaseClient.auth.signUp({
         email: email,
         password: password,
+
+        options: {
+          emailRedirectTo: `${window.location.origin}/login.html`,
+        },
       });
 
       if (error) {
@@ -275,41 +376,105 @@ if (registerForm) {
       const authUser = data.user;
 
       if (!authUser) {
-        throw new Error("User account was not created.");
+        throw new Error("Your account could not be created.");
       }
 
       console.log("Auth user created:", authUser.id);
 
-      // 2. Create provider profile
-      const response = await fetch(`${API_BASE_URL}/api/providers/register`, {
-        method: "POST",
+      // ==================================================
+      // 2. CREATE PROVIDER PROFILE
+      // ==================================================
 
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${API_BASE_URL}/api/providers/register`,
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json",
+          },
+
+          body: JSON.stringify({
+            user_id: authUser.id,
+            email: email,
+            phone: phone,
+            business_name: businessName,
+            location: location,
+          }),
         },
-
-        body: JSON.stringify({
-          user_id: authUser.id,
-          email: email,
-          phone: phone,
-          business_name: businessName,
-          location: location,
-        }),
-      });
+      );
 
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.message || "Failed to create provider profile.");
+        throw new Error(
+          result.message || "Failed to create your provider profile.",
+        );
       }
 
-      message.textContent = "Account created successfully! Redirecting...";
+      // ==================================================
+      // 3. DO NOT SEND USER TO DASHBOARD
+      // ==================================================
 
-      window.location.href = "provider-dashboard.html";
+      // At this point the account exists, but the user
+      // must confirm their email before logging in.
+
+      if (message) {
+        message.innerHTML = `
+          <strong>Account created successfully!</strong><br><br>
+
+          We've sent a confirmation link to
+          <strong>${email}</strong>.
+
+          <br><br>
+
+          Please check your email and click the
+          <strong>Confirm your email</strong> link.
+
+          <br><br>
+
+          After confirming your email, you'll be taken to
+          the Bide Hub login page where you can sign in
+          and access your dashboard.
+        `;
+      }
+
+      // Hide registration form after successful signup
+      registerForm.reset();
+
+      // Optional:
+      // Hide the form so the user focuses on email confirmation.
+      registerForm.classList.add("registration-complete");
+
+      showToast(
+        "Account created! Please check your email to confirm your account.",
+        "success",
+      );
     } catch (error) {
       console.error("Registration error:", error);
 
-      message.textContent = error.message;
+      let errorMessage = error.message || "Registration failed.";
+
+      // Friendlier Supabase messages
+      if (
+        errorMessage.toLowerCase().includes("user already registered")
+      ) {
+        errorMessage =
+          "An account with this email already exists. Please log in instead.";
+      }
+
+      if (
+        errorMessage.toLowerCase().includes("password")
+      ) {
+        errorMessage =
+          "Your password does not meet the required security requirements.";
+      }
+
+      if (message) {
+        message.textContent = errorMessage;
+      }
+
+      showToast(errorMessage, "error");
     } finally {
       resetButtonLoading(registerButton);
     }
@@ -334,25 +499,51 @@ if (loginForm) {
 
     const loginButton = document.getElementById("loginButton");
 
-    message.textContent = "Logging in...";
+    if (!email || !password) {
+      if (message) {
+        message.textContent = "Please enter your email and password.";
+      }
+
+      return;
+    }
 
     try {
-      // Show loading state
       setButtonLoading(loginButton, "Logging in...");
 
-      // Authenticate with Supabase
-      const { data, error } = await supabaseClient.auth.signInWithPassword({
-        email: email,
-        password: password,
-      });
+      if (message) {
+        message.textContent = "";
+      }
+
+      // ==================================================
+      // 1. AUTHENTICATE WITH SUPABASE
+      // ==================================================
+
+      const { data, error } =
+        await supabaseClient.auth.signInWithPassword({
+          email: email,
+          password: password,
+        });
 
       if (error) {
         throw error;
       }
 
+      // ==================================================
+      // 2. MAKE SURE SESSION EXISTS
+      // ==================================================
+
+      if (!data.session) {
+        throw new Error(
+          "We couldn't establish your login session. Please try again.",
+        );
+      }
+
       console.log("Logged in user:", data.user);
 
-      // Get platform profile and role
+      // ==================================================
+      // 3. GET BIDe HUB PROFILE + ROLE
+      // ==================================================
+
       const response = await fetch(`${API_BASE_URL}/api/me`, {
         method: "GET",
 
@@ -364,27 +555,76 @@ if (loginForm) {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.message || "Failed to load user profile.");
+        throw new Error(
+          result.message || "Failed to load your Bide Hub profile.",
+        );
       }
 
       const user = result.user;
 
+      if (!user || !user.role) {
+        throw new Error(
+          "We couldn't determine your Bide Hub account type.",
+        );
+      }
+
       console.log("Logged in role:", user.role);
 
-      // Redirect based on role
+      // ==================================================
+      // 4. ROLE-BASED REDIRECT
+      // ==================================================
+
       if (user.role === "ADMIN") {
         window.location.href = "admin-dashboard.html";
-      } else if (user.role === "PROVIDER") {
-        window.location.href = "provider-dashboard.html";
-      } else if (user.role === "CLIENT") {
-        window.location.href = "providers.html";
-      } else {
-        throw new Error("Your account has an unsupported role.");
+
+        return;
       }
+
+      if (user.role === "PROVIDER") {
+        window.location.href = "provider-dashboard.html";
+
+        return;
+      }
+
+      if (user.role === "CLIENT") {
+        window.location.href = "providers.html";
+
+        return;
+      }
+
+      throw new Error(
+        "Your account has an unsupported Bide Hub role.",
+      );
     } catch (error) {
       console.error("Login error:", error);
 
-      message.textContent = error.message;
+      let errorMessage = error.message || "Login failed.";
+
+      // ==================================================
+      // FRIENDLY AUTHENTICATION ERRORS
+      // ==================================================
+
+      const lowerMessage = errorMessage.toLowerCase();
+
+      if (
+        lowerMessage.includes("email not confirmed") ||
+        lowerMessage.includes("email_not_confirmed")
+      ) {
+        errorMessage =
+          "Please confirm your email address before logging in. Check your inbox for the confirmation link.";
+      } else if (
+        lowerMessage.includes("invalid login credentials") ||
+        lowerMessage.includes("invalid credentials")
+      ) {
+        errorMessage =
+          "Incorrect email or password. Please check your details and try again.";
+      }
+
+      if (message) {
+        message.textContent = errorMessage;
+      }
+
+      showToast(errorMessage, "error");
     } finally {
       resetButtonLoading(loginButton);
     }
@@ -945,6 +1185,9 @@ if (saveServicesButton) {
 }
 
 async function saveProviderServices() {
+  const button = document.getElementById("saveServicesButton");
+
+  setButtonLoading(button, "Saving...");
   try {
     const {
       data: { session },
@@ -991,19 +1234,15 @@ async function saveProviderServices() {
       throw new Error(result.message || "Failed to save services.");
     }
 
-    if (message) {
-      message.textContent = "Services saved successfully!";
-    }
+    showToast("Services saved successfully!", "success");
 
     await loadProviderServices();
   } catch (error) {
     console.error("Save services error:", error);
 
-    const message = document.getElementById("servicesMessage");
-
-    if (message) {
-      message.textContent = error.message;
-    }
+    showToast(error.message || "Failed to save services.", "error");
+  } finally {
+    resetButtonLoading(button);
   }
 }
 
@@ -1020,11 +1259,9 @@ if (profileForm) {
 async function saveProviderProfile(event) {
   event.preventDefault();
 
-  const message = document.getElementById("profileMessage");
+  const saveProfileButton = document.getElementById("saveProfileButton");
 
-  if (message) {
-    message.textContent = "Saving profile...";
-  }
+  setButtonLoading(saveProfileButton, "Saving...");
 
   try {
     const {
@@ -1086,9 +1323,7 @@ async function saveProviderProfile(event) {
       throw new Error(result.message || "Failed to update profile");
     }
 
-    if (message) {
-      message.textContent = "Profile updated successfully!";
-    }
+    showToast("Profile updated successfully!", "success");
 
     await loadProviderDashboard();
 
@@ -1101,9 +1336,9 @@ async function saveProviderProfile(event) {
   } catch (error) {
     console.error("Profile update error:", error);
 
-    if (message) {
-      message.textContent = error.message;
-    }
+    showToast(error.message || "Failed to update your profile.", "error");
+  } finally {
+    resetButtonLoading(saveProfileButton);
   }
 }
 
@@ -1373,6 +1608,8 @@ async function uploadProviderImages() {
     return;
   }
 
+  setButtonLoading(uploadImagesButton, "Uploading...");
+
   try {
     // --------------------------------------------
     // CHECK CURRENT MEDIA COUNT
@@ -1404,12 +1641,6 @@ async function uploadProviderImages() {
       }
     }
 
-    if (message) {
-      message.textContent = "Uploading media...";
-    }
-
-    uploadImagesButton.disabled = true;
-
     // --------------------------------------------
     // UPLOAD EACH IMAGE
     // --------------------------------------------
@@ -1417,6 +1648,7 @@ async function uploadProviderImages() {
     for (const file of selectedImageFiles) {
       await uploadProviderMedia(file, "IMAGE");
     }
+    showToast("Photos uploaded successfully!", "success");
 
     if (message) {
       message.textContent = "Media uploaded successfully!";
@@ -1434,11 +1666,9 @@ async function uploadProviderImages() {
   } catch (error) {
     console.error("Image upload error:", error);
 
-    if (message) {
-      message.textContent = error.message;
-    }
+    showToast(error.message || "Failed to upload photos.", "error");
   } finally {
-    uploadImagesButton.disabled = false;
+    resetButtonLoading(uploadImagesButton);
   }
 }
 
@@ -1547,13 +1777,11 @@ async function uploadProviderVideo() {
       message.textContent = "Uploading video...";
     }
 
-    uploadVideoButton.disabled = true;
+    setButtonLoading(uploadVideoButton, "Uploading...");
 
     await uploadProviderMedia(file, "VIDEO");
 
-    if (message) {
-      message.textContent = "Video uploaded successfully!";
-    }
+    showToast("Video uploaded successfully!", "success");
 
     videoInput.value = "";
 
@@ -1565,11 +1793,9 @@ async function uploadProviderVideo() {
   } catch (error) {
     console.error("Video upload error:", error);
 
-    if (message) {
-      message.textContent = error.message;
-    }
+    showToast(error.message || "Failed to upload video.", "error");
   } finally {
-    uploadVideoButton.disabled = false;
+    resetButtonLoading(uploadVideoButton);
   }
 }
 
@@ -1737,7 +1963,7 @@ function renderProviderMedia(media) {
     deleteButton.textContent = "Delete";
 
     deleteButton.addEventListener("click", () => {
-      deleteProviderMedia(item.id);
+      deleteProviderMedia(item.id, deleteButton);
     });
 
     mediaItem.appendChild(deleteButton);
@@ -1747,7 +1973,7 @@ function renderProviderMedia(media) {
   });
 }
 
-async function deleteProviderMedia(mediaId) {
+async function deleteProviderMedia(mediaId, button) {
   const message = document.getElementById("mediaMessage");
 
   const confirmed = window.confirm(
@@ -1757,6 +1983,8 @@ async function deleteProviderMedia(mediaId) {
   if (!confirmed) {
     return;
   }
+
+  setButtonLoading(button, "Deleting...");
 
   try {
     if (message) {
@@ -1793,18 +2021,16 @@ async function deleteProviderMedia(mediaId) {
       throw new Error(result.message || "Failed to delete media");
     }
 
-    if (message) {
-      message.textContent = "Media deleted successfully.";
-    }
+    showToast("Media deleted successfully.", "success");
 
     // Refresh gallery
     await loadProviderMedia();
   } catch (error) {
     console.error("Delete provider media error:", error);
 
-    if (message) {
-      message.textContent = error.message;
-    }
+    showToast(error.message || "Failed to delete media.", "error");
+  } finally {
+    resetButtonLoading(button);
   }
 }
 
@@ -1969,9 +2195,7 @@ function handleProfileImageSelection() {
 
   showProviderProfileImage(imageUrl);
 
-  if (profileImageMessage) {
-    profileImageMessage.textContent = "Uploading profile picture...";
-  }
+  showToast("Uploading profile picture...", "info");
 
   uploadProviderProfileImage(file);
 }
@@ -2043,9 +2267,11 @@ async function uploadProviderProfileImage(file) {
       throw new Error(result.message || "Failed to save profile picture.");
     }
 
-    if (profileImageMessage) {
-      profileImageMessage.textContent = "Profile picture updated successfully!";
-    }
+    // if (profileImageMessage) {
+    //   profileImageMessage.textContent = "Profile picture updated successfully!";
+    // }
+
+    showToast("Profile picture updated successfully!", "success");
 
     // Make sure saved image is displayed
     showProviderProfileImage(profileImageUrl);
@@ -2055,10 +2281,7 @@ async function uploadProviderProfileImage(file) {
   } catch (error) {
     console.error("Profile image upload error:", error);
 
-    if (profileImageMessage) {
-      profileImageMessage.textContent =
-        error.message || "Failed to upload profile picture.";
-    }
+    showToast(error.message || "Failed to upload profile picture.", "error");
   }
 }
 
