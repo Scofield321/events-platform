@@ -268,13 +268,15 @@ router.put(
                 UPDATE service_providers
 
                 SET
-                    verification_status = $1,
+                    verification_status = $1::VARCHAR,
+
                     verified_at =
                         CASE
-                            WHEN $1 = 'VERIFIED'
+                            WHEN $1::VARCHAR = 'VERIFIED'
                             THEN NOW()
                             ELSE NULL
                         END,
+
                     updated_at = NOW()
 
                 WHERE id = $2
@@ -294,9 +296,6 @@ router.put(
                     message: "Provider not found",
                 });
             }
-
-            // Reliability calculation intentionally removed.
-            // We are not using reliability scoring for now.
 
             res.json({
                 status: "OK",
