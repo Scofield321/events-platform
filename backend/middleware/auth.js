@@ -21,7 +21,10 @@ async function authenticateUser(req, res, next) {
             });
         }
 
+        // --------------------------------------------------
         // Verify Supabase authentication token
+        // --------------------------------------------------
+
         const {
             data: { user },
             error,
@@ -35,7 +38,7 @@ async function authenticateUser(req, res, next) {
         }
 
         // --------------------------------------------------
-        // Check Bide Hub account status
+        // Get Bide Hub account information
         // --------------------------------------------------
 
         const result = await pool.query(
@@ -43,7 +46,9 @@ async function authenticateUser(req, res, next) {
             SELECT
                 id,
                 role,
-                status
+                status,
+                suspension_reason,
+                suspended_until
             FROM users
             WHERE id = $1
             `,
@@ -60,15 +65,61 @@ async function authenticateUser(req, res, next) {
         const dbUser = result.rows[0];
 
         // --------------------------------------------------
-        // Suspended account
+        // Check suspended account
         // --------------------------------------------------
 
         if (dbUser.status === "SUSPENDED") {
-            return res.status(403).json({
-                status: "ERROR",
-                message:
-                    "Your Bide Hub account has been suspended. Please contact Bide Hub support.",
-            });
+
+            // --------------------------------------------------
+            // Suspension has expired
+            // --------------------------------------------------
+
+            if (
+                dbUser.suspended_until &&
+                new Date(dbUser.suspended_until) <= new Date()
+            ) {
+
+                await pool.query(
+                    `
+                    UPDATE users
+
+                    SET
+                        status = 'ACTIVE',
+                        suspension_reason = NULL,
+                        suspended_until = NULL,
+                        updated_at = NOW()
+
+                    WHERE id = $1
+                    `,
+                    [user.id],
+                );
+
+                dbUser.status = "ACTIVE";
+                dbUser.suspension_reason = null;
+                dbUser.suspended_until = null;
+
+            } else {
+
+                // --------------------------------------------------
+                // Suspension is still active
+                // --------------------------------------------------
+
+                return res.status(403).json({
+                    status: "SUSPENDED",
+
+                    message:
+                        "Your Bide Hub account has been temporarily suspended.",
+
+                    suspension: {
+                        reason:
+                            dbUser.suspension_reason ||
+                            "No suspension reason was provided.",
+
+                        suspended_until:
+                            dbUser.suspended_until,
+                    },
+                });
+            }
         }
 
         // --------------------------------------------------
@@ -77,12 +128,22 @@ async function authenticateUser(req, res, next) {
 
         req.user = {
             ...user,
+
             role: dbUser.role,
+
             status: dbUser.status,
+
+            suspension_reason:
+                dbUser.suspension_reason,
+
+            suspended_until:
+                dbUser.suspended_until,
         };
 
         next();
+
     } catch (error) {
+
         console.error(
             "Authentication error:",
             error,

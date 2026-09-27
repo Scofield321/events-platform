@@ -48,10 +48,7 @@ async function handleEmailConfirmation() {
         `${url.origin}${url.pathname}`,
       );
 
-      showToast(
-        "Email confirmed successfully! You can now log in.",
-        "success",
-      );
+      showToast("Email confirmed successfully! You can now log in.", "success");
 
       const loginMessage = document.getElementById("loginMessage");
 
@@ -67,31 +64,21 @@ async function handleEmailConfirmation() {
     // Handle errors returned through the URL
     // --------------------------------------------------
 
-    const params = new URLSearchParams(
-      window.location.search,
-    );
+    const params = new URLSearchParams(window.location.search);
 
     const errorDescription = params.get("error_description");
 
     if (errorDescription) {
-      console.error(
-        "Email confirmation error:",
-        errorDescription,
-      );
+      console.error("Email confirmation error:", errorDescription);
 
-      const loginMessage =
-        document.getElementById("loginMessage");
+      const loginMessage = document.getElementById("loginMessage");
 
       if (loginMessage) {
-        loginMessage.textContent =
-          decodeURIComponent(errorDescription);
+        loginMessage.textContent = decodeURIComponent(errorDescription);
       }
     }
   } catch (error) {
-    console.error(
-      "Email confirmation handling error:",
-      error,
-    );
+    console.error("Email confirmation handling error:", error);
   }
 }
 
@@ -323,10 +310,7 @@ if (registerForm) {
   registerForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    const businessName = document
-      .getElementById("businessName")
-      .value
-      .trim();
+    const businessName = document.getElementById("businessName").value.trim();
 
     const email = document.getElementById("email").value.trim();
 
@@ -385,24 +369,21 @@ if (registerForm) {
       // 2. CREATE PROVIDER PROFILE
       // ==================================================
 
-      const response = await fetch(
-        `${API_BASE_URL}/api/providers/register`,
-        {
-          method: "POST",
+      const response = await fetch(`${API_BASE_URL}/api/providers/register`, {
+        method: "POST",
 
-          headers: {
-            "Content-Type": "application/json",
-          },
-
-          body: JSON.stringify({
-            user_id: authUser.id,
-            email: email,
-            phone: phone,
-            business_name: businessName,
-            location: location,
-          }),
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+
+        body: JSON.stringify({
+          user_id: authUser.id,
+          email: email,
+          phone: phone,
+          business_name: businessName,
+          location: location,
+        }),
+      });
 
       const result = await response.json();
 
@@ -456,16 +437,12 @@ if (registerForm) {
       let errorMessage = error.message || "Registration failed.";
 
       // Friendlier Supabase messages
-      if (
-        errorMessage.toLowerCase().includes("user already registered")
-      ) {
+      if (errorMessage.toLowerCase().includes("user already registered")) {
         errorMessage =
           "An account with this email already exists. Please log in instead.";
       }
 
-      if (
-        errorMessage.toLowerCase().includes("password")
-      ) {
+      if (errorMessage.toLowerCase().includes("password")) {
         errorMessage =
           "Your password does not meet the required security requirements.";
       }
@@ -518,11 +495,10 @@ if (loginForm) {
       // 1. AUTHENTICATE WITH SUPABASE
       // ==================================================
 
-      const { data, error } =
-        await supabaseClient.auth.signInWithPassword({
-          email: email,
-          password: password,
-        });
+      const { data, error } = await supabaseClient.auth.signInWithPassword({
+        email: email,
+        password: password,
+      });
 
       if (error) {
         throw error;
@@ -555,6 +531,30 @@ if (loginForm) {
       const result = await response.json();
 
       if (!response.ok) {
+        // --------------------------------------------------
+        // SUSPENDED ACCOUNT
+        // --------------------------------------------------
+
+        if (response.status === 403 && result.status === "SUSPENDED") {
+          const suspension = result.suspension || {};
+
+          let suspensionMessage =
+            result.message ||
+            "Your Bide Hub account has been temporarily suspended.";
+
+          if (suspension.reason) {
+            suspensionMessage += ` Reason: ${suspension.reason}`;
+          }
+
+          if (suspension.suspended_until) {
+            const suspendedUntil = new Date(suspension.suspended_until);
+
+            suspensionMessage += ` Your suspension ends on ${suspendedUntil.toLocaleString()}.`;
+          }
+
+          throw new Error(suspensionMessage);
+        }
+
         throw new Error(
           result.message || "Failed to load your Bide Hub profile.",
         );
@@ -563,9 +563,7 @@ if (loginForm) {
       const user = result.user;
 
       if (!user || !user.role) {
-        throw new Error(
-          "We couldn't determine your Bide Hub account type.",
-        );
+        throw new Error("We couldn't determine your Bide Hub account type.");
       }
 
       console.log("Logged in role:", user.role);
@@ -592,9 +590,7 @@ if (loginForm) {
         return;
       }
 
-      throw new Error(
-        "Your account has an unsupported Bide Hub role.",
-      );
+      throw new Error("Your account has an unsupported Bide Hub role.");
     } catch (error) {
       console.error("Login error:", error);
 
@@ -621,7 +617,7 @@ if (loginForm) {
       }
 
       if (message) {
-        message.textContent = errorMessage;
+        message.innerHTML = errorMessage;
       }
 
       showToast(errorMessage, "error");
@@ -716,6 +712,44 @@ async function loadProviderDashboard() {
     const result = await response.json();
 
     if (!response.ok) {
+      // --------------------------------------------------
+      // SUSPENDED ACCOUNT
+      // --------------------------------------------------
+
+      if (response.status === 403 && result.status === "SUSPENDED") {
+        const suspension = result.suspension || {};
+
+        let suspensionMessage =
+          result.message ||
+          "Your Bide Hub account has been temporarily suspended.";
+
+        if (suspension.reason) {
+          suspensionMessage += ` Reason: ${suspension.reason}`;
+        }
+
+        if (suspension.suspended_until) {
+          const suspendedUntil = new Date(suspension.suspended_until);
+
+          suspensionMessage += ` Your suspension ends on ${suspendedUntil.toLocaleString()}.`;
+        }
+
+        await supabaseClient.auth.signOut();
+
+        showToast(suspensionMessage, "error");
+
+        const loginMessage = document.getElementById("loginMessage");
+
+        if (loginMessage) {
+          loginMessage.textContent = suspensionMessage;
+        }
+
+        setTimeout(() => {
+          window.location.href = "login.html";
+        }, 2500);
+
+        return;
+      }
+
       throw new Error(result.message || "Failed to load profile");
     }
 
