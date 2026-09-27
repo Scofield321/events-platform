@@ -70,10 +70,17 @@ function displayAdminProviders(providers) {
         </p>
 
         <p>
-          Status:
-          <strong>
-            ${isSuspended ? "SUSPENDED" : provider.verification_status}
-          </strong>
+            Account Status:
+            <strong>
+              ${provider.account_status || "UNKNOWN"}
+            </strong>
+          </p>
+
+          <p>
+            Verification:
+            <strong>
+              ${provider.verification_status || "UNVERIFIED"}
+            </strong>
         </p>
 
         ${
@@ -398,19 +405,14 @@ async function toggleVerification(providerId, verificationStatus, button) {
 // SUSPEND SERVICE PROVIDER ACCOUNT
 // ==========================================================
 
-async function suspendProvider(
-  providerId,
-  businessName,
-  button
-) {
-
+async function suspendProvider(providerId, businessName, button) {
   // --------------------------------------------------------
   // Ask admin for suspension reason
   // --------------------------------------------------------
 
   const suspensionReason = prompt(
     `Why are you suspending ${businessName}'s account?\n\n` +
-      `This reason will be shown to the provider.`
+      `This reason will be shown to the provider.`,
   );
 
   if (suspensionReason === null) {
@@ -420,10 +422,7 @@ async function suspendProvider(
   const trimmedReason = suspensionReason.trim();
 
   if (!trimmedReason) {
-    showToast(
-      "A suspension reason is required.",
-      "error"
-    );
+    showToast("A suspension reason is required.", "error");
 
     return;
   }
@@ -434,7 +433,7 @@ async function suspendProvider(
 
   const durationInput = prompt(
     `How many days should ${businessName}'s account be suspended?\n\n` +
-      `Enter a number greater than 0.`
+      `Enter a number greater than 0.`,
   );
 
   if (durationInput === null) {
@@ -443,14 +442,8 @@ async function suspendProvider(
 
   const durationDays = Number(durationInput);
 
-  if (
-    !Number.isInteger(durationDays) ||
-    durationDays <= 0
-  ) {
-    showToast(
-      "Please enter a valid number of suspension days.",
-      "error"
-    );
+  if (!Number.isInteger(durationDays) || durationDays <= 0) {
+    showToast("Please enter a valid number of suspension days.", "error");
 
     return;
   }
@@ -461,9 +454,7 @@ async function suspendProvider(
 
   const suspendedUntil = new Date();
 
-  suspendedUntil.setDate(
-    suspendedUntil.getDate() + durationDays
-  );
+  suspendedUntil.setDate(suspendedUntil.getDate() + durationDays);
 
   // --------------------------------------------------------
   // Final confirmation
@@ -472,10 +463,8 @@ async function suspendProvider(
   const confirmed = confirm(
     `Suspend ${businessName}?\n\n` +
       `Reason: ${trimmedReason}\n\n` +
-      `Duration: ${durationDays} day${
-        durationDays === 1 ? "" : "s"
-      }\n\n` +
-      `Suspension ends: ${suspendedUntil.toLocaleString()}`
+      `Duration: ${durationDays} day${durationDays === 1 ? "" : "s"}\n\n` +
+      `Suspension ends: ${suspendedUntil.toLocaleString()}`,
   );
 
   if (!confirmed) {
@@ -483,7 +472,6 @@ async function suspendProvider(
   }
 
   try {
-
     // ------------------------------------------------------
     // Get current session
     // ------------------------------------------------------
@@ -507,10 +495,7 @@ async function suspendProvider(
     // ------------------------------------------------------
 
     if (button) {
-      setButtonLoading(
-        button,
-        "Suspending..."
-      );
+      setButtonLoading(button, "Suspending...");
     }
 
     // ------------------------------------------------------
@@ -530,41 +515,29 @@ async function suspendProvider(
 
         body: JSON.stringify({
           suspension_reason: trimmedReason,
-          suspended_until:
-            suspendedUntil.toISOString(),
+          suspended_until: suspendedUntil.toISOString(),
         }),
-      }
+      },
     );
 
     // ------------------------------------------------------
     // Safely process response
     // ------------------------------------------------------
 
-    const contentType =
-      response.headers.get("content-type") || "";
+    const contentType = response.headers.get("content-type") || "";
 
     let result;
 
-    if (
-      contentType.includes(
-        "application/json"
-      )
-    ) {
+    if (contentType.includes("application/json")) {
       result = await response.json();
     } else {
       const text = await response.text();
 
-      throw new Error(
-        text ||
-          "Server returned an unexpected response."
-      );
+      throw new Error(text || "Server returned an unexpected response.");
     }
 
     if (!response.ok) {
-      throw new Error(
-        result.message ||
-          "Failed to suspend provider"
-      );
+      throw new Error(result.message || "Failed to suspend provider");
     }
 
     // ------------------------------------------------------
@@ -572,28 +545,16 @@ async function suspendProvider(
     // ------------------------------------------------------
 
     showToast(
-      result.message ||
-        "Provider account suspended successfully.",
-      "success"
+      result.message || "Provider account suspended successfully.",
+      "success",
     );
 
     await loadAdminProviders();
-
   } catch (error) {
+    console.error("Suspend provider error:", error);
 
-    console.error(
-      "Suspend provider error:",
-      error
-    );
-
-    showToast(
-      error.message ||
-        "Failed to suspend provider.",
-      "error"
-    );
-
+    showToast(error.message || "Failed to suspend provider.", "error");
   } finally {
-
     // ------------------------------------------------------
     // Restore button
     // ------------------------------------------------------
@@ -608,14 +569,8 @@ async function suspendProvider(
 // ACTIVATE SUSPENDED ACCOUNT
 // ==========================================================
 
-async function activateProvider(
-  providerId,
-  businessName,
-  button
-) {
-  const confirmed = confirm(
-    `Activate ${businessName}'s account?`
-  );
+async function activateProvider(providerId, businessName, button) {
+  const confirmed = confirm(`Activate ${businessName}'s account?`);
 
   if (!confirmed) {
     return;
@@ -645,10 +600,7 @@ async function activateProvider(
     // ------------------------------------------------------
 
     if (button) {
-      setButtonLoading(
-        button,
-        "Activating..."
-      );
+      setButtonLoading(button, "Activating...");
     }
 
     // ------------------------------------------------------
@@ -663,38 +615,27 @@ async function activateProvider(
         headers: {
           Authorization: `Bearer ${session.access_token}`,
         },
-      }
+      },
     );
 
     // ------------------------------------------------------
     // Safely process response
     // ------------------------------------------------------
 
-    const contentType =
-      response.headers.get("content-type") || "";
+    const contentType = response.headers.get("content-type") || "";
 
     let result;
 
-    if (
-      contentType.includes(
-        "application/json"
-      )
-    ) {
+    if (contentType.includes("application/json")) {
       result = await response.json();
     } else {
       const text = await response.text();
 
-      throw new Error(
-        text ||
-          "Server returned an unexpected response."
-      );
+      throw new Error(text || "Server returned an unexpected response.");
     }
 
     if (!response.ok) {
-      throw new Error(
-        result.message ||
-          "Failed to activate provider"
-      );
+      throw new Error(result.message || "Failed to activate provider");
     }
 
     // ------------------------------------------------------
@@ -702,28 +643,16 @@ async function activateProvider(
     // ------------------------------------------------------
 
     showToast(
-      result.message ||
-        "Provider account activated successfully.",
-      "success"
+      result.message || "Provider account activated successfully.",
+      "success",
     );
 
     await loadAdminProviders();
-
   } catch (error) {
+    console.error("Activate provider error:", error);
 
-    console.error(
-      "Activate provider error:",
-      error
-    );
-
-    showToast(
-      error.message ||
-        "Failed to activate provider.",
-      "error"
-    );
-
+    showToast(error.message || "Failed to activate provider.", "error");
   } finally {
-
     // ------------------------------------------------------
     // Restore button
     // ------------------------------------------------------
@@ -738,15 +667,11 @@ async function activateProvider(
 // DELETE ACCOUNT FOR SERVICE PROVIDER
 // ==========================================================
 
-async function deleteProvider(
-  providerId,
-  businessName,
-  button
-) {
+async function deleteProvider(providerId, businessName, button) {
   const confirmed = confirm(
     `PERMANENTLY DELETE ${businessName}?\n\n` +
       `This will remove the provider profile, reviews, services, media and account data.\n\n` +
-      `This action cannot be undone.`
+      `This action cannot be undone.`,
   );
 
   if (!confirmed) {
@@ -777,10 +702,7 @@ async function deleteProvider(
     // ------------------------------------------------------
 
     if (button) {
-      setButtonLoading(
-        button,
-        "Deleting..."
-      );
+      setButtonLoading(button, "Deleting...");
     }
 
     // ------------------------------------------------------
@@ -795,38 +717,27 @@ async function deleteProvider(
         headers: {
           Authorization: `Bearer ${session.access_token}`,
         },
-      }
+      },
     );
 
     // ------------------------------------------------------
     // Safely process response
     // ------------------------------------------------------
 
-    const contentType =
-      response.headers.get("content-type") || "";
+    const contentType = response.headers.get("content-type") || "";
 
     let result;
 
-    if (
-      contentType.includes(
-        "application/json"
-      )
-    ) {
+    if (contentType.includes("application/json")) {
       result = await response.json();
     } else {
       const text = await response.text();
 
-      throw new Error(
-        text ||
-          "Server returned an unexpected response."
-      );
+      throw new Error(text || "Server returned an unexpected response.");
     }
 
     if (!response.ok) {
-      throw new Error(
-        result.message ||
-          "Failed to delete provider"
-      );
+      throw new Error(result.message || "Failed to delete provider");
     }
 
     // ------------------------------------------------------
@@ -834,28 +745,16 @@ async function deleteProvider(
     // ------------------------------------------------------
 
     showToast(
-      result.message ||
-        "Provider account deleted successfully.",
-      "success"
+      result.message || "Provider account deleted successfully.",
+      "success",
     );
 
     await loadAdminProviders();
-
   } catch (error) {
+    console.error("Delete provider error:", error);
 
-    console.error(
-      "Delete provider error:",
-      error
-    );
-
-    showToast(
-      error.message ||
-        "Failed to delete provider.",
-      "error"
-    );
-
+    showToast(error.message || "Failed to delete provider.", "error");
   } finally {
-
     // ------------------------------------------------------
     // Restore button
     // ------------------------------------------------------
