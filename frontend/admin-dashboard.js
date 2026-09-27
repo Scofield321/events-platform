@@ -114,7 +114,8 @@ function displayAdminProviders(providers) {
                 class="admin-action-button admin-suspend-button"
                 onclick="suspendProvider(
                   '${provider.id}',
-                  '${provider.business_name}'
+                  '${provider.business_name}',
+                  this
                 )"
               >
                 Suspend Account
@@ -125,7 +126,8 @@ function displayAdminProviders(providers) {
                 class="admin-action-button admin-activate-button"
                 onclick="activateProvider(
                   '${provider.id}',
-                  '${provider.business_name}'
+                  '${provider.business_name}',
+                  this
                 )"
               >
                 Activate Account
@@ -137,7 +139,8 @@ function displayAdminProviders(providers) {
           class="admin-action-button admin-danger-button"
           onclick="deleteProvider(
             '${provider.id}',
-            '${provider.business_name}'
+            '${provider.business_name}',
+            this
           )"
         >
           Delete Account
@@ -391,7 +394,15 @@ async function toggleVerification(providerId, verificationStatus, button) {
 // SUSPEND SERVICE PROVIDER ACCOUNT
 // ==========================================================
 
-async function suspendProvider(providerId, businessName) {
+// ==========================================================
+// SUSPEND SERVICE PROVIDER ACCOUNT
+// ==========================================================
+
+async function suspendProvider(
+  providerId,
+  businessName,
+  button
+) {
 
   // --------------------------------------------------------
   // Ask admin for suspension reason
@@ -409,7 +420,11 @@ async function suspendProvider(providerId, businessName) {
   const trimmedReason = suspensionReason.trim();
 
   if (!trimmedReason) {
-    showToast("A suspension reason is required.", "error");
+    showToast(
+      "A suspension reason is required.",
+      "error"
+    );
+
     return;
   }
 
@@ -488,6 +503,17 @@ async function suspendProvider(providerId, businessName) {
     }
 
     // ------------------------------------------------------
+    // Show loading state
+    // ------------------------------------------------------
+
+    if (button) {
+      setButtonLoading(
+        button,
+        "Suspending..."
+      );
+    }
+
+    // ------------------------------------------------------
     // Send suspension request
     // ------------------------------------------------------
 
@@ -504,7 +530,8 @@ async function suspendProvider(providerId, businessName) {
 
         body: JSON.stringify({
           suspension_reason: trimmedReason,
-          suspended_until: suspendedUntil.toISOString(),
+          suspended_until:
+            suspendedUntil.toISOString(),
         }),
       }
     );
@@ -518,13 +545,18 @@ async function suspendProvider(providerId, businessName) {
 
     let result;
 
-    if (contentType.includes("application/json")) {
+    if (
+      contentType.includes(
+        "application/json"
+      )
+    ) {
       result = await response.json();
     } else {
       const text = await response.text();
 
       throw new Error(
-        text || "Server returned an unexpected response."
+        text ||
+          "Server returned an unexpected response."
       );
     }
 
@@ -559,19 +591,41 @@ async function suspendProvider(providerId, businessName) {
         "Failed to suspend provider.",
       "error"
     );
+
+  } finally {
+
+    // ------------------------------------------------------
+    // Restore button
+    // ------------------------------------------------------
+
+    if (button) {
+      resetButtonLoading(button);
+    }
   }
 }
 
+// ==========================================================
 // ACTIVATE SUSPENDED ACCOUNT
+// ==========================================================
 
-async function activateProvider(providerId, businessName) {
-  const confirmed = confirm(`Activate ${businessName}'s account?`);
+async function activateProvider(
+  providerId,
+  businessName,
+  button
+) {
+  const confirmed = confirm(
+    `Activate ${businessName}'s account?`
+  );
 
   if (!confirmed) {
     return;
   }
 
   try {
+    // ------------------------------------------------------
+    // Get current session
+    // ------------------------------------------------------
+
     const {
       data: { session },
       error,
@@ -585,6 +639,21 @@ async function activateProvider(providerId, businessName) {
       window.location.href = "login.html";
       return;
     }
+
+    // ------------------------------------------------------
+    // Show loading state
+    // ------------------------------------------------------
+
+    if (button) {
+      setButtonLoading(
+        button,
+        "Activating..."
+      );
+    }
+
+    // ------------------------------------------------------
+    // Send activation request
+    // ------------------------------------------------------
 
     const response = await fetch(
       `${API_BASE_URL}/api/admin/providers/${providerId}/activate`,
@@ -594,32 +663,90 @@ async function activateProvider(providerId, businessName) {
         headers: {
           Authorization: `Bearer ${session.access_token}`,
         },
-      },
+      }
     );
 
-    const result = await response.json();
+    // ------------------------------------------------------
+    // Safely process response
+    // ------------------------------------------------------
 
-    if (!response.ok) {
-      throw new Error(result.message || "Failed to activate provider");
+    const contentType =
+      response.headers.get("content-type") || "";
+
+    let result;
+
+    if (
+      contentType.includes(
+        "application/json"
+      )
+    ) {
+      result = await response.json();
+    } else {
+      const text = await response.text();
+
+      throw new Error(
+        text ||
+          "Server returned an unexpected response."
+      );
     }
 
-    showToast(result.message, "success");
+    if (!response.ok) {
+      throw new Error(
+        result.message ||
+          "Failed to activate provider"
+      );
+    }
+
+    // ------------------------------------------------------
+    // Success
+    // ------------------------------------------------------
+
+    showToast(
+      result.message ||
+        "Provider account activated successfully.",
+      "success"
+    );
 
     await loadAdminProviders();
-  } catch (error) {
-    console.error("Activate provider error:", error);
 
-    showToast(error.message, "error");
+  } catch (error) {
+
+    console.error(
+      "Activate provider error:",
+      error
+    );
+
+    showToast(
+      error.message ||
+        "Failed to activate provider.",
+      "error"
+    );
+
+  } finally {
+
+    // ------------------------------------------------------
+    // Restore button
+    // ------------------------------------------------------
+
+    if (button) {
+      resetButtonLoading(button);
+    }
   }
 }
 
+// ==========================================================
 // DELETE ACCOUNT FOR SERVICE PROVIDER
+// ==========================================================
 
-async function deleteProvider(providerId, businessName) {
+async function deleteProvider(
+  providerId,
+  businessName,
+  button
+) {
   const confirmed = confirm(
     `PERMANENTLY DELETE ${businessName}?\n\n` +
       `This will remove the provider profile, reviews, services, media and account data.\n\n` +
-      `This action cannot be undone.`,
+      `This action cannot be undone.`
   );
 
   if (!confirmed) {
@@ -627,6 +754,10 @@ async function deleteProvider(providerId, businessName) {
   }
 
   try {
+    // ------------------------------------------------------
+    // Get current session
+    // ------------------------------------------------------
+
     const {
       data: { session },
       error,
@@ -641,6 +772,21 @@ async function deleteProvider(providerId, businessName) {
       return;
     }
 
+    // ------------------------------------------------------
+    // Show loading state
+    // ------------------------------------------------------
+
+    if (button) {
+      setButtonLoading(
+        button,
+        "Deleting..."
+      );
+    }
+
+    // ------------------------------------------------------
+    // Delete provider
+    // ------------------------------------------------------
+
     const response = await fetch(
       `${API_BASE_URL}/api/admin/providers/${providerId}`,
       {
@@ -649,22 +795,74 @@ async function deleteProvider(providerId, businessName) {
         headers: {
           Authorization: `Bearer ${session.access_token}`,
         },
-      },
+      }
     );
 
-    const result = await response.json();
+    // ------------------------------------------------------
+    // Safely process response
+    // ------------------------------------------------------
 
-    if (!response.ok) {
-      throw new Error(result.message || "Failed to delete provider");
+    const contentType =
+      response.headers.get("content-type") || "";
+
+    let result;
+
+    if (
+      contentType.includes(
+        "application/json"
+      )
+    ) {
+      result = await response.json();
+    } else {
+      const text = await response.text();
+
+      throw new Error(
+        text ||
+          "Server returned an unexpected response."
+      );
     }
 
-    showToast(result.message, "success");
+    if (!response.ok) {
+      throw new Error(
+        result.message ||
+          "Failed to delete provider"
+      );
+    }
+
+    // ------------------------------------------------------
+    // Success
+    // ------------------------------------------------------
+
+    showToast(
+      result.message ||
+        "Provider account deleted successfully.",
+      "success"
+    );
 
     await loadAdminProviders();
-  } catch (error) {
-    console.error("Delete provider error:", error);
 
-    showToast(error.message, "error");
+  } catch (error) {
+
+    console.error(
+      "Delete provider error:",
+      error
+    );
+
+    showToast(
+      error.message ||
+        "Failed to delete provider.",
+      "error"
+    );
+
+  } finally {
+
+    // ------------------------------------------------------
+    // Restore button
+    // ------------------------------------------------------
+
+    if (button) {
+      resetButtonLoading(button);
+    }
   }
 }
 
