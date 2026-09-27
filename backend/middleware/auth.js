@@ -22,7 +22,7 @@ async function authenticateUser(req, res, next) {
         }
 
         // --------------------------------------------------
-        // Verify Supabase authentication token
+        // VERIFY SUPABASE AUTHENTICATION TOKEN
         // --------------------------------------------------
 
         const {
@@ -38,7 +38,7 @@ async function authenticateUser(req, res, next) {
         }
 
         // --------------------------------------------------
-        // Get Bide Hub account information
+        // GET BIDE HUB ACCOUNT INFORMATION
         // --------------------------------------------------
 
         const result = await pool.query(
@@ -65,20 +65,34 @@ async function authenticateUser(req, res, next) {
         const dbUser = result.rows[0];
 
         // --------------------------------------------------
-        // Check suspended account
+        // HANDLE SUSPENDED ACCOUNTS
+        // --------------------------------------------------
+        //
+        // IMPORTANT:
+        //
+        // ADMIN accounts are allowed through even if their
+        // account status is SUSPENDED.
+        //
+        // This prevents the administrator from locking
+        // themselves out of the admin dashboard.
+        //
+        // Suspended PROVIDERS and other non-admin users
+        // remain blocked.
         // --------------------------------------------------
 
-        if (dbUser.status === "SUSPENDED") {
+        if (
+            dbUser.status === "SUSPENDED" &&
+            dbUser.role !== "ADMIN"
+        ) {
 
             // --------------------------------------------------
-            // Suspension has expired
+            // SUSPENSION HAS EXPIRED
             // --------------------------------------------------
 
             if (
                 dbUser.suspended_until &&
                 new Date(dbUser.suspended_until) <= new Date()
             ) {
-
                 await pool.query(
                     `
                     UPDATE users
@@ -101,7 +115,7 @@ async function authenticateUser(req, res, next) {
             } else {
 
                 // --------------------------------------------------
-                // Suspension is still active
+                // SUSPENSION IS STILL ACTIVE
                 // --------------------------------------------------
 
                 return res.status(403).json({
@@ -123,7 +137,7 @@ async function authenticateUser(req, res, next) {
         }
 
         // --------------------------------------------------
-        // Attach authenticated user + DB information
+        // ATTACH AUTHENTICATED USER + DATABASE INFORMATION
         // --------------------------------------------------
 
         req.user = {
@@ -143,7 +157,6 @@ async function authenticateUser(req, res, next) {
         next();
 
     } catch (error) {
-
         console.error(
             "Authentication error:",
             error,

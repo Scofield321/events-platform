@@ -476,12 +476,17 @@ router.put(
         const providerId = req.params.id;
 
         try {
+            // --------------------------------------------------
+            // Find provider
+            // --------------------------------------------------
+
             const providerResult = await pool.query(
                 `
                 SELECT
                     sp.id,
                     sp.business_name,
-                    sp.user_id
+                    sp.user_id,
+                    u.status AS current_status
 
                 FROM service_providers sp
 
@@ -502,7 +507,13 @@ router.put(
 
             const provider = providerResult.rows[0];
 
-            await pool.query(
+            // --------------------------------------------------
+            // ADMIN OVERRIDE
+            // Reactivate account immediately
+            // regardless of suspended_until date
+            // --------------------------------------------------
+
+            const activationResult = await pool.query(
                 `
                 UPDATE users
 
@@ -513,23 +524,66 @@ router.put(
                     updated_at = NOW()
 
                 WHERE id = $1
+
+                RETURNING
+                    id,
+                    status,
+                    suspension_reason,
+                    suspended_until,
+                    updated_at
                 `,
                 [provider.user_id],
             );
+
+            if (activationResult.rows.length === 0) {
+                return res.status(500).json({
+                    status: "ERROR",
+                    message:
+                        "Provider account could not be activated.",
+                });
+            }
+
+            const activatedAccount =
+                activationResult.rows[0];
+
+            // --------------------------------------------------
+            // Confirm activation actually happened
+            // --------------------------------------------------
+
+            if (activatedAccount.status !== "ACTIVE") {
+                return res.status(500).json({
+                    status: "ERROR",
+                    message:
+                        "Account activation was not completed.",
+                });
+            }
+
+            // --------------------------------------------------
+            // Success
+            // --------------------------------------------------
 
             res.json({
                 status: "OK",
 
                 message:
-                    "Provider account activated successfully",
+                    "Provider account activated successfully by admin.",
 
                 provider: {
                     id: provider.id,
                     business_name: provider.business_name,
-                    account_status: "ACTIVE",
+                    previous_status:
+                        provider.current_status,
+                    account_status:
+                        activatedAccount.status,
+                    suspension_reason:
+                        activatedAccount.suspension_reason,
+                    suspended_until:
+                        activatedAccount.suspended_until,
                 },
             });
+
         } catch (error) {
+
             console.error(
                 "Provider activation error:",
                 error,
