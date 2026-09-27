@@ -466,7 +466,6 @@ router.put(
 
 // ==========================================================
 // ACTIVATE PROVIDER
-// ADMIN OVERRIDE
 // ==========================================================
 
 router.put(
@@ -477,19 +476,12 @@ router.put(
         const providerId = req.params.id;
 
         try {
-            // --------------------------------------------------
-            // Find provider
-            // --------------------------------------------------
-
             const providerResult = await pool.query(
                 `
                 SELECT
                     sp.id,
                     sp.business_name,
-                    sp.user_id,
-                    u.status AS account_status,
-                    u.suspension_reason,
-                    u.suspended_until
+                    sp.user_id
 
                 FROM service_providers sp
 
@@ -498,7 +490,7 @@ router.put(
 
                 WHERE sp.id = $1
                 `,
-                [providerId]
+                [providerId],
             );
 
             if (providerResult.rows.length === 0) {
@@ -510,15 +502,7 @@ router.put(
 
             const provider = providerResult.rows[0];
 
-            // --------------------------------------------------
-            // ADMIN OVERRIDE
-            //
-            // We deliberately do NOT check suspended_until.
-            // The administrator is allowed to activate the
-            // account before the scheduled suspension expiry.
-            // --------------------------------------------------
-
-            const activationResult = await pool.query(
+            await pool.query(
                 `
                 UPDATE users
 
@@ -529,69 +513,35 @@ router.put(
                     updated_at = NOW()
 
                 WHERE id = $1
-
-                RETURNING
-                    id,
-                    status,
-                    suspension_reason,
-                    suspended_until,
-                    updated_at
                 `,
-                [provider.user_id]
+                [provider.user_id],
             );
-
-            if (activationResult.rows.length === 0) {
-                return res.status(500).json({
-                    status: "ERROR",
-                    message:
-                        "Provider account could not be activated.",
-                });
-            }
-
-            const activatedUser = activationResult.rows[0];
-
-            // --------------------------------------------------
-            // Confirm activation
-            // --------------------------------------------------
-
-            if (activatedUser.status !== "ACTIVE") {
-                return res.status(500).json({
-                    status: "ERROR",
-                    message:
-                        "Provider account activation could not be confirmed.",
-                });
-            }
 
             res.json({
                 status: "OK",
 
                 message:
-                    "Provider account activated successfully by administrator.",
+                    "Provider account activated successfully",
 
                 provider: {
                     id: provider.id,
                     business_name: provider.business_name,
-                    account_status: activatedUser.status,
-                    suspension_reason:
-                        activatedUser.suspension_reason,
-                    suspended_until:
-                        activatedUser.suspended_until,
+                    account_status: "ACTIVE",
                 },
             });
-
         } catch (error) {
             console.error(
                 "Provider activation error:",
-                error
+                error,
             );
 
             res.status(500).json({
                 status: "ERROR",
                 message:
-                    "Failed to activate provider account.",
+                    "Failed to activate provider account",
             });
         }
-    }
+    },
 );
 
 // ==========================================================
