@@ -387,11 +387,80 @@ async function toggleVerification(providerId, verificationStatus, button) {
   }
 }
 
+// ==========================================================
 // SUSPEND SERVICE PROVIDER ACCOUNT
+// ==========================================================
+
 async function suspendProvider(providerId, businessName) {
+
+  // --------------------------------------------------------
+  // Ask admin for suspension reason
+  // --------------------------------------------------------
+
+  const suspensionReason = prompt(
+    `Why are you suspending ${businessName}'s account?\n\n` +
+      `This reason will be shown to the provider.`
+  );
+
+  if (suspensionReason === null) {
+    return;
+  }
+
+  const trimmedReason = suspensionReason.trim();
+
+  if (!trimmedReason) {
+    showToast("A suspension reason is required.", "error");
+    return;
+  }
+
+  // --------------------------------------------------------
+  // Ask admin for suspension duration
+  // --------------------------------------------------------
+
+  const durationInput = prompt(
+    `How many days should ${businessName}'s account be suspended?\n\n` +
+      `Enter a number greater than 0.`
+  );
+
+  if (durationInput === null) {
+    return;
+  }
+
+  const durationDays = Number(durationInput);
+
+  if (
+    !Number.isInteger(durationDays) ||
+    durationDays <= 0
+  ) {
+    showToast(
+      "Please enter a valid number of suspension days.",
+      "error"
+    );
+
+    return;
+  }
+
+  // --------------------------------------------------------
+  // Calculate suspension end date
+  // --------------------------------------------------------
+
+  const suspendedUntil = new Date();
+
+  suspendedUntil.setDate(
+    suspendedUntil.getDate() + durationDays
+  );
+
+  // --------------------------------------------------------
+  // Final confirmation
+  // --------------------------------------------------------
+
   const confirmed = confirm(
-    `Are you sure you want to suspend ${businessName}?\n\n` +
-      `The provider will no longer be able to use their Bide Hub account.`,
+    `Suspend ${businessName}?\n\n` +
+      `Reason: ${trimmedReason}\n\n` +
+      `Duration: ${durationDays} day${
+        durationDays === 1 ? "" : "s"
+      }\n\n` +
+      `Suspension ends: ${suspendedUntil.toLocaleString()}`
   );
 
   if (!confirmed) {
@@ -399,6 +468,11 @@ async function suspendProvider(providerId, businessName) {
   }
 
   try {
+
+    // ------------------------------------------------------
+    // Get current session
+    // ------------------------------------------------------
+
     const {
       data: { session },
       error,
@@ -413,30 +487,78 @@ async function suspendProvider(providerId, businessName) {
       return;
     }
 
+    // ------------------------------------------------------
+    // Send suspension request
+    // ------------------------------------------------------
+
     const response = await fetch(
       `${API_BASE_URL}/api/admin/providers/${providerId}/suspend`,
       {
         method: "PUT",
 
         headers: {
+          "Content-Type": "application/json",
+
           Authorization: `Bearer ${session.access_token}`,
         },
-      },
+
+        body: JSON.stringify({
+          suspension_reason: trimmedReason,
+          suspended_until: suspendedUntil.toISOString(),
+        }),
+      }
     );
 
-    const result = await response.json();
+    // ------------------------------------------------------
+    // Safely process response
+    // ------------------------------------------------------
 
-    if (!response.ok) {
-      throw new Error(result.message || "Failed to suspend provider");
+    const contentType =
+      response.headers.get("content-type") || "";
+
+    let result;
+
+    if (contentType.includes("application/json")) {
+      result = await response.json();
+    } else {
+      const text = await response.text();
+
+      throw new Error(
+        text || "Server returned an unexpected response."
+      );
     }
 
-    showToast(result.message, "success");
+    if (!response.ok) {
+      throw new Error(
+        result.message ||
+          "Failed to suspend provider"
+      );
+    }
+
+    // ------------------------------------------------------
+    // Success
+    // ------------------------------------------------------
+
+    showToast(
+      result.message ||
+        "Provider account suspended successfully.",
+      "success"
+    );
 
     await loadAdminProviders();
-  } catch (error) {
-    console.error("Suspend provider error:", error);
 
-    showToast(error.message, "error");
+  } catch (error) {
+
+    console.error(
+      "Suspend provider error:",
+      error
+    );
+
+    showToast(
+      error.message ||
+        "Failed to suspend provider.",
+      "error"
+    );
   }
 }
 

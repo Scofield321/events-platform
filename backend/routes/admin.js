@@ -337,7 +337,7 @@ router.put(
         const {
             suspension_reason,
             suspended_until,
-        } = req.body;
+        } = req.body || {};
 
         // --------------------------------------------------
         // Validate reason
