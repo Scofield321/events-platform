@@ -14,7 +14,7 @@ async function loadAdminProviders() {
       return;
     }
 
-    const response = await fetch(`${API_BASE_URL}/api/providers`, {
+    const response = await fetch(`${API_BASE_URL}/api/admin/providers`, {
       headers: {
         Authorization: `Bearer ${session.access_token}`,
       },

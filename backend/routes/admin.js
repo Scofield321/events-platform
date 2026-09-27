@@ -8,7 +8,101 @@ const authenticateUser = require("../middleware/auth");
 const requireAdmin = require("../middleware/admin");
 const requireClient = require("../middleware/client");
 
-const calculateReliabilityScore = require("../utils/reputation");
+// ==========================================================
+// GET ALL PROVIDERS FOR ADMIN DASHBOARD
+// ==========================================================
+
+router.get(
+    "/admin/providers",
+    authenticateUser,
+    requireAdmin,
+    async (req, res) => {
+        try {
+            const providerResult = await pool.query(
+                `
+                SELECT
+                    sp.id,
+                    sp.user_id,
+                    sp.business_name,
+                    sp.description,
+                    sp.location,
+                    sp.address,
+                    sp.website_url,
+                    sp.whatsapp_number,
+                    sp.instagram_url,
+                    sp.facebook_url,
+                    sp.tiktok_url,
+                    sp.youtube_url,
+                    sp.profile_image_url,
+
+                    u.phone,
+                    u.email,
+                    u.status AS account_status,
+                    u.suspension_reason,
+                    u.suspended_until,
+
+                    sp.average_rating,
+                    sp.review_count,
+                    sp.verification_status,
+                    sp.verified_at
+
+                FROM service_providers sp
+
+                JOIN users u
+                    ON u.id = sp.user_id
+
+                ORDER BY sp.business_name
+                `,
+            );
+
+            // Load services for each provider
+            for (const provider of providerResult.rows) {
+                const servicesResult = await pool.query(
+                    `
+                    SELECT
+                        s.id,
+                        s.name,
+                        s.description,
+                        c.id AS category_id,
+                        c.name AS category_name
+
+                    FROM provider_services ps
+
+                    JOIN services s
+                        ON s.id = ps.service_id
+
+                    JOIN categories c
+                        ON c.id = s.category_id
+
+                    WHERE ps.provider_id = $1
+                        AND s.status = 'ACTIVE'
+                        AND c.status = 'ACTIVE'
+
+                    ORDER BY c.name, s.name
+                    `,
+                    [provider.id],
+                );
+
+                provider.services = servicesResult.rows;
+            }
+
+            res.json({
+                status: "OK",
+                providers: providerResult.rows,
+            });
+        } catch (error) {
+            console.error(
+                "Admin providers error:",
+                error,
+            );
+
+            res.status(500).json({
+                status: "ERROR",
+                message: "Failed to load admin providers",
+            });
+        }
+    },
+);
 
 // ==========================================================
 // GET PROVIDER DETAILS
@@ -42,10 +136,11 @@ router.get(
                     u.phone,
                     u.email,
                     u.status AS account_status,
+                    u.suspension_reason,
+                    u.suspended_until,
 
                     sp.average_rating,
                     sp.review_count,
-                    sp.reliability_score,
                     sp.verification_status,
                     sp.verified_at
 
@@ -173,15 +268,13 @@ router.put(
                 UPDATE service_providers
 
                 SET
-                    verification_status = $1::VARCHAR,
-
+                    verification_status = $1,
                     verified_at =
                         CASE
-                            WHEN $1::VARCHAR = 'VERIFIED'
+                            WHEN $1 = 'VERIFIED'
                             THEN NOW()
                             ELSE NULL
                         END,
-
                     updated_at = NOW()
 
                 WHERE id = $2
@@ -202,10 +295,8 @@ router.put(
                 });
             }
 
-            // Recalculate reliability because verification
-            // contributes to the provider reliability score.
-            const reliabilityScore =
-                await calculateReliabilityScore(providerId);
+            // Reliability calculation intentionally removed.
+            // We are not using reliability scoring for now.
 
             res.json({
                 status: "OK",
@@ -216,8 +307,6 @@ router.put(
                         : "Provider verification removed",
 
                 provider: result.rows[0],
-
-                reliability_score: reliabilityScore,
             });
         } catch (error) {
             console.error(
@@ -244,6 +333,56 @@ router.put(
     requireAdmin,
     async (req, res) => {
         const providerId = req.params.id;
+
+        const {
+            suspension_reason,
+            suspended_until,
+        } = req.body;
+
+        // --------------------------------------------------
+        // Validate reason
+        // --------------------------------------------------
+
+        if (
+            !suspension_reason ||
+            !suspension_reason.trim()
+        ) {
+            return res.status(400).json({
+                status: "ERROR",
+                message:
+                    "A suspension reason is required.",
+            });
+        }
+
+        // --------------------------------------------------
+        // Validate suspension date
+        // --------------------------------------------------
+
+        if (!suspended_until) {
+            return res.status(400).json({
+                status: "ERROR",
+                message:
+                    "A suspension end date is required.",
+            });
+        }
+
+        const suspensionDate = new Date(suspended_until);
+
+        if (Number.isNaN(suspensionDate.getTime())) {
+            return res.status(400).json({
+                status: "ERROR",
+                message:
+                    "Invalid suspension end date.",
+            });
+        }
+
+        if (suspensionDate <= new Date()) {
+            return res.status(400).json({
+                status: "ERROR",
+                message:
+                    "Suspension end date must be in the future.",
+            });
+        }
 
         try {
             const providerResult = await pool.query(
@@ -272,17 +411,27 @@ router.put(
 
             const provider = providerResult.rows[0];
 
+            // --------------------------------------------------
+            // Suspend account
+            // --------------------------------------------------
+
             await pool.query(
                 `
                 UPDATE users
 
                 SET
                     status = 'SUSPENDED',
+                    suspension_reason = $1,
+                    suspended_until = $2,
                     updated_at = NOW()
 
-                WHERE id = $1
+                WHERE id = $3
                 `,
-                [provider.user_id],
+                [
+                    suspension_reason.trim(),
+                    suspensionDate,
+                    provider.user_id,
+                ],
             );
 
             res.json({
@@ -295,6 +444,10 @@ router.put(
                     id: provider.id,
                     business_name: provider.business_name,
                     account_status: "SUSPENDED",
+                    suspension_reason:
+                        suspension_reason.trim(),
+                    suspended_until:
+                        suspensionDate.toISOString(),
                 },
             });
         } catch (error) {
@@ -356,6 +509,8 @@ router.put(
 
                 SET
                     status = 'ACTIVE',
+                    suspension_reason = NULL,
+                    suspended_until = NULL,
                     updated_at = NOW()
 
                 WHERE id = $1
@@ -402,10 +557,6 @@ router.delete(
         const providerId = req.params.id;
 
         try {
-            // --------------------------------------------------
-            // 1. Find provider and linked user
-            // --------------------------------------------------
-
             const providerResult = await pool.query(
                 `
                 SELECT
@@ -434,7 +585,7 @@ router.delete(
             const provider = providerResult.rows[0];
 
             // --------------------------------------------------
-            // 2. Delete Supabase Auth account
+            // Delete Supabase Auth account
             // --------------------------------------------------
 
             const {
@@ -457,7 +608,7 @@ router.delete(
             }
 
             // --------------------------------------------------
-            // 3. Delete application database records
+            // Delete application database records
             // --------------------------------------------------
 
             const client = await pool.connect();
@@ -465,7 +616,6 @@ router.delete(
             try {
                 await client.query("BEGIN");
 
-                // Reviews belonging to this provider.
                 await client.query(
                     `
                     DELETE FROM reviews
@@ -474,7 +624,6 @@ router.delete(
                     [providerId],
                 );
 
-                // Provider services.
                 await client.query(
                     `
                     DELETE FROM provider_services
@@ -483,7 +632,6 @@ router.delete(
                     [providerId],
                 );
 
-                // Provider media records.
                 await client.query(
                     `
                     DELETE FROM provider_media
@@ -492,7 +640,6 @@ router.delete(
                     [providerId],
                 );
 
-                // Provider profile.
                 await client.query(
                     `
                     DELETE FROM service_providers
@@ -501,7 +648,6 @@ router.delete(
                     [providerId],
                 );
 
-                // Local application user record.
                 await client.query(
                     `
                     DELETE FROM users
