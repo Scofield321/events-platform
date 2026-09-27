@@ -268,6 +268,7 @@ router.get("/providers/:id", async (req, res) => {
             JOIN users u
                 ON u.id = sp.user_id
             WHERE sp.id = $1
+            AND u.status = 'ACTIVE'
             `,
             [providerId],
         );

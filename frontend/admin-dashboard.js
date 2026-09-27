@@ -38,7 +38,6 @@ async function loadAdminProviders() {
 
 function displayAdminProviders(providers) {
   const container = document.getElementById("adminProvidersList");
-
   const message = document.getElementById("adminMessage");
 
   container.innerHTML = "";
@@ -55,51 +54,103 @@ function displayAdminProviders(providers) {
 
     card.className = "admin-provider-card";
 
-    const isVerified = provider.verification_status === "VERIFIED";
+    const isVerified =
+      provider.verification_status === "VERIFIED";
+
+    const isSuspended =
+      provider.account_status === "SUSPENDED";
 
     card.innerHTML = `
-            <div>
-                <h3>
-                    ${provider.business_name}
-                </h3>
+      <div>
+        <h3>
+          ${provider.business_name}
+        </h3>
 
-                <p>
-                    📍
-                    ${provider.location || "Location not provided"}
-                </p>
+        <p>
+          📍
+          ${provider.location || "Location not provided"}
+        </p>
 
-                <p>
-                    Status:
-                    <strong>
-                        ${provider.verification_status}
-                    </strong>
-                </p>
-            </div>
+        <p>
+          Status:
+          <strong>
+            ${isSuspended ? "SUSPENDED" : provider.verification_status}
+          </strong>
+        </p>
 
-            <div class="admin-provider-actions">
+        ${
+          isSuspended
+            ? `
+              <p>
+                <strong>Account suspended</strong>
+              </p>
+            `
+            : ""
+        }
+      </div>
 
-                <button
-                    class="admin-action-button"
-                    onclick="viewAdminProvider(
-                        '${provider.id}'
-                    )"
-                >
-                    View Details
-                </button>
+      <div class="admin-provider-actions">
 
-                <button
-                    class="admin-action-button"
-                    onclick="toggleVerification(
-                        '${provider.id}',
-                        '${isVerified ? "UNVERIFIED" : "VERIFIED"}',
-                        this
-                    )"
-                >
-                    ${isVerified ? "Remove Verification" : "Verify Provider"}
-                </button>
+        <button
+          class="admin-action-button"
+          onclick="viewAdminProvider('${provider.id}')"
+        >
+          View Details
+        </button>
 
-            </div>
-        `;
+        ${
+          !isSuspended
+            ? `
+              <button
+                class="admin-action-button"
+                onclick="toggleVerification(
+                  '${provider.id}',
+                  '${isVerified ? "UNVERIFIED" : "VERIFIED"}',
+                  this
+                )"
+              >
+                ${
+                  isVerified
+                    ? "Remove Verification"
+                    : "Verify Provider"
+                }
+              </button>
+
+              <button
+                class="admin-action-button"
+                onclick="suspendProvider(
+                  '${provider.id}',
+                  '${provider.business_name}'
+                )"
+              >
+                Suspend Account
+              </button>
+            `
+            : `
+              <button
+                class="admin-action-button"
+                onclick="activateProvider(
+                  '${provider.id}',
+                  '${provider.business_name}'
+                )"
+              >
+                Activate Account
+              </button>
+            `
+        }
+
+        <button
+          class="admin-action-button admin-danger-button"
+          onclick="deleteProvider(
+            '${provider.id}',
+            '${provider.business_name}'
+          )"
+        >
+          Delete Account
+        </button>
+
+      </div>
+    `;
 
     container.appendChild(card);
   });
@@ -339,6 +390,173 @@ async function toggleVerification(providerId, verificationStatus, button) {
     if (button) {
       resetButtonLoading(button);
     }
+  }
+}
+
+// SUSPEND SERVICE PROVIDER ACCOUNT
+async function suspendProvider(providerId, businessName) {
+  const confirmed = confirm(
+    `Are you sure you want to suspend ${businessName}?\n\n` +
+    `The provider will no longer be able to use their Bide Hub account.`
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  try {
+    const {
+      data: { session },
+      error,
+    } = await supabaseClient.auth.getSession();
+
+    if (error) {
+      throw error;
+    }
+
+    if (!session) {
+      window.location.href = "login.html";
+      return;
+    }
+
+    const response = await fetch(
+      `${API_BASE_URL}/api/admin/providers/${providerId}/suspend`,
+      {
+        method: "PUT",
+
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      },
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        result.message || "Failed to suspend provider",
+      );
+    }
+
+    showToast(result.message, "success");
+
+    await loadAdminProviders();
+  } catch (error) {
+    console.error("Suspend provider error:", error);
+
+    showToast(error.message, "error");
+  }
+}
+
+// ACTIVATE SUSPENDED ACCOUNT
+
+async function activateProvider(providerId, businessName) {
+  const confirmed = confirm(
+    `Activate ${businessName}'s account?`
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  try {
+    const {
+      data: { session },
+      error,
+    } = await supabaseClient.auth.getSession();
+
+    if (error) {
+      throw error;
+    }
+
+    if (!session) {
+      window.location.href = "login.html";
+      return;
+    }
+
+    const response = await fetch(
+      `${API_BASE_URL}/api/admin/providers/${providerId}/activate`,
+      {
+        method: "PUT",
+
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      },
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        result.message || "Failed to activate provider",
+      );
+    }
+
+    showToast(result.message, "success");
+
+    await loadAdminProviders();
+  } catch (error) {
+    console.error("Activate provider error:", error);
+
+    showToast(error.message, "error");
+  }
+}
+
+// DELETE ACCOUNT FOR SERVICE PROVIDER
+
+async function deleteProvider(providerId, businessName) {
+  const confirmed = confirm(
+    `PERMANENTLY DELETE ${businessName}?\n\n` +
+    `This will remove the provider profile, reviews, services, media and account data.\n\n` +
+    `This action cannot be undone.`
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  try {
+    const {
+      data: { session },
+      error,
+    } = await supabaseClient.auth.getSession();
+
+    if (error) {
+      throw error;
+    }
+
+    if (!session) {
+      window.location.href = "login.html";
+      return;
+    }
+
+    const response = await fetch(
+      `${API_BASE_URL}/api/admin/providers/${providerId}`,
+      {
+        method: "DELETE",
+
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      },
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        result.message || "Failed to delete provider",
+      );
+    }
+
+    showToast(result.message, "success");
+
+    await loadAdminProviders();
+  } catch (error) {
+    console.error("Delete provider error:", error);
+
+    showToast(error.message, "error");
   }
 }
 
