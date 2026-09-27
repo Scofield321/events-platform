@@ -1861,32 +1861,328 @@ footer p {
 
 .admin-provider-actions {
     display: flex;
-
     flex-direction: column;
-
     gap: 8px;
 }
 
 
 .admin-action-button {
     display: inline-flex;
-
     align-items: center;
-
     justify-content: center;
-
     width: 100%;
-
     background: var(--primary);
-
     color: white;
 }
 
-
 .admin-action-button:hover {
     background: var(--primary-hover);
-
     opacity: 1;
+}
+
+/* ==========================================================
+   ADMIN PROVIDER ACTIONS
+   ========================================================== */
+
+.admin-provider-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+}
+
+
+/* ==========================================================
+   BASE ADMIN ACTION BUTTON
+   ========================================================== */
+
+.admin-action-button {
+    appearance: none;
+    border: 1px solid #d1d5db;
+    background: #ffffff;
+    color: #374151;
+
+    padding: 9px 15px;
+    min-height: 38px;
+
+    border-radius: 8px;
+
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+
+    line-height: 1.2;
+
+    cursor: pointer;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.15s ease;
+}
+
+
+/* Hover */
+
+.admin-action-button:hover {
+    background: #f8fafc;
+    border-color: #9ca3af;
+    transform: translateY(-1px);
+
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+
+/* Click */
+
+.admin-action-button:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+
+/* Keyboard accessibility */
+
+.admin-action-button:focus-visible {
+    outline: 3px solid rgba(59, 130, 246, 0.18);
+    outline-offset: 2px;
+}
+
+
+/* Disabled/loading state */
+
+.admin-action-button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+
+/* ==========================================================
+   DELETE BUTTON
+   ========================================================== */
+
+.admin-danger-button {
+    background: #fff1f2;
+    color: #be123c;
+    border-color: #fecdd3;
+}
+
+
+.admin-danger-button:hover {
+    background: #ffe4e6;
+    border-color: #fda4af;
+    color: #9f1239;
+
+    box-shadow: 0 2px 7px rgba(190, 24, 93, 0.08);
+}
+
+
+/* ==========================================================
+   PROVIDER CARD
+   ========================================================== */
+
+.admin-provider-card {
+    background: #ffffff;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+
+    padding: 20px;
+
+    margin-bottom: 14px;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.admin-provider-card:hover {
+    border-color: #d1d5db;
+
+    box-shadow:
+        0 4px 14px rgba(0, 0, 0, 0.06);
+
+    transform: translateY(-1px);
+}
+
+
+/* Provider name */
+
+.admin-provider-card h3 {
+    margin: 0 0 8px;
+
+    font-size: 18px;
+    font-weight: 700;
+
+    color: #111827;
+}
+
+
+/* Provider location */
+
+.admin-provider-card p {
+    margin: 5px 0;
+
+    color: #6b7280;
+    font-size: 14px;
+}
+
+
+/* Provider status */
+
+.admin-provider-card p strong {
+    color: #374151;
+}
+
+
+/* ==========================================================
+   SUSPENDED PROVIDER
+   ========================================================== */
+
+.admin-provider-card:has(strong:first-child) {
+    /* intentionally subtle */
+}
+
+
+/* ==========================================================
+   ADMIN DETAILS HEADER
+   ========================================================== */
+
+.admin-details-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-bottom: 20px;
+
+    padding-bottom: 15px;
+
+    border-bottom: 1px solid #e5e7eb;
+}
+
+
+.admin-details-header h2 {
+    margin: 0;
+
+    color: #111827;
+
+    font-size: 22px;
+    font-weight: 700;
+}
+
+
+/* ==========================================================
+   RESPONSIVE BUTTONS
+   ========================================================== */
+
+@media (max-width: 700px) {
+
+    .admin-provider-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .admin-action-button {
+        width: 100%;
+        min-height: 42px;
+    }
+
+}
+
+
+@media (max-width: 450px) {
+
+    .admin-provider-actions {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+/* ==========================================================
+   ACTION-SPECIFIC BUTTONS
+   ========================================================== */
+
+.admin-view-button {
+    background: #f8fafc;
+    color: #334155;
+    border-color: #cbd5e1;
+}
+
+.admin-view-button:hover {
+    background: #f1f5f9;
+    border-color: #94a3b8;
+}
+
+
+/* Verification */
+
+.admin-verify-button {
+    background: #ecfdf5;
+    color: #047857;
+    border-color: #a7f3d0;
+}
+
+.admin-verify-button:hover {
+    background: #d1fae5;
+    border-color: #6ee7b7;
+}
+
+
+/* Remove verification */
+
+.admin-unverify-button {
+    background: #f8fafc;
+    color: #475569;
+    border-color: #cbd5e1;
+}
+
+.admin-unverify-button:hover {
+    background: #f1f5f9;
+    border-color: #94a3b8;
+}
+
+
+/* Suspend */
+
+.admin-suspend-button {
+    background: #fff7ed;
+    color: #c2410c;
+    border-color: #fed7aa;
+}
+
+.admin-suspend-button:hover {
+    background: #ffedd5;
+    border-color: #fdba74;
+}
+
+
+/* Activate */
+
+.admin-activate-button {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border-color: #bfdbfe;
+}
+
+.admin-activate-button:hover {
+    background: #dbeafe;
+    border-color: #93c5fd;
 }
 
 

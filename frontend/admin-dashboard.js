@@ -54,11 +54,9 @@ function displayAdminProviders(providers) {
 
     card.className = "admin-provider-card";
 
-    const isVerified =
-      provider.verification_status === "VERIFIED";
+    const isVerified = provider.verification_status === "VERIFIED";
 
-    const isSuspended =
-      provider.account_status === "SUSPENDED";
+    const isSuspended = provider.account_status === "SUSPENDED";
 
     card.innerHTML = `
       <div>
@@ -92,32 +90,28 @@ function displayAdminProviders(providers) {
       <div class="admin-provider-actions">
 
         <button
-          class="admin-action-button"
-          onclick="viewAdminProvider('${provider.id}')"
-        >
-          View Details
+            class="admin-action-button admin-view-button"
+            onclick="viewAdminProvider('${provider.id}')"
+          >
+            View Details
         </button>
 
         ${
           !isSuspended
             ? `
               <button
-                class="admin-action-button"
+                class="admin-action-button admin-verify-button"
                 onclick="toggleVerification(
                   '${provider.id}',
                   '${isVerified ? "UNVERIFIED" : "VERIFIED"}',
                   this
                 )"
               >
-                ${
-                  isVerified
-                    ? "Remove Verification"
-                    : "Verify Provider"
-                }
+                ${isVerified ? "Remove Verification" : "Verify Provider"}
               </button>
 
               <button
-                class="admin-action-button"
+                class="admin-action-button admin-suspend-button"
                 onclick="suspendProvider(
                   '${provider.id}',
                   '${provider.business_name}'
@@ -128,7 +122,7 @@ function displayAdminProviders(providers) {
             `
             : `
               <button
-                class="admin-action-button"
+                class="admin-action-button admin-activate-button"
                 onclick="activateProvider(
                   '${provider.id}',
                   '${provider.business_name}'
@@ -397,7 +391,7 @@ async function toggleVerification(providerId, verificationStatus, button) {
 async function suspendProvider(providerId, businessName) {
   const confirmed = confirm(
     `Are you sure you want to suspend ${businessName}?\n\n` +
-    `The provider will no longer be able to use their Bide Hub account.`
+      `The provider will no longer be able to use their Bide Hub account.`,
   );
 
   if (!confirmed) {
@@ -433,9 +427,7 @@ async function suspendProvider(providerId, businessName) {
     const result = await response.json();
 
     if (!response.ok) {
-      throw new Error(
-        result.message || "Failed to suspend provider",
-      );
+      throw new Error(result.message || "Failed to suspend provider");
     }
 
     showToast(result.message, "success");
@@ -451,9 +443,7 @@ async function suspendProvider(providerId, businessName) {
 // ACTIVATE SUSPENDED ACCOUNT
 
 async function activateProvider(providerId, businessName) {
-  const confirmed = confirm(
-    `Activate ${businessName}'s account?`
-  );
+  const confirmed = confirm(`Activate ${businessName}'s account?`);
 
   if (!confirmed) {
     return;
@@ -488,9 +478,7 @@ async function activateProvider(providerId, businessName) {
     const result = await response.json();
 
     if (!response.ok) {
-      throw new Error(
-        result.message || "Failed to activate provider",
-      );
+      throw new Error(result.message || "Failed to activate provider");
     }
 
     showToast(result.message, "success");
@@ -508,8 +496,8 @@ async function activateProvider(providerId, businessName) {
 async function deleteProvider(providerId, businessName) {
   const confirmed = confirm(
     `PERMANENTLY DELETE ${businessName}?\n\n` +
-    `This will remove the provider profile, reviews, services, media and account data.\n\n` +
-    `This action cannot be undone.`
+      `This will remove the provider profile, reviews, services, media and account data.\n\n` +
+      `This action cannot be undone.`,
   );
 
   if (!confirmed) {
@@ -545,9 +533,7 @@ async function deleteProvider(providerId, businessName) {
     const result = await response.json();
 
     if (!response.ok) {
-      throw new Error(
-        result.message || "Failed to delete provider",
-      );
+      throw new Error(result.message || "Failed to delete provider");
     }
 
     showToast(result.message, "success");
