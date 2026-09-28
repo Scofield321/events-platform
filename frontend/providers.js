@@ -207,10 +207,6 @@ function displayProviders(providers) {
                         reviews
                     </span>
 
-                    <span>
-                        Reliability ${reliability}%
-                    </span>
-
                 </div>
 
 
