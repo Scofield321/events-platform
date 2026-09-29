@@ -349,7 +349,7 @@ if (registerForm) {
         password: password,
 
         options: {
-          emailRedirectTo: `${window.location.origin}/login.html`,
+          emailRedirectTo: "https://bidehub.com/login.html",
         },
       });
 
