@@ -16,74 +16,6 @@ window.currentProviderMedia = [];
 
 console.log("Supabase connected:", supabaseClient);
 
-// ======================================================
-// EMAIL CONFIRMATION HANDLER
-// ======================================================
-
-async function handleEmailConfirmation() {
-  try {
-    const url = new URL(window.location.href);
-
-    const hash = window.location.hash;
-
-    // Supabase may return authentication information
-    // in the URL hash after email confirmation.
-    if (hash && hash.includes("access_token")) {
-      console.log("Email confirmation session detected.");
-
-      // Give Supabase a moment to process the session.
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      // Sign the user out immediately.
-      //
-      // We want the user to explicitly log in after
-      // confirming their email rather than being
-      // automatically sent into the dashboard.
-      await supabaseClient.auth.signOut();
-
-      // Clean the URL.
-      window.history.replaceState(
-        {},
-        document.title,
-        `${url.origin}${url.pathname}`,
-      );
-
-      showToast("Email confirmed successfully! You can now log in.", "success");
-
-      const loginMessage = document.getElementById("loginMessage");
-
-      if (loginMessage) {
-        loginMessage.textContent =
-          "Your email has been confirmed successfully. Please log in to continue.";
-      }
-
-      return;
-    }
-
-    // --------------------------------------------------
-    // Handle errors returned through the URL
-    // --------------------------------------------------
-
-    const params = new URLSearchParams(window.location.search);
-
-    const errorDescription = params.get("error_description");
-
-    if (errorDescription) {
-      console.error("Email confirmation error:", errorDescription);
-
-      const loginMessage = document.getElementById("loginMessage");
-
-      if (loginMessage) {
-        loginMessage.textContent = decodeURIComponent(errorDescription);
-      }
-    }
-  } catch (error) {
-    console.error("Email confirmation handling error:", error);
-  }
-}
-
-handleEmailConfirmation();
-
 /* ========================================
    REUSABLE LOADING SYSTEM
 ======================================== */
@@ -347,10 +279,6 @@ if (registerForm) {
       const { data, error } = await supabaseClient.auth.signUp({
         email: email,
         password: password,
-
-        options: {
-          emailRedirectTo: "https://bidehub.com/login.html",
-        },
       });
 
       if (error) {
@@ -394,43 +322,28 @@ if (registerForm) {
       }
 
       // ==================================================
-      // 3. DO NOT SEND USER TO DASHBOARD
+      // 3. ACCOUNT CREATED SUCCESSFULLY
       // ==================================================
-
-      // At this point the account exists, but the user
-      // must confirm their email before logging in.
 
       if (message) {
         message.innerHTML = `
-          <strong>Account created successfully!</strong><br><br>
-
-          We've sent a confirmation link to
-          <strong>${email}</strong>.
-
-          <br><br>
-
-          Please check your email and click the
-          <strong>Confirm your email</strong> link.
-
-          <br><br>
-
-          After confirming your email, you'll be taken to
-          the Bide Hub login page where you can sign in
-          and access your dashboard.
-        `;
+    <strong>Account created successfully!</strong><br><br>
+    Your Bide Hub account is ready.
+    <br><br>
+    Redirecting you to login...
+  `;
       }
 
-      // Hide registration form after successful signup
       registerForm.reset();
 
-      // Optional:
-      // Hide the form so the user focuses on email confirmation.
-      registerForm.classList.add("registration-complete");
-
       showToast(
-        "Account created! Please check your email to confirm your account.",
+        "Account created successfully! Redirecting you to login...",
         "success",
       );
+
+      setTimeout(() => {
+        window.location.href = "login.html";
+      }, 1500);
     } catch (error) {
       console.error("Registration error:", error);
 
@@ -603,12 +516,6 @@ if (loginForm) {
       const lowerMessage = errorMessage.toLowerCase();
 
       if (
-        lowerMessage.includes("email not confirmed") ||
-        lowerMessage.includes("email_not_confirmed")
-      ) {
-        errorMessage =
-          "Please confirm your email address before logging in. Check your inbox for the confirmation link.";
-      } else if (
         lowerMessage.includes("invalid login credentials") ||
         lowerMessage.includes("invalid credentials")
       ) {
@@ -951,23 +858,6 @@ async function loadProviderDashboard() {
   } catch (error) {
     console.error("Dashboard error:", error);
   }
-}
-
-// Business description character counter
-const businessDescriptionInput = document.getElementById("profileDescription");
-
-const businessDescriptionCounter = document.querySelector(
-  ".description-counter",
-);
-
-if (businessDescriptionInput && businessDescriptionCounter) {
-  const updateDescriptionCounter = () => {
-    businessDescriptionCounter.textContent = `${businessDescriptionInput.value.length} / 180 characters`;
-  };
-
-  businessDescriptionInput.addEventListener("input", updateDescriptionCounter);
-
-  updateDescriptionCounter();
 }
 
 // ======================================================
