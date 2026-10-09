@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Admin Dashboard | Bide Hub</title>
-    <link rel="icon" type="image/png" href="bidehub-social-profile-logo.png">
+    <link rel="icon" type="image/png" href="bidehub-social-profile-logo.png" />
     <link rel="stylesheet" href="style.css" />
   </head>
 
@@ -26,7 +26,6 @@
     </header>
 
     <main class="admin-dashboard-container">
-
       <!-- ========================================
            DASHBOARD TITLE
       ========================================= -->
@@ -41,106 +40,67 @@
         </div>
       </section>
 
-
       <!-- ========================================
            PLATFORM STATISTICS
       ======================================== -->
 
       <section class="admin-stats-grid">
-
         <div class="admin-stat-card">
-          <div class="admin-stat-icon">
-            👥
-          </div>
+          <div class="admin-stat-icon">👥</div>
 
           <div>
-            <span class="admin-stat-label">
-              Total Providers
-            </span>
+            <span class="admin-stat-label"> Total Providers </span>
 
-            <strong id="totalProvidersStat">
-              0
-            </strong>
+            <strong id="totalProvidersStat"> 0 </strong>
           </div>
         </div>
 
-
         <div class="admin-stat-card">
-          <div class="admin-stat-icon">
-            ✓
-          </div>
+          <div class="admin-stat-icon">✓</div>
 
           <div>
-            <span class="admin-stat-label">
-              Verified Providers
-            </span>
+            <span class="admin-stat-label"> Verified Providers </span>
 
-            <strong id="verifiedProvidersStat">
-              0
-            </strong>
+            <strong id="verifiedProvidersStat"> 0 </strong>
           </div>
         </div>
 
-
         <div class="admin-stat-card">
-          <div class="admin-stat-icon">
-            ⏳
-          </div>
+          <div class="admin-stat-icon">⏳</div>
 
           <div>
-            <span class="admin-stat-label">
-              Pending Verification
-            </span>
+            <span class="admin-stat-label"> Pending Verification </span>
 
-            <strong id="pendingProvidersStat">
-              0
-            </strong>
+            <strong id="pendingProvidersStat"> 0 </strong>
           </div>
         </div>
 
-
         <div class="admin-stat-card">
-          <div class="admin-stat-icon">
-            ⭐
-          </div>
+          <div class="admin-stat-icon">⭐</div>
 
           <div>
-            <span class="admin-stat-label">
-              Total Reviews
-            </span>
+            <span class="admin-stat-label"> Total Reviews </span>
 
-            <strong id="totalReviewsStat">
-              0
-            </strong>
+            <strong id="totalReviewsStat"> 0 </strong>
           </div>
         </div>
 
-
         <div class="admin-stat-card">
-          <div class="admin-stat-icon">
-            ★
-          </div>
+          <div class="admin-stat-icon">★</div>
 
           <div>
-            <span class="admin-stat-label">
-              Platform Rating
-            </span>
+            <span class="admin-stat-label"> Platform Rating </span>
 
-            <strong id="platformRatingStat">
-              0.0
-            </strong>
+            <strong id="platformRatingStat"> 0.0 </strong>
           </div>
         </div>
-
       </section>
-
 
       <!-- ========================================
            CATEGORY OVERVIEW
       ======================================== -->
 
       <section class="dashboard-card admin-category-card">
-
         <div class="admin-section-header">
           <div>
             <h2>Service Categories</h2>
@@ -151,51 +111,94 @@
           </div>
         </div>
 
-        <div
-          id="adminCategoriesList"
-          class="admin-categories-grid"
-        >
+        <div id="adminCategoriesList" class="admin-categories-grid">
           <div class="content-loader">
             <span class="loader-spinner"></span>
 
-            <p class="content-loader-message">
-              Loading categories...
+            <p class="content-loader-message">Loading categories...</p>
+          </div>
+        </div>
+      </section>
+
+      ```html
+      <!-- ========================================
+     BOOKING INQUIRIES
+======================================== -->
+
+      <section class="dashboard-card admin-inquiries-section">
+        <div class="admin-section-header">
+          <div>
+            <h2>Booking Inquiries</h2>
+            <p>
+              Manage client requests, coordinate providers, track quotations and
+              monitor Bide Hub's commission.
             </p>
+          </div>
+
+          <button
+            type="button"
+            id="refreshInquiriesButton"
+            class="admin-action-button admin-view-button"
+          >
+            Refresh Inquiries
+          </button>
+        </div>
+
+        <div class="admin-inquiry-summary">
+          <div>
+            <span>Total inquiries</span>
+            <strong id="totalInquiriesCount">0</strong>
+          </div>
+          <div>
+            <span>New requests</span>
+            <strong id="newInquiriesCount">0</strong>
+          </div>
+          <div>
+            <span>Confirmed bookings</span>
+            <strong id="confirmedInquiriesCount">0</strong>
           </div>
         </div>
 
-      </section>
+        <div class="admin-inquiry-filters">
+          <label for="inquiryStatusFilter">Filter by status</label>
+          <select id="inquiryStatusFilter">
+            <option value="ALL">All inquiries</option>
+            <option value="NEW">New</option>
+            <option value="CONTACTED">Contacted</option>
+            <option value="QUOTING">Quoting</option>
+            <option value="AWAITING_CLIENT">Awaiting client</option>
+            <option value="CONFIRMED">Confirmed</option>
+            <option value="COMPLETED">Completed</option>
+            <option value="CANCELLED">Cancelled</option>
+            <option value="DECLINED">Declined</option>
+          </select>
+        </div>
 
+        <p id="adminInquiriesMessage" role="status" aria-live="polite">
+          Booking inquiries will appear here.
+        </p>
+
+        <div id="adminInquiriesList" class="admin-inquiries-list"></div>
+      </section>
+      ```
 
       <!-- ========================================
            PROVIDER MANAGEMENT
       ======================================== -->
 
       <section class="dashboard-card">
-
         <div class="admin-section-header">
-
           <div>
             <h2>Provider Management</h2>
 
-            <p>
-              Review, verify and manage service providers on the platform.
-            </p>
+            <p>Review, verify and manage service providers on the platform.</p>
           </div>
-
         </div>
 
-        <div id="adminMessage">
-          Loading providers...
-        </div>
+        <div id="adminMessage">Loading providers...</div>
 
-        <div
-          id="adminProvidersList"
-          class="admin-providers-list"
-        ></div>
-
+        <div id="adminProvidersList" class="admin-providers-list"></div>
       </section>
-
     </main>
     <div id="footer"></div>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
