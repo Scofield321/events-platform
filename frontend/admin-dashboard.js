@@ -923,3 +923,410 @@ function updateAdminCategories(providers) {
 }
 
 loadAdminProviders();
+
+// ==========================================
+// BIDE HUB ADMIN BOOKING INQUIRIES
+// ==========================================
+
+const INQUIRY_STATUSES = [
+  "NEW",
+  "CONTACTED",
+  "QUOTING",
+  "AWAITING_CLIENT",
+  "CONFIRMED",
+  "COMPLETED",
+  "CANCELLED",
+  "DECLINED",
+];
+
+let adminInquiries = [];
+
+function getInquirySession() {
+  return supabaseClient.auth.getSession().then(({ data, error }) => {
+    if (error) throw error;
+
+    if (!data.session) {
+      window.location.href = "login.html";
+      throw new Error("Please log in to continue.");
+    }
+
+    return data.session;
+  });
+}
+
+function formatInquiryDate(value) {
+  if (!value) return "Not provided";
+
+  const date = new Date(value);
+
+  return Number.isNaN(date.getTime())
+    ? String(value)
+    : date.toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      });
+}
+
+function formatInquiryAmount(value) {
+  if (value === null || value === undefined || value === "") {
+    return "Not set";
+  }
+
+  return `UGX ${Number(value).toLocaleString("en-UG", {
+    maximumFractionDigits: 2,
+  })}`;
+}
+
+function createInquiryElement(tag, className, text) {
+  const element = document.createElement(tag);
+
+  if (className) element.className = className;
+  if (text !== undefined) element.textContent = text;
+
+  return element;
+}
+
+async function loadAdminInquiries() {
+  const message = document.getElementById("adminInquiriesMessage");
+  const container = document.getElementById("adminInquiriesList");
+
+  if (!message || !container) return;
+
+  message.textContent = "Loading booking inquiries...";
+  container.replaceChildren();
+
+  try {
+    const session = await getInquirySession();
+
+    const response = await fetch(
+      `${API_BASE_URL}/api/admin/inquiries`,
+      {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        result.message || "Unable to load booking inquiries."
+      );
+    }
+
+    adminInquiries = Array.isArray(result.inquiries)
+      ? result.inquiries
+      : [];
+
+    updateInquirySummary();
+    displayAdminInquiries();
+  } catch (error) {
+    console.error("Admin inquiries error:", error);
+    message.textContent =
+      error.message || "Unable to load booking inquiries.";
+  }
+}
+
+function updateInquirySummary() {
+  const total = adminInquiries.length;
+
+  const newCount = adminInquiries.filter(
+    (item) => item.status === "NEW"
+  ).length;
+
+  const confirmedCount = adminInquiries.filter(
+    (item) => item.status === "CONFIRMED"
+  ).length;
+
+  document.getElementById("totalInquiriesCount").textContent = total;
+  document.getElementById("newInquiriesCount").textContent = newCount;
+  document.getElementById("confirmedInquiriesCount").textContent =
+    confirmedCount;
+}
+
+function displayAdminInquiries() {
+  const container = document.getElementById("adminInquiriesList");
+  const message = document.getElementById("adminInquiriesMessage");
+  const filter = document.getElementById("inquiryStatusFilter");
+
+  const selectedStatus = filter ? filter.value : "ALL";
+
+  const filtered = adminInquiries.filter(
+    (item) =>
+      selectedStatus === "ALL" || item.status === selectedStatus
+  );
+
+  container.replaceChildren();
+
+  if (filtered.length === 0) {
+    message.textContent =
+      adminInquiries.length === 0
+        ? "No booking inquiries have been received yet."
+        : "No inquiries match this status filter.";
+    return;
+  }
+
+  message.textContent = `${filtered.length} inquiry/inquiries displayed.`;
+
+  filtered.forEach((inquiry) => {
+    container.appendChild(createInquiryCard(inquiry));
+  });
+}
+
+function createInquiryCard(inquiry) {
+  const card = createInquiryElement("article", "admin-inquiry-card");
+
+  const heading = createInquiryElement(
+    "div",
+    "admin-inquiry-heading"
+  );
+
+  const titleGroup = createInquiryElement("div");
+
+  titleGroup.appendChild(
+    createInquiryElement(
+      "h3",
+      "",
+      inquiry.client_name || "Unnamed client"
+    )
+  );
+
+  titleGroup.appendChild(
+    createInquiryElement(
+      "p",
+      "admin-inquiry-meta",
+      `Received ${formatInquiryDate(inquiry.created_at)}`
+    )
+  );
+
+  const statusBadge = createInquiryElement(
+    "span",
+    "admin-inquiry-status",
+    String(inquiry.status || "NEW").replaceAll("_", " ")
+  );
+
+  heading.append(titleGroup, statusBadge);
+  card.appendChild(heading);
+
+  const details = createInquiryElement("div", "admin-inquiry-details");
+
+  const detailRows = [
+    ["Provider", inquiry.business_name || "Provider not found"],
+    ["Phone", inquiry.client_phone || "Not provided"],
+    ["Email", inquiry.client_email || "Not provided"],
+    ["Event type", inquiry.event_type || "Not provided"],
+    ["Event date", formatInquiryDate(inquiry.event_date)],
+    ["Location", inquiry.event_location || "Not provided"],
+    ["Budget", inquiry.budget_range || "Not specified"],
+    ["Requirements", inquiry.requirements || "Not provided"],
+  ];
+
+  detailRows.forEach(([label, value]) => {
+    const row = createInquiryElement("div", "admin-inquiry-detail-row");
+
+    row.appendChild(createInquiryElement("strong", "", `${label}:`));
+    row.appendChild(createInquiryElement("span", "", String(value)));
+
+    details.appendChild(row);
+  });
+
+  card.appendChild(details);
+
+  const management = createInquiryElement(
+    "div",
+    "admin-inquiry-management"
+  );
+
+  const statusLabel = createInquiryElement("label", "", "Inquiry status");
+  const statusSelect = document.createElement("select");
+  statusSelect.className = "admin-inquiry-status-select";
+  statusSelect.setAttribute("aria-label", "Inquiry status");
+
+  INQUIRY_STATUSES.forEach((status) => {
+    const option = document.createElement("option");
+    option.value = status;
+    option.textContent = status.replaceAll("_", " ");
+    option.selected = status === inquiry.status;
+    statusSelect.appendChild(option);
+  });
+
+  statusLabel.appendChild(statusSelect);
+  management.appendChild(statusLabel);
+
+  function addMoneyField(labelText, value) {
+    const label = createInquiryElement("label", "", labelText);
+    const input = document.createElement("input");
+
+    input.type = "number";
+    input.min = "0";
+    input.step = "0.01";
+    input.placeholder = "Amount in UGX";
+    input.value = value ?? "";
+    input.className = "admin-inquiry-money-input";
+
+    label.appendChild(input);
+    management.appendChild(label);
+
+    return input;
+  }
+
+  const quotedAmount = addMoneyField(
+    "Client quotation (UGX)",
+    inquiry.quoted_amount
+  );
+
+  const providerAmount = addMoneyField(
+    "Provider payout (UGX)",
+    inquiry.provider_amount
+  );
+
+  const commissionAmount = addMoneyField(
+    "Bide Hub commission (UGX)",
+    inquiry.bidehub_commission
+  );
+
+  const notesLabel = createInquiryElement(
+    "label",
+    "admin-inquiry-notes-label",
+    "Internal admin notes"
+  );
+
+  const notes = document.createElement("textarea");
+  notes.rows = 3;
+  notes.maxLength = 5000;
+  notes.placeholder =
+    "Record client calls, provider negotiations and follow-up actions.";
+  notes.value = inquiry.admin_notes || "";
+
+  notesLabel.appendChild(notes);
+  management.appendChild(notesLabel);
+
+  const amountSummary = createInquiryElement(
+    "p",
+    "admin-inquiry-amount-summary"
+  );
+
+  function updateAmountSummary() {
+    const clientAmount = Number(quotedAmount.value);
+    const payoutAmount = Number(providerAmount.value);
+
+    if (
+      quotedAmount.value.trim() !== "" &&
+      providerAmount.value.trim() !== "" &&
+      clientAmount >= 0 &&
+      payoutAmount >= 0
+    ) {
+      const difference = clientAmount - payoutAmount;
+
+      amountSummary.textContent =
+        `Quotation less provider payout: ${formatInquiryAmount(difference)}` +
+        (difference < 0 ? " — check these amounts." : "");
+    } else {
+      amountSummary.textContent =
+        "Enter a client quotation and provider payout to see the difference.";
+    }
+  }
+
+  quotedAmount.addEventListener("input", updateAmountSummary);
+  providerAmount.addEventListener("input", updateAmountSummary);
+  updateAmountSummary();
+
+  management.appendChild(amountSummary);
+
+  const saveButton = createInquiryElement(
+    "button",
+    "admin-action-button admin-verify-button",
+    "Save Changes"
+  );
+
+  saveButton.type = "button";
+
+  saveButton.addEventListener("click", async () => {
+    const quotedText = quotedAmount.value.trim();
+    const providerText = providerAmount.value.trim();
+    const commissionText = commissionAmount.value.trim();
+
+    const quoted = quotedText === "" ? null : Number(quotedText);
+    const payout = providerText === "" ? null : Number(providerText);
+    const commission =
+      commissionText === "" ? null : Number(commissionText);
+
+    for (const [label, amount] of [
+      ["Client quotation", quoted],
+      ["Provider payout", payout],
+      ["Bide Hub commission", commission],
+    ]) {
+      if (amount !== null && (!Number.isFinite(amount) || amount < 0)) {
+        showToast(`${label} must be a valid non-negative amount.`, "error");
+        return;
+      }
+    }
+
+    if (quoted !== null && payout !== null && payout > quoted) {
+      showToast(
+        "Provider payout cannot exceed the client quotation.",
+        "error"
+      );
+      return;
+    }
+
+    saveButton.disabled = true;
+    saveButton.textContent = "Saving...";
+
+    try {
+      const session = await getInquirySession();
+
+      const response = await fetch(
+        `${API_BASE_URL}/api/admin/inquiries/${inquiry.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({
+            status: statusSelect.value,
+            quoted_amount: quoted,
+            provider_amount: payout,
+            bidehub_commission: commission,
+            admin_notes: notes.value.trim(),
+          }),
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Unable to save inquiry.");
+      }
+
+      showToast("Inquiry updated successfully.", "success");
+      await loadAdminInquiries();
+    } catch (error) {
+      console.error("Save inquiry error:", error);
+      showToast(error.message || "Unable to save inquiry.", "error");
+    } finally {
+      saveButton.disabled = false;
+      saveButton.textContent = "Save Changes";
+    }
+  });
+
+  management.appendChild(saveButton);
+  card.appendChild(management);
+
+  return card;
+}
+
+document
+  .getElementById("refreshInquiriesButton")
+  ?.addEventListener("click", loadAdminInquiries);
+
+document
+  .getElementById("inquiryStatusFilter")
+  ?.addEventListener("change", displayAdminInquiries);
+
+// Load inquiries alongside the existing provider dashboard.
+loadAdminInquiries();
+
