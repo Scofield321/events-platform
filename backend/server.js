@@ -11,6 +11,7 @@ const providerRoutes = require("./routes/providers");
 const mediaRoutes = require("./routes/media");
 const reviewRoutes = require("./routes/reviews");
 const adminRoutes = require("./routes/admin");
+const inquiryRoutes = require("./routes/inquiries");
 
 const app = express();
 
@@ -35,6 +36,7 @@ app.use("/api", mediaRoutes);
 app.use("/api", providerRoutes);
 app.use("/api", reviewRoutes);
 app.use("/api", adminRoutes);
+app.use("/api", inquiryRoutes);
 
 // =========================================================
 // START SERVER

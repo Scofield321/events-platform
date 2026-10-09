@@ -269,74 +269,39 @@ async function loadProviderProfile() {
     //   `${reliability}%`;
 
     // ==========================================
-    // CONTACT OPTIONS
+    // BIDE HUB MANAGED QUOTE REQUEST
     // ==========================================
 
-    // CALL
-    const callButton = document.getElementById("callProvider");
+    // Public profiles should not expose provider contact links.
+    // Clients submit requests through the Bide Hub form instead.
 
-    if (provider.phone) {
-      callButton.href = `tel:${provider.phone}`;
-    } else {
-      callButton.style.display = "none";
+    const contactCard = document.querySelector(".provider-contact-card");
+
+    if (contactCard) {
+      contactCard
+        .querySelectorAll(
+          "#callProvider, #whatsappProvider, #websiteProvider, #instagramProvider, #facebookProvider, #tiktokProvider, #youtubeProvider",
+        )
+        .forEach((button) => {
+          button.removeAttribute("href");
+          button.style.display = "none";
+        });
+
+      const contactHeading = contactCard.querySelector("h2");
+
+      if (contactHeading) {
+        contactHeading.textContent = "Plan Your Event with Bide Hub";
+      }
+
+      const contactDescription = contactCard.querySelector("p");
+
+      if (contactDescription) {
+        contactDescription.textContent =
+          "Tell us about your event. Our team will help coordinate your request with this provider.";
+      }
     }
 
-    // WHATSAPP
-    const whatsappButton = document.getElementById("whatsappProvider");
-
-    if (provider.whatsapp_number) {
-      const whatsappNumber = provider.whatsapp_number.replace(/\D/g, "");
-
-      whatsappButton.href = `https://wa.me/${whatsappNumber}`;
-    } else {
-      whatsappButton.style.display = "none";
-    }
-
-    // WEBSITE
-    const websiteButton = document.getElementById("websiteProvider");
-
-    if (provider.website_url) {
-      websiteButton.href = provider.website_url;
-    } else {
-      websiteButton.style.display = "none";
-    }
-
-    // INSTAGRAM
-    const instagramButton = document.getElementById("instagramProvider");
-
-    if (provider.instagram_url) {
-      instagramButton.href = provider.instagram_url;
-    } else {
-      instagramButton.style.display = "none";
-    }
-
-    // FACEBOOK
-    const facebookButton = document.getElementById("facebookProvider");
-
-    if (provider.facebook_url) {
-      facebookButton.href = provider.facebook_url;
-    } else {
-      facebookButton.style.display = "none";
-    }
-
-    // TIKTOK
-    const tiktokButton = document.getElementById("tiktokProvider");
-
-    if (provider.tiktok_url) {
-      tiktokButton.href = provider.tiktok_url;
-    } else {
-      tiktokButton.style.display = "none";
-    }
-
-    // YOUTUBE
-
-    const youtubeButton = document.getElementById("youtubeProvider");
-
-    if (provider.youtube_url) {
-      youtubeButton.href = provider.youtube_url;
-    } else {
-      youtubeButton.style.display = "none";
-    }
+    setupQuoteRequestForm(providerId);
 
     // ==========================================
     // SERVICES
@@ -702,6 +667,102 @@ async function refreshProviderRating(providerId) {
   } catch (error) {
     console.error("Rating refresh error:", error);
   }
+}
+
+function setupQuoteRequestForm(providerId) {
+  const form = document.getElementById("quoteRequestForm");
+  const submitButton = document.getElementById("submitQuoteRequest");
+  const message = document.getElementById("quoteRequestMessage");
+
+  if (!form || !submitButton || !message) {
+    console.warn("Bide Hub quote request form was not found.");
+    return;
+  }
+
+  // Avoid attaching duplicate handlers if setup runs more than once.
+  if (form.dataset.initialized === "true") {
+    return;
+  }
+
+  form.dataset.initialized = "true";
+
+  const eventDateInput = document.getElementById("quoteEventDate");
+
+  if (eventDateInput) {
+    const today = new Date();
+    const localToday = [
+      today.getFullYear(),
+      String(today.getMonth() + 1).padStart(2, "0"),
+      String(today.getDate()).padStart(2, "0"),
+    ].join("-");
+
+    eventDateInput.min = localToday;
+  }
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    if (!form.reportValidity()) {
+      return;
+    }
+
+    const value = (name) => String(new FormData(form).get(name) || "").trim();
+
+    const payload = {
+      provider_id: providerId,
+      client_name: value("client_name"),
+      client_phone: value("client_phone"),
+      client_email: value("client_email"),
+      event_type: value("event_type"),
+      event_date: value("event_date"),
+      event_location: value("event_location"),
+      budget_range: value("budget_range"),
+      requirements: value("requirements"),
+    };
+
+    submitButton.disabled = true;
+    message.textContent = "Sending your quote request...";
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/inquiries`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          result.message || "Unable to submit your quote request.",
+        );
+      }
+
+      message.textContent =
+        "Your request has been received! The Bide Hub team will contact you about the next steps.";
+
+      form.reset();
+
+      if (eventDateInput) {
+        const today = new Date();
+
+        eventDateInput.min = [
+          today.getFullYear(),
+          String(today.getMonth() + 1).padStart(2, "0"),
+          String(today.getDate()).padStart(2, "0"),
+        ].join("-");
+      }
+    } catch (error) {
+      console.error("Quote request submission failed:", error);
+
+      message.textContent =
+        error.message || "Something went wrong. Please try again.";
+    } finally {
+      submitButton.disabled = false;
+    }
+  });
 }
 
 // ==========================================
