@@ -924,6 +924,77 @@ function updateAdminCategories(providers) {
 
 loadAdminProviders();
 
+
+function normalizeUgandaPhone(phone) {
+  const digits = String(phone || "").replace(/\D/g, "");
+
+  // Convert Ugandan local numbers, e.g. 07XXXXXXXX,
+  // into international format, 2567XXXXXXXX.
+  if (/^0[37]\d{8}$/.test(digits)) {
+    return "256" + digits.slice(1);
+  }
+
+  // Also accept numbers already written with Uganda's country code.
+  if (/^256[37]\d{8}$/.test(digits)) {
+    return digits;
+  }
+
+  // For other international numbers, retain the digits.
+  if (/^[1-9]\d{7,14}$/.test(digits)) {
+    return digits;
+  }
+
+  return null;
+}
+
+function createClientWhatsAppMessage(inquiry) {
+  const clientName = inquiry.client_name || "there";
+  const eventType = inquiry.event_type || "your event";
+  const eventDate = formatInquiryDate(inquiry.event_date);
+  const eventLocation = inquiry.event_location || "your specified location";
+
+  return `Hello ${clientName}, 👋
+
+I'm contacting you from Bide Hub regarding your inquiry for ${eventType} on ${eventDate} in ${eventLocation}.
+
+We've received your request and would like to discuss your requirements and help coordinate the next steps.
+
+Would this be a convenient time to talk?
+
+Thank you for choosing Bide Hub!`;
+}
+
+function contactClientByPhone(phone) {
+  const number = normalizeUgandaPhone(phone);
+
+  if (!number) {
+    showToast(
+      "This phone number is missing or invalid. Please check the client's number.",
+      "error"
+    );
+    return;
+  }
+
+  window.location.href = `tel:+${number}`;
+}
+
+function contactClientByWhatsApp(inquiry) {
+  const number = normalizeUgandaPhone(inquiry.client_phone);
+
+  if (!number) {
+    showToast(
+      "This phone number is missing or invalid. Please check the client's number.",
+      "error"
+    );
+    return;
+  }
+
+  const message = createClientWhatsAppMessage(inquiry);
+  const url = `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
+
+  window.open(url, "_blank", "noopener,noreferrer");
+}
+
 // ==========================================
 // BIDE HUB ADMIN BOOKING INQUIRIES
 // ==========================================
@@ -1109,6 +1180,39 @@ function createInquiryCard(inquiry) {
 
   heading.append(titleGroup, statusBadge);
   card.appendChild(heading);
+
+
+  const contactActions = createInquiryElement(
+    "div",
+    "admin-inquiry-contact-actions"
+  );
+
+  const callButton = createInquiryElement(
+    "button",
+    "admin-action-button admin-view-button",
+    "Call Client"
+  );
+
+  callButton.type = "button";
+
+  callButton.addEventListener("click", () => {
+    contactClientByPhone(inquiry.client_phone);
+  });
+
+  const whatsappButton = createInquiryElement(
+    "button",
+    "admin-action-button admin-whatsapp-button",
+    "WhatsApp Client"
+  );
+
+  whatsappButton.type = "button";
+
+  whatsappButton.addEventListener("click", () => {
+    contactClientByWhatsApp(inquiry);
+  });
+
+  contactActions.append(callButton, whatsappButton);
+  card.appendChild(contactActions);
 
   const details = createInquiryElement("div", "admin-inquiry-details");
 

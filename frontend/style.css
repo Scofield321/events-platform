@@ -6079,3 +6079,31 @@ background: #ecfdf5;
     width: 100%;
   }
 }
+
+
+
+.admin-inquiry-contact-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 16px 0;
+}
+
+.admin-inquiry-contact-actions button {
+  min-height: 42px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.admin-inquiry-contact-actions .admin-whatsapp-button {
+  background: #25D366;
+  color: #102417;
+}
+
+.admin-inquiry-contact-actions .admin-view-button {
+  background: #f1f3f5;
+  color: #202124;
+}
