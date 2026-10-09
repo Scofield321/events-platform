@@ -228,7 +228,10 @@ router.get(
     }
 );
 
-// ADMIN: Update inquiry status and negotiated amounts.
+
+/* ADMIN: Update inquiry status and negotiated amounts.
+   Omitted fields remain unchanged.
+   Explicit null or an empty amount clears that field. */
 router.patch(
     "/admin/inquiries/:id",
     authenticateUser,
@@ -236,13 +239,18 @@ router.patch(
     async (req, res) => {
         try {
             const { id } = req.params;
-            const {
-                status,
-                quoted_amount,
-                provider_amount,
-                bidehub_commission,
-                admin_notes,
-            } = req.body || {};
+            const body = req.body || {};
+
+            const fields = [
+                "status",
+                "quoted_amount",
+                "provider_amount",
+                "bidehub_commission",
+                "admin_notes",
+            ];
+
+            const has = (field) =>
+                Object.prototype.hasOwnProperty.call(body, field);
 
             const uuidPattern =
                 /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -254,46 +262,54 @@ router.patch(
                 });
             }
 
-            if (status !== undefined && !VALID_STATUSES.includes(status)) {
+            if (!fields.some(has)) {
+                return res.status(400).json({
+                    status: "ERROR",
+                    message: "No inquiry fields were provided.",
+                });
+            }
+
+            if (has("status") &&
+                !VALID_STATUSES.includes(body.status)) {
                 return res.status(400).json({
                     status: "ERROR",
                     message: "Invalid inquiry status.",
                 });
             }
 
-            const amountFields = {
-                quoted_amount,
-                provider_amount,
-                bidehub_commission,
-            };
+            const amountFields = [
+                "quoted_amount",
+                "provider_amount",
+                "bidehub_commission",
+            ];
 
-            for (const [field, value] of Object.entries(amountFields)) {
+            for (const field of amountFields) {
+                if (!has(field) || body[field] === null ||
+                    body[field] === "") {
+                    continue;
+                }
+
+                const value = body[field];
+
                 if (
-                    value !== undefined &&
-                    value !== null &&
-                    (!Number.isFinite(Number(value)) || Number(value) < 0)
+                    (typeof value !== "number" &&
+                        typeof value !== "string") ||
+                    !Number.isFinite(Number(value)) ||
+                    Number(value) < 0
                 ) {
                     return res.status(400).json({
                         status: "ERROR",
-                        message: `${field} must be a non-negative number.`,
+                        message:
+                            `${field} must be a non-negative number or empty.`,
                     });
                 }
             }
 
             if (
-                quoted_amount != null &&
-                provider_amount != null &&
-                Number(provider_amount) > Number(quoted_amount)
-            ) {
-                return res.status(400).json({
-                    status: "ERROR",
-                    message: "Provider amount cannot exceed the client quote.",
-                });
-            }
-
-            if (
-                admin_notes !== undefined &&
-                (typeof admin_notes !== "string" || admin_notes.length > 5000)
+                has("admin_notes") &&
+                body.admin_notes !== null &&
+                (typeof body.admin_notes !== "string" ||
+                    body.admin_notes.length > 5000)
             ) {
                 return res.status(400).json({
                     status: "ERROR",
@@ -301,40 +317,93 @@ router.patch(
                 });
             }
 
-            const result = await pool.query(
-                `UPDATE booking_inquiries
-                 SET
-                    status = COALESCE($2, status),
-                    quoted_amount = COALESCE($3, quoted_amount),
-                    provider_amount = COALESCE($4, provider_amount),
-                    bidehub_commission = COALESCE($5, bidehub_commission),
-                    admin_notes = COALESCE($6, admin_notes),
-                    updated_at = NOW()
-                 WHERE id = $1
-                 RETURNING *`,
-                [
-                    id,
-                    status ?? null,
-                    quoted_amount ?? null,
-                    provider_amount ?? null,
-                    bidehub_commission ?? null,
-                    admin_notes ?? null,
-                ]
+            // Read existing amounts to validate the final quote and payout.
+            const currentResult = await pool.query(
+                `SELECT quoted_amount, provider_amount
+                 FROM booking_inquiries
+                 WHERE id = $1`,
+                [id]
             );
 
-            if (result.rows.length === 0) {
+            if (currentResult.rows.length === 0) {
                 return res.status(404).json({
                     status: "ERROR",
                     message: "Inquiry not found.",
                 });
             }
 
+            const current = currentResult.rows[0];
+
+            const nextQuote = has("quoted_amount")
+                ? (body.quoted_amount === "" ? null : body.quoted_amount)
+                : current.quoted_amount;
+
+            const nextPayout = has("provider_amount")
+                ? (body.provider_amount === "" ? null : body.provider_amount)
+                : current.provider_amount;
+
+            if (
+                nextQuote != null &&
+                nextPayout != null &&
+                Number(nextPayout) > Number(nextQuote)
+            ) {
+                return res.status(400).json({
+                    status: "ERROR",
+                    message:
+                        "Provider amount cannot exceed the client quote.",
+                });
+            }
+
+            const result = await pool.query(
+                `UPDATE booking_inquiries
+                 SET
+                    status = CASE
+                        WHEN $2::boolean THEN $3::varchar
+                        ELSE status
+                    END,
+                    quoted_amount = CASE
+                        WHEN $4::boolean THEN $5::numeric
+                        ELSE quoted_amount
+                    END,
+                    provider_amount = CASE
+                        WHEN $6::boolean THEN $7::numeric
+                        ELSE provider_amount
+                    END,
+                    bidehub_commission = CASE
+                        WHEN $8::boolean THEN $9::numeric
+                        ELSE bidehub_commission
+                    END,
+                    admin_notes = CASE
+                        WHEN $10::boolean THEN $11::text
+                        ELSE admin_notes
+                    END,
+                    updated_at = NOW()
+                 WHERE id = $1
+                 RETURNING *`,
+                [
+                    id,
+                    has("status"),
+                    body.status ?? null,
+                    has("quoted_amount"),
+                    body.quoted_amount === "" ? null : body.quoted_amount ?? null,
+                    has("provider_amount"),
+                    body.provider_amount === "" ? null : body.provider_amount ?? null,
+                    has("bidehub_commission"),
+                    body.bidehub_commission === "" ? null : body.bidehub_commission ?? null,
+                    has("admin_notes"),
+                    body.admin_notes ?? null,
+                ]
+            );
+
             return res.json({
                 status: "SUCCESS",
                 inquiry: result.rows[0],
             });
         } catch (error) {
-            console.error("Updating inquiry failed:", error.message);
+            console.error(
+                "Updating inquiry failed:",
+                error.message
+            );
 
             return res.status(500).json({
                 status: "ERROR",
