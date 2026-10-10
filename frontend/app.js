@@ -1074,11 +1074,9 @@ async function loadProviderServices() {
         checkbox.checked = selectedServiceIds.includes(service.id);
 
         label.appendChild(checkbox);
-
+        
         label.appendChild(
-          document.createTextNode(
-            ` ${service.name} (${service.category_name})`,
-          ),
+          document.createTextNode(` ${service.name}`),
         );
 
         servicesList.appendChild(label);
