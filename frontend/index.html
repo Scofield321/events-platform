@@ -103,22 +103,153 @@
     </header>
 
     <main>
-      <section class="hero">
-        <h1>Find Reliable Event Professionals in Uganda</h1>
-        <p>
-          Find decorators, sound companies, photographers, videographers,
-          lighting providers, venues and more. Explore their profiles, evaluate
-          their work and contact them directly.
-        </p>
+      <section class="hero hero-slider" aria-label="Discover Bide Hub">
+        <div class="hero-slides">
+          <!-- SLIDE 1 -->
+          <article
+            class="hero-slide active"
+            style="--hero-image: url(&quot;sound-production.jpg&quot;)"
+          >
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+              <span class="hero-eyebrow">YOUR EVENT. OUR NETWORK.</span>
+              <h1>Find Reliable Event Professionals in Uganda</h1>
+              <p>
+                Discover decorators, sound companies, photographers,
+                videographers, lighting providers, venues and more. Explore
+                their work and contact them directly.
+              </p>
+              <div class="hero-buttons">
+                <a
+                  href="providers.html"
+                  class="hero-button hero-button-primary"
+                >
+                  Find a Service <span>→</span>
+                </a>
+                <a
+                  href="register.html"
+                  class="hero-button hero-button-secondary"
+                >
+                  Join as a Provider <span>→</span>
+                </a>
+              </div>
+            </div>
+          </article>
 
-        <div class="hero-buttons">
-          <a href="providers.html">
-            <button type="button">Find a Service</button>
-          </a>
+          <!-- SLIDE 2 -->
+          <article
+            class="hero-slide"
+            style="--hero-image: url(&quot;decoration.jpg&quot;)"
+          >
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+              <span class="hero-eyebrow">MAKE EVERY MOMENT COUNT</span>
+              <h2>Bring Your Event to Life</h2>
+              <p>
+                From beautiful decorations and stunning photography to
+                professional sound, lighting and production, find the right team
+                for your occasion.
+              </p>
+              <div class="hero-buttons">
+                <a
+                  href="providers.html"
+                  class="hero-button hero-button-primary"
+                >
+                  Explore Services <span>→</span>
+                </a>
+                <a
+                  href="providers.html?category=decoration"
+                  class="hero-button hero-button-secondary"
+                >
+                  Discover Decorators <span>→</span>
+                </a>
+              </div>
+            </div>
+          </article>
 
-          <a href="register.html">
-            <button type="button">Join as a Provider</button>
-          </a>
+          <!-- SLIDE 3 -->
+          <article
+            class="hero-slide"
+            style="--hero-image: url(&quot;photography.jpg&quot;)"
+          >
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+              <span class="hero-eyebrow">PLAN WITH CONFIDENCE</span>
+              <h2>Find the People Behind Great Events</h2>
+              <p>
+                Explore provider profiles, review their work and connect
+                directly with event professionals who can help bring your vision
+                to life.
+              </p>
+              <div class="hero-buttons">
+                <a
+                  href="providers.html"
+                  class="hero-button hero-button-primary"
+                >
+                  Find Your Professionals <span>→</span>
+                </a>
+                <a
+                  href="register.html"
+                  class="hero-button hero-button-secondary"
+                >
+                  Join Bide Hub <span>→</span>
+                </a>
+              </div>
+            </div>
+          </article>
+
+          <!-- SLIDE 4 -->
+          <article
+            class="hero-slide"
+            style="--hero-image: url(&quot;lighting.jpg&quot;)"
+          >
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+              <span class="hero-eyebrow">GROW WITH BIDE HUB</span>
+              <h2>Let More Clients Discover Your Business</h2>
+              <p>
+                Showcase your work, build your online presence and help people
+                planning events discover your services.
+              </p>
+              <div class="hero-buttons">
+                <a href="register.html" class="hero-button hero-button-primary">
+                  Join as a Provider <span>→</span>
+                </a>
+                <a href="login.html" class="hero-button hero-button-secondary">
+                  Provider Login <span>→</span>
+                </a>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <!-- SLIDER CONTROLS -->
+        <button
+          class="hero-arrow hero-prev"
+          type="button"
+          aria-label="Previous slide"
+        >
+          &#10094;
+        </button>
+
+        <button
+          class="hero-arrow hero-next"
+          type="button"
+          aria-label="Next slide"
+        >
+          &#10095;
+        </button>
+
+        <div class="hero-dots" aria-label="Choose a banner slide">
+          <button
+            class="hero-dot active"
+            type="button"
+            aria-label="Slide 1"
+            aria-current="true"
+          ></button>
+          <button class="hero-dot" type="button" aria-label="Slide 2"></button>
+          <button class="hero-dot" type="button" aria-label="Slide 3"></button>
+          <button class="hero-dot" type="button" aria-label="Slide 4"></button>
         </div>
       </section>
 
@@ -199,6 +330,134 @@
       </section>
     </main>
     <div id="footer"></div>
+    <script>
+      (() => {
+        const slider = document.querySelector(".hero-slider");
+
+        if (!slider) return;
+
+        const slides = Array.from(slider.querySelectorAll(".hero-slide"));
+
+        const dots = Array.from(slider.querySelectorAll(".hero-dot"));
+
+        const previousButton = slider.querySelector(".hero-prev");
+        const nextButton = slider.querySelector(".hero-next");
+
+        if (slides.length === 0) return;
+
+        const reduceMotion = window.matchMedia(
+          "(prefers-reduced-motion: reduce)",
+        );
+
+        let currentIndex = 0;
+        let timer = null;
+        let touchStartX = 0;
+
+        function showSlide(index) {
+          currentIndex = (index + slides.length) % slides.length;
+
+          slides.forEach((slide, i) => {
+            const isActive = i === currentIndex;
+
+            slide.classList.toggle("active", isActive);
+            slide.setAttribute("aria-hidden", String(!isActive));
+
+            if (isActive) {
+              slide.removeAttribute("inert");
+            } else {
+              slide.setAttribute("inert", "");
+            }
+          });
+
+          dots.forEach((dot, i) => {
+            const isActive = i === currentIndex;
+
+            dot.classList.toggle("active", isActive);
+
+            if (isActive) {
+              dot.setAttribute("aria-current", "true");
+            } else {
+              dot.removeAttribute("aria-current");
+            }
+          });
+        }
+
+        function stopAutoplay() {
+          if (timer) {
+            clearInterval(timer);
+            timer = null;
+          }
+        }
+
+        function startAutoplay() {
+          stopAutoplay();
+
+          if (reduceMotion.matches || document.hidden) return;
+
+          timer = setInterval(() => {
+            showSlide(currentIndex + 1);
+          }, 5500);
+        }
+
+        function moveToSlide(index) {
+          showSlide(index);
+          startAutoplay();
+        }
+
+        previousButton.addEventListener("click", () => {
+          moveToSlide(currentIndex - 1);
+        });
+
+        nextButton.addEventListener("click", () => {
+          moveToSlide(currentIndex + 1);
+        });
+
+        dots.forEach((dot, index) => {
+          dot.addEventListener("click", () => {
+            moveToSlide(index);
+          });
+        });
+
+        slider.addEventListener("mouseenter", stopAutoplay);
+        slider.addEventListener("mouseleave", startAutoplay);
+
+        slider.addEventListener("focusin", stopAutoplay);
+
+        slider.addEventListener("focusout", () => {
+          setTimeout(startAutoplay, 0);
+        });
+
+        document.addEventListener("visibilitychange", startAutoplay);
+
+        reduceMotion.addEventListener("change", startAutoplay);
+
+        // Support swiping between slides on touchscreens.
+        slider.addEventListener(
+          "touchstart",
+          (event) => {
+            touchStartX = event.changedTouches[0].screenX;
+          },
+          { passive: true },
+        );
+
+        slider.addEventListener(
+          "touchend",
+          (event) => {
+            const touchEndX = event.changedTouches[0].screenX;
+            const difference = touchEndX - touchStartX;
+
+            if (Math.abs(difference) < 50) return;
+
+            moveToSlide(difference < 0 ? currentIndex + 1 : currentIndex - 1);
+          },
+          { passive: true },
+        );
+
+        showSlide(0);
+        startAutoplay();
+      })();
+    </script>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="app.js"></script>
   </body>

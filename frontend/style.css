@@ -6107,3 +6107,276 @@ background: #ecfdf5;
   background: #f1f3f5;
   color: #202124;
 }
+/* ========================================
+   BIDE HUB — HOMEPAGE HERO SLIDER
+======================================== */
+
+.hero-slider {
+  position: relative;
+  width: 100%;
+  height: clamp(420px, 43vw, 600px);
+  min-height: 420px;
+  padding: 0;
+  overflow: hidden;
+  isolation: isolate;
+  background: #101b35;
+  color: #fff;
+}
+
+.hero-slides {
+  position: absolute;
+  inset: 0;
+}
+
+.hero-slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  padding: clamp(28px, 8vw, 120px);
+  background-image: var(--hero-image);
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(1.035);
+  transition:
+    opacity 700ms ease,
+    transform 5s ease,
+    visibility 700ms;
+}
+
+.hero-slide.active {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1);
+  z-index: 1;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(7, 15, 35, 0.92) 0%,
+      rgba(7, 15, 35, 0.76) 43%,
+      rgba(7, 15, 35, 0.25) 100%
+    );
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  width: min(680px, 100%);
+  color: #fff;
+}
+
+.hero-eyebrow {
+  display: inline-block;
+  margin-bottom: 18px;
+  color: #b9c6ff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.hero-content h1,
+.hero-content h2 {
+  max-width: 680px;
+  margin: 0 0 20px;
+  color: #fff;
+  font-size: clamp(2.1rem, 4.3vw, 4rem);
+  line-height: 1.12;
+  font-weight: 750;
+}
+
+.hero-content p {
+  max-width: 580px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.91);
+  font-size: clamp(1rem, 1.3vw, 1.15rem);
+  line-height: 1.8;
+}
+
+.hero-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 30px;
+}
+
+.hero-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 48px;
+  padding: 13px 23px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  font-size: 0.96rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition:
+    background 200ms ease,
+    transform 200ms ease,
+    border-color 200ms ease;
+}
+
+.hero-button:hover {
+  transform: translateY(-2px);
+}
+
+.hero-button-primary {
+  background: #4f46e5;
+  color: #fff;
+}
+
+.hero-button-primary:hover {
+  background: #4338ca;
+}
+
+.hero-button-secondary {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.65);
+  color: #fff;
+}
+
+.hero-button-secondary:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.hero-arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  background: rgba(10, 18, 38, 0.5);
+  color: #fff;
+  font-size: 17px;
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition: background 200ms ease;
+}
+
+.hero-arrow:hover {
+  background: rgba(10, 18, 38, 0.9);
+}
+
+.hero-prev {
+  left: 20px;
+}
+
+.hero-next {
+  right: 20px;
+}
+
+.hero-dots {
+  position: absolute;
+  right: 0;
+  bottom: 24px;
+  left: 0;
+  z-index: 5;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.hero-dot {
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  border: 1px solid #fff;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  transition:
+    background 200ms ease,
+    transform 200ms ease;
+}
+
+.hero-dot.active {
+  background: #fff;
+  transform: scale(1.15);
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+  .hero-slider {
+    height: 540px;
+    min-height: 540px;
+  }
+
+  .hero-slide {
+    align-items: center;
+    padding: 34px 25px 66px;
+    background-position: center;
+  }
+
+  .hero-overlay {
+    background: linear-gradient(
+      90deg,
+      rgba(7, 15, 35, 0.88),
+      rgba(7, 15, 35, 0.62)
+    );
+  }
+
+  .hero-content h1,
+  .hero-content h2 {
+    font-size: clamp(2rem, 8vw, 2.7rem);
+  }
+
+  .hero-content p {
+    font-size: 0.98rem;
+    line-height: 1.65;
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 11px;
+    margin-top: 23px;
+  }
+
+  .hero-button {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .hero-arrow {
+    top: auto;
+    bottom: 15px;
+    width: 35px;
+    height: 35px;
+    transform: none;
+  }
+
+  .hero-prev {
+    left: 15px;
+  }
+
+  .hero-next {
+    right: 15px;
+  }
+
+  .hero-dots {
+    bottom: 28px;
+    gap: 8px;
+  }
+}
+
+/* Respect visitors who prefer less animation */
+@media (prefers-reduced-motion: reduce) {
+  .hero-slide,
+  .hero-button,
+  .hero-dot {
+    transition: none !important;
+  }
+}
