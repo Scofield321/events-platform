@@ -1270,8 +1270,8 @@ async function saveProviderProfile(event) {
 // PROVIDER MEDIA UPLOAD
 // ======================================================
 
-const MAX_PROVIDER_MEDIA = 4;
-const MAX_MEDIA_FILE_SIZE = 25 * 1024 * 1024; // 25 MB
+const MAX_PROVIDER_MEDIA = 8;
+const MAX_MEDIA_FILE_SIZE = 49 * 1024 * 1024; // 49 MB
 
 async function uploadProviderMedia(file, mediaType) {
   try {
@@ -1281,7 +1281,7 @@ async function uploadProviderMedia(file, mediaType) {
 
     if (file.size > MAX_MEDIA_FILE_SIZE) {
       throw new Error(
-        `"${file.name}" is too large. Each media file must be 25 MB or smaller.`,
+        `"${file.name}" is too large. Each media file must be under 50 MB (49 MB maximum).`,
       );
     }
 
@@ -1549,7 +1549,7 @@ async function uploadProviderImages() {
       throw new Error(
         remaining > 0
           ? `You can upload ${remaining} more media file${remaining === 1 ? "" : "s"}.`
-          : "You already have the maximum of 4 media files.",
+          : `You already have the maximum of ${MAX_PROVIDER_MEDIA} media files.`,
       );
     }
 
@@ -1560,7 +1560,7 @@ async function uploadProviderImages() {
     for (const file of selectedImageFiles) {
       if (file.size > MAX_MEDIA_FILE_SIZE) {
         throw new Error(
-          `"${file.name}" is too large. Each media file must be 25 MB or smaller.`,
+          `"${file.name}" is too large. Each media file must be under 50 MB (49 MB maximum.`,
         );
       }
     }
@@ -1626,10 +1626,10 @@ function previewSelectedVideo() {
   if (file.size > MAX_MEDIA_FILE_SIZE) {
     videoPreview.innerHTML = `
       <p>
-        This video is too large.
-        Maximum file size is 25 MB.
+          This video is too large.
+          Each media file must be under 50 MB (49 MB maximum).
       </p>
-    `;
+     `;
 
     return;
   }
@@ -1676,7 +1676,9 @@ async function uploadProviderVideo() {
     const currentMediaCount = await getCurrentProviderMediaCount();
 
     if (currentMediaCount >= MAX_PROVIDER_MEDIA) {
-      throw new Error("You already have the maximum of 4 media files.");
+      throw new Error(
+        `You already have the maximum of ${MAX_PROVIDER_MEDIA} media files.`,
+      );
     }
 
     // --------------------------------------------
@@ -1756,7 +1758,7 @@ function setupMediaDropzone(dropzone, input, fileHandler) {
 setupMediaDropzone(imageDropzone, imageInput, (files) => {
   const imageFiles = files.filter((file) => file.type.startsWith("image/"));
 
-  selectedImageFiles = imageFiles.slice(0, 4);
+  selectedImageFiles = imageFiles.slice(0, MAX_PROVIDER_MEDIA);
 
   renderImagePreview();
 });

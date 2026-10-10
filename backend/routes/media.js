@@ -56,11 +56,13 @@ router.post("/providers/media", authenticateUser, async (req, res) => {
 
     const mediaCount = countResult.rows[0].count;
 
-    // Maximum of 4 total media files
-    if (mediaCount >= 4) {
+    const MAX_PROVIDER_MEDIA = 8;
+
+    // Maximum of 8 total media files
+    if (mediaCount >= MAX_PROVIDER_MEDIA) {
       return res.status(400).json({
         status: "ERROR",
-        message: "Maximum of 4 media files allowed",
+        message: `Maximum of ${MAX_PROVIDER_MEDIA} media files allowed`,
       });
     }
 
@@ -100,42 +102,39 @@ router.post("/providers/media", authenticateUser, async (req, res) => {
 // ======================================================
 
 // Save or update provider profile image
-router.post(
-  "/providers/profile-image",
-  authenticateUser,
-  async (req, res) => {
-    const { profile_image_url } = req.body;
+router.post("/providers/profile-image", authenticateUser, async (req, res) => {
+  const { profile_image_url } = req.body;
 
-    if (!profile_image_url) {
-      return res.status(400).json({
-        status: "ERROR",
-        message: "Profile image URL is required",
-      });
-    }
+  if (!profile_image_url) {
+    return res.status(400).json({
+      status: "ERROR",
+      message: "Profile image URL is required",
+    });
+  }
 
-    try {
-      // Find provider belonging to logged-in user
-      const providerResult = await pool.query(
-        `
+  try {
+    // Find provider belonging to logged-in user
+    const providerResult = await pool.query(
+      `
           SELECT id
           FROM service_providers
           WHERE user_id = $1
         `,
-        [req.user.id],
-      );
+      [req.user.id],
+    );
 
-      if (providerResult.rows.length === 0) {
-        return res.status(404).json({
-          status: "ERROR",
-          message: "Provider profile not found",
-        });
-      }
+    if (providerResult.rows.length === 0) {
+      return res.status(404).json({
+        status: "ERROR",
+        message: "Provider profile not found",
+      });
+    }
 
-      const providerId = providerResult.rows[0].id;
+    const providerId = providerResult.rows[0].id;
 
-      // Save profile image URL
-      const result = await pool.query(
-        `
+    // Save profile image URL
+    const result = await pool.query(
+      `
           UPDATE service_providers
           SET
             profile_image_url = $1,
@@ -146,39 +145,29 @@ router.post(
             business_name,
             profile_image_url
         `,
-        [
-          profile_image_url,
-          providerId,
-        ],
-      );
+      [profile_image_url, providerId],
+    );
 
-      res.json({
-        status: "OK",
-        message: "Profile image saved successfully",
-        provider: result.rows[0],
-      });
-    } catch (error) {
-      console.error(
-        "Profile image save error:",
-        error,
-      );
+    res.json({
+      status: "OK",
+      message: "Profile image saved successfully",
+      provider: result.rows[0],
+    });
+  } catch (error) {
+    console.error("Profile image save error:", error);
 
-      res.status(500).json({
-        status: "ERROR",
-        message: "Failed to save profile image",
-      });
-    }
-  },
-);
+    res.status(500).json({
+      status: "ERROR",
+      message: "Failed to save profile image",
+    });
+  }
+});
 
 // Get profile image for logged-in provider
-router.get(
-  "/providers/profile-image",
-  authenticateUser,
-  async (req, res) => {
-    try {
-      const result = await pool.query(
-        `
+router.get("/providers/profile-image", authenticateUser, async (req, res) => {
+  try {
+    const result = await pool.query(
+      `
           SELECT
             id,
             business_name,
@@ -186,34 +175,29 @@ router.get(
           FROM service_providers
           WHERE user_id = $1
         `,
-        [req.user.id],
-      );
+      [req.user.id],
+    );
 
-      if (result.rows.length === 0) {
-        return res.status(404).json({
-          status: "ERROR",
-          message: "Provider profile not found",
-        });
-      }
-
-      res.json({
-        status: "OK",
-        provider: result.rows[0],
-      });
-    } catch (error) {
-      console.error(
-        "Profile image retrieval error:",
-        error,
-      );
-
-      res.status(500).json({
+    if (result.rows.length === 0) {
+      return res.status(404).json({
         status: "ERROR",
-        message:
-          "Failed to fetch profile image",
+        message: "Provider profile not found",
       });
     }
-  },
-);
+
+    res.json({
+      status: "OK",
+      provider: result.rows[0],
+    });
+  } catch (error) {
+    console.error("Profile image retrieval error:", error);
+
+    res.status(500).json({
+      status: "ERROR",
+      message: "Failed to fetch profile image",
+    });
+  }
+});
 
 // Get media for the logged-in provider
 router.get("/providers/media", authenticateUser, async (req, res) => {
