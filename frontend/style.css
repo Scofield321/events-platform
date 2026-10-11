@@ -6380,3 +6380,522 @@ background: #ecfdf5;
     transition: none !important;
   }
 }
+
+
+
+/* =========================================================
+   BIDE HUB — PREMIUM PROVIDER PROFILE
+   Scoped to the public provider profile only
+========================================================= */
+
+body:has(.provider-hero) {
+  --profile-navy: #101a2e;
+  --profile-navy-light: #1c2b46;
+  --profile-gold: #d7b879;
+  --profile-gold-light: #f4ead4;
+  --profile-border: #e7eaf0;
+  background: #f6f7fa;
+}
+
+/* ---------- Clean profile header ---------- */
+
+.dashboard-header:has(.provider-hero) {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+}
+
+.dashboard-header:has(.provider-hero) > div {
+  width: 100%;
+  max-width: 1210px;
+  margin-inline: auto;
+  padding: 28px 24px 0;
+}
+
+/* ---------- Slim navigation ---------- */
+
+.profile-navigation {
+  order: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  min-height: 66px;
+  padding: 12px max(24px, calc((100% - 1162px) / 2));
+  background: rgba(255, 255, 255, 0.96);
+  border-bottom: 1px solid #e9ecf2;
+}
+
+.profile-navigation a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  color: #475569;
+  font-size: 0.9rem;
+  font-weight: 650;
+  text-decoration: none;
+  transition: color 180ms ease;
+}
+
+.profile-navigation a:hover {
+  color: #8a6a2d;
+}
+
+/* ---------- Premium hero panel ---------- */
+
+.dashboard-header .provider-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  margin: 0;
+  padding: clamp(28px, 4vw, 48px);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 22px;
+  background:
+    radial-gradient(
+      circle at 90% 0%,
+      rgba(215, 184, 121, 0.17),
+      transparent 34%
+    ),
+    linear-gradient(
+      125deg,
+      var(--profile-navy) 0%,
+      var(--profile-navy-light) 100%
+    );
+  box-shadow: 0 18px 45px rgba(16, 26, 46, 0.13);
+  color: #fff;
+}
+
+.dashboard-header .provider-hero::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  right: -90px;
+  bottom: -160px;
+  width: 320px;
+  height: 320px;
+  border: 1px solid rgba(215, 184, 121, 0.16);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 35px rgba(215, 184, 121, 0.025),
+    0 0 0 70px rgba(215, 184, 121, 0.02);
+  pointer-events: none;
+}
+
+.provider-hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 100%;
+}
+
+.provider-profile-header {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  min-width: 0;
+}
+
+/* ---------- Provider photo / logo ---------- */
+
+.provider-profile-image {
+  flex: 0 0 112px;
+  width: 112px;
+  height: 112px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border: 3px solid rgba(215, 184, 121, 0.9);
+  border-radius: 20px;
+  background: #253650;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  color: #f4ead4;
+  font-size: 2.5rem;
+  font-weight: 750;
+}
+
+.provider-profile-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.provider-profile-info {
+  min-width: 0;
+}
+
+.provider-profile-header h1 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 12px;
+  color: #fff;
+  font-size: clamp(1.8rem, 3.5vw, 2.7rem);
+  font-weight: 750;
+  line-height: 1.12;
+  letter-spacing: -0.045em;
+  overflow-wrap: anywhere;
+}
+
+.provider-profile-location {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: #d0d8e5;
+  font-size: 0.98rem;
+}
+
+/* ---------- Verification badge ---------- */
+
+.provider-profile-header .verified-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 9px;
+  border: 1px solid rgba(110, 231, 183, 0.3);
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.12);
+  color: #a7f3d0;
+  font-size: 0.73rem;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+/* ---------- Reputation summary ---------- */
+
+.provider-hero-reputation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 30px;
+}
+
+.provider-hero-reputation > div {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  min-width: 150px;
+  padding: 14px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.provider-hero-reputation strong {
+  color: #fff;
+  font-size: 1.4rem;
+  font-weight: 750;
+  line-height: 1;
+}
+
+.provider-hero-reputation span {
+  margin: 0;
+  color: #d4dbea;
+  font-size: 0.83rem;
+}
+
+/* Make the star accent feel intentional */
+.provider-hero-reputation > div:first-child span {
+  color: var(--profile-gold);
+}
+
+/* ---------- Main profile content ---------- */
+
+body:has(.provider-hero) .dashboard-container {
+  max-width: 1210px;
+  padding: 28px 24px 64px;
+}
+
+body:has(.provider-hero) .dashboard-card {
+  margin-bottom: 22px;
+  padding: clamp(22px, 3vw, 32px);
+  border: 1px solid var(--profile-border);
+  border-radius: 17px;
+  background: #fff;
+  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.035);
+}
+
+body:has(.provider-hero) .dashboard-card > h2 {
+  margin-bottom: 18px;
+  color: var(--profile-navy);
+  font-size: 1.35rem;
+  font-weight: 750;
+  letter-spacing: -0.025em;
+}
+
+/* ---------- Portfolio gallery ---------- */
+
+#providerMedia {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.public-media-item {
+  overflow: hidden;
+  border: 1px solid #e8ebf1;
+  border-radius: 12px;
+  background: #f1f3f7;
+}
+
+.public-media-item img,
+.public-media-item video {
+  width: 100%;
+  height: 230px;
+  display: block;
+  object-fit: cover;
+  transition: transform 300ms ease;
+}
+
+@media (hover: hover) {
+  .public-media-item:hover img {
+    transform: scale(1.035);
+  }
+}
+
+/* ---------- Service cards ---------- */
+
+#providerServices {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+#providerServices .service-item {
+  padding: 18px;
+  border: 1px solid #e8ebf1;
+  border-radius: 12px;
+  background: #fafbfc;
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    transform 180ms ease;
+}
+
+#providerServices .service-item strong {
+  margin-bottom: 5px;
+  font-size: 0.96rem;
+}
+
+#providerServices .service-item p {
+  font-size: 0.82rem;
+}
+
+@media (hover: hover) {
+  #providerServices .service-item:hover {
+    transform: translateY(-2px);
+    border-color: #d8c49b;
+    background: #fffdf8;
+  }
+}
+
+/* ---------- Reputation cards ---------- */
+
+body:has(.provider-hero) .stats-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+body:has(.provider-hero) .stat-card {
+  padding: 24px;
+  border: 1px solid #e8ebf1;
+  border-radius: 13px;
+  background: #fafbfc;
+}
+
+body:has(.provider-hero) .stat-card h3 {
+  margin-bottom: 8px;
+  color: #64748b;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+body:has(.provider-hero) .stat-card p {
+  color: var(--profile-navy);
+  font-size: 2rem;
+  font-weight: 750;
+}
+
+/* ---------- Quote request card ---------- */
+
+body:has(.provider-hero) .provider-contact-card {
+  border-color: #e5d8bb;
+  background:
+    linear-gradient(145deg, #fff 0%, #fffdf8 100%);
+}
+
+body:has(.provider-hero) .provider-contact-card > h2 {
+  font-size: 1.55rem;
+}
+
+body:has(.provider-hero) .provider-contact-card > p {
+  max-width: 760px;
+  line-height: 1.75;
+}
+
+body:has(.provider-hero) .provider-contact-card .provider-profile-button {
+  width: auto;
+  min-width: 240px;
+  margin-top: 8px;
+  border-radius: 9px;
+  background: var(--profile-navy);
+  color: #fff;
+}
+
+body:has(.provider-hero) .provider-contact-card .provider-profile-button:hover {
+  background: #263650;
+}
+
+/* ---------- Tablet ---------- */
+
+@media (max-width: 800px) {
+  .dashboard-header:has(.provider-hero) > div {
+    padding: 20px 18px 0;
+  }
+
+  .profile-navigation {
+    padding-inline: 18px;
+  }
+
+  .dashboard-header .provider-hero {
+    padding: 28px;
+  }
+
+  body:has(.provider-hero) .dashboard-container {
+    padding: 22px 18px 48px;
+  }
+
+  #providerMedia {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ---------- Mobile ---------- */
+
+@media (max-width: 560px) {
+  .profile-navigation {
+    min-height: 58px;
+    padding: 9px 16px;
+  }
+
+  .profile-navigation a {
+    font-size: 0.82rem;
+  }
+
+  .dashboard-header:has(.provider-hero) > div {
+    padding: 16px 14px 0;
+  }
+
+  .dashboard-header .provider-hero {
+    padding: 24px 19px;
+    border-radius: 17px;
+  }
+
+  .provider-profile-header {
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .provider-profile-image {
+    flex-basis: 76px;
+    width: 76px;
+    height: 76px;
+    border-radius: 15px;
+    font-size: 1.8rem;
+  }
+
+  .provider-profile-header h1 {
+    gap: 8px;
+    margin-bottom: 9px;
+    font-size: clamp(1.35rem, 6vw, 1.8rem);
+  }
+
+  .provider-profile-header .verified-badge {
+    font-size: 0.67rem;
+  }
+
+  .provider-profile-location {
+    font-size: 0.84rem;
+    line-height: 1.5;
+  }
+
+  .provider-hero-reputation {
+    gap: 9px;
+    margin-top: 23px;
+  }
+
+  .provider-hero-reputation > div {
+    flex: 1 1 125px;
+    min-width: 0;
+    gap: 9px;
+    padding: 12px;
+  }
+
+  .provider-hero-reputation strong {
+    font-size: 1.2rem;
+  }
+
+  .provider-hero-reputation span {
+    font-size: 0.76rem;
+  }
+
+  body:has(.provider-hero) .dashboard-container {
+    padding: 18px 14px 42px;
+  }
+
+  body:has(.provider-hero) .dashboard-card {
+    padding: 21px 17px;
+    border-radius: 14px;
+  }
+
+  body:has(.provider-hero) .dashboard-card > h2 {
+    font-size: 1.2rem;
+  }
+
+  #providerMedia {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .public-media-item img,
+  .public-media-item video {
+    height: 155px;
+  }
+
+  #providerServices {
+    grid-template-columns: 1fr;
+  }
+
+  body:has(.provider-hero) .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+  }
+
+  body:has(.provider-hero) .stat-card {
+    padding: 17px 12px;
+  }
+
+  body:has(.provider-hero) .stat-card p {
+    font-size: 1.65rem;
+  }
+
+  body:has(.provider-hero) .provider-contact-card .provider-profile-button {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+/* ---------- Accessibility ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .public-media-item img,
+  #providerServices .service-item {
+    transition: none;
+  }
+}
