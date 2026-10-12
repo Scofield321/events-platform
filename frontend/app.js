@@ -1178,6 +1178,7 @@ if (profileForm) {
   profileForm.addEventListener("submit", saveProviderProfile);
 }
 
+
 async function saveProviderProfile(event) {
   event.preventDefault();
 
@@ -1197,59 +1198,49 @@ async function saveProviderProfile(event) {
 
     if (!session) {
       window.location.href = "login.html";
-
       return;
     }
 
+    // Safely read fields that exist in the current HTML.
+    // Optional fields return an empty string when absent.
+    const getFieldValue = (id) => {
+      const field = document.getElementById(id);
+      return field ? field.value.trim() : "";
+    };
+
     const profileData = {
-      business_name: document
-        .getElementById("profileBusinessName")
-        .value.trim(),
+      business_name: getFieldValue("profileBusinessName"),
+      phone: getFieldValue("profilePhone"),
+      location: getFieldValue("profileLocation"),
+      address: getFieldValue("profileAddress"),
+      description: getFieldValue("profileDescription"),
+      website_url: getFieldValue("profileWebsite"),
+      whatsapp_number: getFieldValue("profileWhatsapp"),
 
-      phone: document.getElementById("profilePhone").value.trim(),
-
-      location: document.getElementById("profileLocation").value.trim(),
-
-      address: document.getElementById("profileAddress").value.trim(),
-
-      description: document.getElementById("profileDescription").value.trim(),
-
-      website_url: document.getElementById("profileWebsite").value.trim(),
-
-      whatsapp_number: document.getElementById("profileWhatsapp").value.trim(),
-
-      instagram_url: document.getElementById("profileInstagram").value.trim(),
-
-      facebook_url: document.getElementById("profileFacebook").value.trim(),
-
-      tiktok_url: document.getElementById("profileTiktok").value.trim(),
-
-      youtube_url: document.getElementById("profileYoutube").value.trim(),
+      // Social media fields were intentionally removed from the HTML.
+      // Keep their existing values unchanged in the database.
     };
 
     const response = await fetch(`${API_BASE_URL}/api/providers/profile`, {
       method: "PUT",
-
       headers: {
         "Content-Type": "application/json",
-
         Authorization: `Bearer ${session.access_token}`,
       },
-
       body: JSON.stringify(profileData),
     });
 
     const result = await response.json();
 
     if (!response.ok) {
-      throw new Error(result.message || "Failed to update profile");
+      throw new Error(result.message || "Failed to update profile.");
     }
 
     showToast("Profile updated successfully!", "success");
 
     await loadProviderDashboard();
 
-    // Recalculate readiness
+    // Recalculate profile readiness.
     updateProfileCompletion(
       window.currentProviderUser,
       window.currentProviderServices || [],
@@ -1258,11 +1249,15 @@ async function saveProviderProfile(event) {
   } catch (error) {
     console.error("Profile update error:", error);
 
-    showToast(error.message || "Failed to update your profile.", "error");
+    showToast(
+      error.message || "Failed to update your profile.",
+      "error",
+    );
   } finally {
     resetButtonLoading(saveProfileButton);
   }
 }
+
 
 // ======================================================
 // PROVIDER MEDIA UPLOAD
