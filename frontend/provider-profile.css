@@ -771,3 +771,61 @@ body:has(.provider-hero) footer p {
     scroll-behavior: auto !important;
   }
 }
+
+
+/* Circular provider profile picture or business logo */
+
+#providerProfileImage {
+  width: 112px;
+  height: 112px;
+  min-width: 112px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #edf2eb;
+  border: 3px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+/* Image or logo inside the circle */
+
+#providerProfileImage img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+/* Initial shown when no profile image exists */
+
+#providerProfileInitial {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  color: #24563a;
+  font-size: 36px;
+  font-weight: 750;
+  background: #edf2eb;
+}
+
+/* Smaller circle on mobile */
+
+@media (max-width: 600px) {
+  #providerProfileImage {
+    width: 88px;
+    height: 88px;
+    min-width: 88px;
+  }
+
+  #providerProfileInitial {
+    font-size: 30px;
+  }
+}
+

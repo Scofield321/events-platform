@@ -7077,3 +7077,875 @@ body:has(.provider-hero) .provider-contact-card .provider-profile-button:hover {
     padding: 22px 18px 18px;
   }
 }
+
+
+
+/* =========================================
+   BIDE HUB — PROVIDERS PAGE
+   Elegant forest-green design
+========================================= */
+
+body:has(.providers-intro) {
+  background: #f7f8f6;
+  color: #18231d;
+}
+
+/* Main page container */
+
+body:has(.providers-intro) main {
+  width: min(1200px, calc(100% - 40px));
+  margin: 38px auto 64px;
+}
+
+body:has(.providers-intro) .dashboard-card {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  overflow: visible;
+}
+
+/* Intro section */
+
+.providers-intro {
+  position: relative;
+  overflow: hidden;
+  padding: 56px 48px;
+  margin-bottom: 34px;
+  border-radius: 22px;
+  color: #fff;
+  background:
+    radial-gradient(
+      circle at 90% 10%,
+      rgba(170, 198, 158, 0.17),
+      transparent 34%
+    ),
+    linear-gradient(135deg, #102d20 0%, #194c34 65%, #236344 100%);
+  box-shadow: 0 16px 38px rgba(16, 45, 32, 0.12);
+}
+
+.providers-intro .section-eyebrow {
+  margin: 0 0 14px;
+  color: #c5dfc5;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 3px;
+}
+
+.providers-intro h1 {
+  max-width: 760px;
+  margin: 0 0 20px;
+  color: #fff;
+  font-size: clamp(30px, 4vw, 46px);
+  font-weight: 750;
+  line-height: 1.15;
+  letter-spacing: -1.3px;
+}
+
+.providers-intro p:not(.section-eyebrow) {
+  max-width: 740px;
+  margin: 0 0 12px;
+  color: rgba(255, 255, 255, 0.84);
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+.providers-intro p:last-child {
+  margin-bottom: 0;
+}
+
+/* Search section heading */
+
+body:has(.providers-intro) .dashboard-card > h2 {
+  margin: 0 0 20px;
+  color: #183b29;
+  font-size: 26px;
+  font-weight: 750;
+  letter-spacing: -0.5px;
+}
+
+/* Search and filter panel */
+
+.provider-filters {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  gap: 18px;
+  margin-bottom: 32px;
+  padding: 24px;
+  background: #fff;
+  border: 1px solid #e4e9e3;
+  border-radius: 18px;
+  box-shadow: 0 5px 22px rgba(20, 40, 28, 0.045);
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  min-width: 0;
+}
+
+.filter-group label {
+  color: #34463a;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.filter-group input,
+.filter-group select {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 14px;
+  color: #243329;
+  background: #fbfcfa;
+  border: 1px solid #dce4da;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 14px;
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.filter-group input::placeholder {
+  color: #8b968d;
+}
+
+.filter-group input:focus,
+.filter-group select:focus {
+  background: #fff;
+  border-color: #36764e;
+  box-shadow: 0 0 0 3px rgba(54, 118, 78, 0.12);
+}
+
+/* Provider results grid */
+
+#providersList {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 24px;
+}
+
+/* Provider card */
+
+#providersList .provider-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #e4e9e3;
+  border-radius: 18px;
+  box-shadow: 0 5px 20px rgba(20, 40, 28, 0.045);
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease,
+    border-color 0.22s ease;
+}
+
+#providersList .provider-card:hover {
+  transform: translateY(-5px);
+  border-color: #c5d7c6;
+  box-shadow: 0 15px 34px rgba(20, 55, 34, 0.1);
+}
+
+/* Provider image */
+
+#providersList .provider-card-image,
+#providersList .provider-card-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 210px;
+  flex: 0 0 210px;
+  object-fit: cover;
+  background: #edf2eb;
+}
+
+#providersList .provider-card-placeholder {
+  color: #24563a;
+  font-size: 48px;
+  font-weight: 750;
+  letter-spacing: -2px;
+  background:
+    radial-gradient(circle at top right, #dce9d9, transparent 55%),
+    #edf2eb;
+}
+
+/* Provider card content */
+
+#providersList .provider-card-content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 22px;
+  min-width: 0;
+}
+
+#providersList .provider-card-name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px;
+  color: #183b29;
+  font-size: 19px;
+  font-weight: 750;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+#providersList .verified-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 8px;
+  color: #23633e;
+  background: #e9f5eb;
+  border: 1px solid #d2e9d6;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.1px;
+  white-space: nowrap;
+}
+
+#providersList .provider-location {
+  margin: 0 0 16px;
+  color: #6b776e;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* Service tags */
+
+#providersList .provider-services {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 17px;
+}
+
+#providersList .service-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  color: #28583a;
+  background: #eff5ed;
+  border: 1px solid #e0ebdc;
+  border-radius: 7px;
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1.4;
+}
+
+/* Rating and reviews */
+
+#providersList .provider-reputation {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  margin-bottom: 16px;
+  padding: 13px 0;
+  border-top: 1px solid #edf0eb;
+  border-bottom: 1px solid #edf0eb;
+  color: #657168;
+  font-size: 12px;
+}
+
+#providersList .provider-reputation span:first-child {
+  color: #956b16;
+  font-weight: 750;
+}
+
+/* Provider description */
+
+#providersList .provider-description {
+  display: -webkit-box;
+  flex: 1;
+  width: 100%;
+  margin: 0 0 22px;
+  overflow: hidden;
+  color: #657168;
+  font-size: 13px;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+}
+
+/* View profile button */
+
+#providersList .provider-profile-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 46px;
+  margin-top: auto;
+  padding: 12px 18px;
+  color: #fff;
+  background: #194c34;
+  border: 1px solid #194c34;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 750;
+  text-align: center;
+  text-decoration: none;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+#providersList .provider-profile-button:hover {
+  background: #236344;
+  box-shadow: 0 5px 14px rgba(25, 76, 52, 0.16);
+}
+
+/* Empty state and error messages */
+
+#providersList > p,
+#providersList > .content-loader {
+  grid-column: 1 / -1;
+}
+
+#providersList > p {
+  margin: 0;
+  padding: 36px 20px;
+  color: #68756b;
+  background: #fff;
+  border: 1px solid #e4e9e3;
+  border-radius: 14px;
+  text-align: center;
+  line-height: 1.7;
+}
+
+/* Tablet */
+
+@media (max-width: 1000px) {
+  #providersList {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .provider-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .provider-filters .filter-group:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .providers-intro {
+    padding: 42px 34px;
+  }
+}
+
+/* Mobile */
+
+@media (max-width: 600px) {
+  body:has(.providers-intro) main {
+    width: calc(100% - 28px);
+    margin: 24px auto 42px;
+  }
+
+  .providers-intro {
+    padding: 34px 23px;
+    margin-bottom: 27px;
+    border-radius: 17px;
+  }
+
+  .providers-intro h1 {
+    font-size: 31px;
+    letter-spacing: -0.8px;
+  }
+
+  .providers-intro p:not(.section-eyebrow) {
+    font-size: 14px;
+    line-height: 1.75;
+  }
+
+  body:has(.providers-intro) .dashboard-card > h2 {
+    font-size: 23px;
+  }
+
+  .provider-filters {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 18px;
+    border-radius: 15px;
+  }
+
+  .provider-filters .filter-group:first-child {
+    grid-column: auto;
+  }
+
+  #providersList {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  #providersList .provider-card-image,
+  #providersList .provider-card-placeholder {
+    height: 220px;
+    flex-basis: 220px;
+  }
+
+  #providersList .provider-card-content {
+    padding: 20px;
+  }
+
+  #providersList .provider-card-name {
+    font-size: 18px;
+  }
+}
+
+/* Respect reduced-motion preferences */
+
+@media (prefers-reduced-motion: reduce) {
+  #providersList .provider-card,
+  #providersList .provider-profile-button {
+    transition: none;
+  }
+
+  #providersList .provider-card:hover {
+    transform: none;
+  }
+}
+
+/* =====================================
+   BIDE HUB — COMPACT PROVIDER CARDS
+   Homepage-inspired layout
+===================================== */
+
+body:has(.providers-intro) #providersList {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+  align-items: stretch;
+}
+
+/* Card */
+body:has(.providers-intro) #providersList > .provider-card,
+body:has(.providers-intro) #providersList > article {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  min-width: 0;
+  padding: 28px 22px 24px;
+  background: #fff;
+  border: 1px solid #e0e8e2;
+  border-radius: 23px;
+  box-shadow: 0 5px 16px rgba(24, 55, 38, 0.05);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+body:has(.providers-intro) #providersList > .provider-card:hover,
+body:has(.providers-intro) #providersList > article:hover {
+  border-color: #cbdcd0;
+  box-shadow: 0 8px 22px rgba(24, 55, 38, 0.08);
+}
+
+/* Smaller circular logos */
+body:has(.providers-intro) #providersList .provider-card-image {
+  width: 112px;
+  height: 112px;
+  min-width: 112px;
+  margin: 0 auto 20px;
+  overflow: hidden;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 4px solid #f0f3f0;
+  background: #f0f3f0;
+  box-sizing: border-box;
+}
+
+body:has(.providers-intro) #providersList .provider-card-image img,
+body:has(.providers-intro) #providersList img.provider-card-image {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+/* Provider name */
+body:has(.providers-intro) #providersList h3 {
+  margin: 0 0 12px;
+  color: #203b2d;
+  font-size: 21px;
+  font-weight: 750;
+  line-height: 1.4;
+}
+
+/* Location */
+body:has(.providers-intro) #providersList .provider-location {
+  margin: 8px 0 14px;
+  color: #77817b;
+  font-size: 15px;
+}
+
+/* Service labels */
+body:has(.providers-intro) #providersList .provider-services {
+  margin: 0 0 10px;
+  color: #758078;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+/* Ratings */
+body:has(.providers-intro) #providersList .provider-rating {
+  width: 100%;
+  margin: 10px 0 20px;
+  padding: 16px 0;
+  border-top: 1px solid #e8ede9;
+  border-bottom: 1px solid #e8ede9;
+  color: #737e77;
+  font-size: 14px;
+}
+
+/* Description */
+body:has(.providers-intro) #providersList .provider-description {
+  margin: 0 0 22px;
+  color: #737e77;
+  font-size: 14px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+/* View Profile button */
+body:has(.providers-intro) #providersList a[href*="provider-profile"],
+body:has(.providers-intro) #providersList .view-profile-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 52px;
+  margin-top: auto;
+  padding: 12px 16px;
+  box-sizing: border-box;
+  border-radius: 12px;
+  background: #194d39;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  text-decoration: none;
+  text-align: center;
+}
+
+body:has(.providers-intro) #providersList a[href*="provider-profile"]:hover,
+body:has(.providers-intro) #providersList .view-profile-btn:hover {
+  background: #123b2b;
+}
+
+/* Tablet */
+@media (max-width: 1000px) {
+  body:has(.providers-intro) #providersList {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  body:has(.providers-intro) #providersList {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  body:has(.providers-intro) #providersList > .provider-card,
+  body:has(.providers-intro) #providersList > article {
+    padding: 26px 22px;
+  }
+
+  body:has(.providers-intro) #providersList .provider-card-image {
+    width: 100px;
+    height: 100px;
+    min-width: 100px;
+  }
+}
+
+
+/* =========================================================
+   BIDE HUB — PROVIDER LISTING CARDS
+   Applies to providers.html only
+   ========================================================= */
+
+/* Provider listing grid */
+body:has(.providers-intro) #providersList {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+  align-items: stretch;
+  width: 100%;
+  margin: 28px auto 0;
+}
+
+/* Individual provider card */
+body:has(.providers-intro) #providersList .provider-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+  min-height: 680px;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 28px 24px 24px;
+  background: #ffffff;
+  border: 1px solid #dce8df;
+  border-radius: 28px;
+  box-shadow: 0 4px 18px rgba(25, 65, 45, 0.045);
+  text-align: center;
+  overflow: hidden;
+}
+
+/* Circular logo area — fixed square dimensions */
+body:has(.providers-intro) #providersList .provider-card-image,
+body:has(.providers-intro) #providersList .provider-card-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 140px !important;
+  height: 140px !important;
+  min-width: 140px;
+  max-width: 140px;
+  min-height: 140px;
+  max-height: 140px;
+  flex: 0 0 140px;
+  aspect-ratio: 1 / 1;
+  box-sizing: border-box;
+  margin: 4px auto 24px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #ffffff;
+  border: 2px solid #edf1ed;
+}
+
+/* Show the complete logo without stretching or cropping it */
+body:has(.providers-intro) #providersList img.provider-card-image {
+  object-fit: contain !important;
+  object-position: center;
+  padding: 5px;
+}
+
+/* Initial displayed when no logo exists */
+body:has(.providers-intro) #providersList .provider-card-placeholder {
+  color: #24563a;
+  background: #edf4ee;
+  font-size: 42px;
+  font-weight: 750;
+}
+
+/* Content below the logo */
+body:has(.providers-intro) #providersList .provider-card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  text-align: center;
+}
+
+/* Provider business name */
+body:has(.providers-intro) #providersList .provider-card-name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin: 0 0 20px;
+  color: #203c2d;
+  font-size: 25px;
+  font-weight: 750;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+/* Verified badge */
+body:has(.providers-intro) #providersList .verified-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 12px;
+  border: 1px solid #c8e6cf;
+  border-radius: 999px;
+  background: #eaf6ed;
+  color: #21663c;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* Location */
+body:has(.providers-intro) #providersList .provider-location {
+  width: 100%;
+  margin: 0 0 20px;
+  color: #77837b;
+  font-size: 17px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+/* Service tags */
+body:has(.providers-intro) #providersList .provider-services {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  margin: 0 0 18px;
+}
+
+body:has(.providers-intro) #providersList .service-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 11px 15px;
+  border: 1px solid #d5e6d6;
+  border-radius: 14px;
+  background: #f0f6ef;
+  color: #285b3d;
+  font-size: 15px;
+  font-weight: 650;
+  line-height: 1.4;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+/* Rating and reviews */
+body:has(.providers-intro) #providersList .provider-reputation {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0 0 18px;
+  padding: 16px 4px;
+  border-top: 1px solid #e0e8e1;
+  border-bottom: 1px solid #e0e8e1;
+  color: #77837b;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+body:has(.providers-intro) #providersList .provider-reputation span:first-child {
+  color: #a87408;
+  font-weight: 700;
+}
+
+/* Provider description */
+body:has(.providers-intro) #providersList .provider-description {
+  display: -webkit-box;
+  width: 100%;
+  margin: 0 0 24px;
+  color: #77837b;
+  font-size: 17px;
+  line-height: 1.7;
+  text-align: center;
+  overflow-wrap: anywhere;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+}
+
+/* View Profile button stays at the bottom */
+body:has(.providers-intro) #providersList .provider-profile-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 68px;
+  box-sizing: border-box;
+  margin-top: auto;
+  padding: 16px 20px;
+  border: 0;
+  border-radius: 18px;
+  background: #19543e;
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.3;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+body:has(.providers-intro) #providersList .provider-profile-button:hover {
+  background: #123f2e;
+  transform: translateY(-1px);
+}
+
+/* Empty results message */
+body:has(.providers-intro) #providersList > p {
+  grid-column: 1 / -1;
+  padding: 28px;
+  color: #77837b;
+  text-align: center;
+}
+
+/* Medium screens */
+@media (max-width: 1000px) {
+  body:has(.providers-intro) #providersList {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+  }
+
+  body:has(.providers-intro) #providersList .provider-card {
+    min-height: 660px;
+    padding: 24px 20px;
+  }
+}
+
+/* Mobile screens */
+@media (max-width: 620px) {
+  body:has(.providers-intro) #providersList {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+  }
+
+  body:has(.providers-intro) #providersList .provider-card {
+    min-height: 0;
+    padding: 24px 20px;
+    border-radius: 24px;
+  }
+
+  body:has(.providers-intro) #providersList .provider-card-image,
+  body:has(.providers-intro) #providersList .provider-card-placeholder {
+    width: 125px !important;
+    height: 125px !important;
+    min-width: 125px;
+    max-width: 125px;
+    min-height: 125px;
+    max-height: 125px;
+    flex-basis: 125px;
+  }
+
+  body:has(.providers-intro) #providersList .provider-card-name {
+    font-size: 22px;
+  }
+
+  body:has(.providers-intro) #providersList .provider-description {
+    font-size: 16px;
+  }
+
+  body:has(.providers-intro) #providersList .provider-profile-button {
+    min-height: 58px;
+    font-size: 18px;
+  }
+}
